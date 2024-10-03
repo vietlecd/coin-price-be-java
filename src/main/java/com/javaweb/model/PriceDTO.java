@@ -5,7 +5,7 @@ public class PriceDTO {
     private String price;
 
     public PriceDTO() {}
-    
+
     public PriceDTO(String symbol, String price) {
         this.symbol = symbol;
         this.price = price;
