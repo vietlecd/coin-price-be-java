@@ -14,28 +14,26 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
 @Service
 public class BinanceWebSocketServiceImpl extends TextWebSocketHandler implements BinanceWebSocketService {
 
-
     @Autowired
     private APIController apiController;
-    private final ObjectMapper objectMapper = new ObjectMapper();
 
+    private final ObjectMapper objectMapper = new ObjectMapper();
     private WebSocketSession webSocketSession;
 
     private String buildWebSocketUrl(List<String> streams) {
-        String streamParam = streams.stream().collect(Collectors.joining("/"));
+        String streamParam = streams.stream().map(s -> s.toLowerCase() + "@ticker").collect(Collectors.joining("/"));
         return "wss://stream.binance.com:9443/stream?streams=" + streamParam;
     }
 
     @Override
     public void connectToWebSocket(List<String> streams) {
         String wsUrl = buildWebSocketUrl(streams);
+
         StandardWebSocketClient client = new StandardWebSocketClient();
         try {
-            // Connect to the dynamically built WebSocket URL
             this.webSocketSession = client.doHandshake(this, wsUrl).get();
             System.out.println("Connected to Binance WebSocket at: " + wsUrl);
         } catch (Exception e) {
@@ -53,10 +51,9 @@ public class BinanceWebSocketServiceImpl extends TextWebSocketHandler implements
         String symbol = data.get("s").asText();
         String price = data.get("c").asText();
 
-        System.out.println("Symbol: " + symbol + ", Price: " + price);
+        System.out.println("Symbol: " + symbol + ", Spot Price: " + price);
 
         apiController.updatePriceData(symbol, price);
-
     }
 
     @Override

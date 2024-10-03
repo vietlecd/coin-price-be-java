@@ -5,8 +5,7 @@ public class PriceDTO {
     private String price;
 
     public PriceDTO() {}
-
-    // Constructor có 2 tham số
+    
     public PriceDTO(String symbol, String price) {
         this.symbol = symbol;
         this.price = price;
