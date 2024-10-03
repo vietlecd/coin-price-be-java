@@ -13,7 +13,6 @@ public class DataStorageServiceImpl implements DataStorageService {
     @Autowired
     private PriceRepository priceRepository;
 
-
     public PriceDTO getSpotPrice(String symbol) {
         PriceEntity priceEntity = priceRepository.findTopBySymbolOrderByTimestampDesc(symbol);
         if (priceEntity != null) {
