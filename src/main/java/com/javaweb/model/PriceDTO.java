@@ -1,13 +1,10 @@
 package com.javaweb.model;
 
 public class PriceDTO {
-
     private String symbol;
     private String price;
 
-
     public PriceDTO() {}
-
 
     public PriceDTO(String symbol, String price) {
         this.symbol = symbol;

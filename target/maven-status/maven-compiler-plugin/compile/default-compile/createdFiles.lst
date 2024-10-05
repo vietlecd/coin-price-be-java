@@ -1,10 +1,6 @@
-com\javaweb\config\RestTemplateConfig.class
-com\javaweb\SpringBootWebApplication.class
-com\javaweb\repository\PriceRepository.class
-com\javaweb\entity\PriceEntity.class
-com\javaweb\model\PriceDTO.class
+com\javaweb\controller\APIController.class
+com\javaweb\config\ModelMapperConfig.class
 com\javaweb\service\impl\BinanceWebSocketServiceImpl.class
 com\javaweb\service\BinanceWebSocketService.class
-com\javaweb\service\impl\DataStorageServiceImpl.class
-com\javaweb\controller\DataStorageController.class
-com\javaweb\service\DataStorageService.class
+com\javaweb\SpringBootWebApplication.class
+com\javaweb\model\PriceDTO.class

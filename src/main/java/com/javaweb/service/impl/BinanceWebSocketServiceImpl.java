@@ -2,37 +2,40 @@ package com.javaweb.service.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.javaweb.model.PriceDTO;
+import com.javaweb.controller.APIController;
 import com.javaweb.service.BinanceWebSocketService;
-import com.javaweb.service.DataStorageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
-import javax.annotation.PostConstruct;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class BinanceWebSocketServiceImpl extends TextWebSocketHandler implements BinanceWebSocketService {
 
-    private final String BINANCE_WS_URL = "wss://stream.binance.com:9443/ws/btcusdt@ticker";
-    private final ObjectMapper objectMapper = new ObjectMapper();
-
     @Autowired
-    private DataStorageService dataStorageService;
+    private APIController apiController;
 
+    private final ObjectMapper objectMapper = new ObjectMapper();
     private WebSocketSession webSocketSession;
 
+    private String buildWebSocketUrl(List<String> streams) {
+        String streamParam = streams.stream().map(s -> s.toLowerCase() + "@ticker").collect(Collectors.joining("/"));
+        return "wss://stream.binance.com:9443/stream?streams=" + streamParam;
+    }
+
     @Override
-    @PostConstruct
-    public void connectToWebSocket() {
+    public void connectToWebSocket(List<String> streams) {
+        String wsUrl = buildWebSocketUrl(streams);
+
         StandardWebSocketClient client = new StandardWebSocketClient();
         try {
-            this.webSocketSession = client.doHandshake(this, BINANCE_WS_URL).get();
-            System.out.println("Connected to Binance WebSocket at: " + BINANCE_WS_URL);
+            this.webSocketSession = client.doHandshake(this, wsUrl).get();
+            System.out.println("Connected to Binance WebSocket at: " + wsUrl);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -43,16 +46,14 @@ public class BinanceWebSocketServiceImpl extends TextWebSocketHandler implements
         String payload = message.getPayload();
         System.out.println("Received from Binance: " + payload);
 
-        // Parse JSON
-        JsonNode jsonNode = objectMapper.readTree(payload);
-        String symbol = jsonNode.get("s").asText();
-        String price = jsonNode.get("c").asText();
+        JsonNode data = objectMapper.readTree(payload).get("data");
 
-        System.out.println("Symbol: " + symbol + ", PriceEntity: " + price);
+        String symbol = data.get("s").asText();
+        String price = data.get("c").asText();
 
-        PriceDTO priceDTO = new PriceDTO(symbol, price);
+        System.out.println("Symbol: " + symbol + ", Spot Price: " + price);
 
-        dataStorageService.savePrice(priceDTO);
+        apiController.updatePriceData(symbol, price);
     }
 
     @Override
