@@ -53,8 +53,28 @@ public class APIController {
         return emitter;
     }
 
-    public void updateKlineData(String symbol, String openPrice, String closePrice, String highPrice, String lowPrice ) {
-        priceDataMap.put(symbol.toUpperCase(), new PriceDTO(symbol, openPrice, closePrice, highPrice, lowPrice));
+    public void updateKlineData(String symbol, String openPrice, String closePrice, String highPrice, String lowPrice, String volume, String numberOfTrades,
+                                String isKlineClosed,
+                                String baseAssetVolume,
+                                String takerBuyVolume,
+                                String takerBuyBaseVolume,
+                                String eventTime,
+                                String klineStartTime,
+                                String klineCloseTime ) {
+        priceDataMap.put(symbol.toUpperCase(), new PriceDTO(symbol,
+                openPrice,
+                closePrice,
+                highPrice,
+                lowPrice,
+                volume,
+                numberOfTrades,
+                isKlineClosed,
+                baseAssetVolume,
+                takerBuyVolume,
+                takerBuyBaseVolume,
+                eventTime,
+                klineStartTime,
+                klineCloseTime));
     }
 
 }

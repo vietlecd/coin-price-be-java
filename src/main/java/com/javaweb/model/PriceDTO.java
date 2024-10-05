@@ -2,21 +2,24 @@ package com.javaweb.model;
 
 public class PriceDTO {
     private String symbol;
-    private String price;
-    private String openTime;
+
+
     private String openPrice;
     private String highPrice;
     private String lowPrice;
     private String closePrice;
     private String volume;
-    private String closeTime;
-    private String baseAssetVolume;
     private String numberOfTrades;
+    private String isKlineClosed;
+    private String baseAssetVolume;
     private String takerBuyVolume;
-    private String takerBuyBaseAssetVolume;
-    private Long ignore;
+    private String takerBuyBaseVolume;
+    private String eventTime;
+    private String klineStartTime;
+    private String klineCloseTime;
 
     public PriceDTO() {}
+
 
     public String getSymbol() {
         return symbol;
@@ -24,22 +27,6 @@ public class PriceDTO {
 
     public void setSymbol(String symbol) {
         this.symbol = symbol;
-    }
-
-    public String getPrice() {
-        return price;
-    }
-
-    public void setPrice(String price) {
-        this.price = price;
-    }
-
-    public String getOpenTime() {
-        return openTime;
-    }
-
-    public void setOpenTime(String openTime) {
-        this.openTime = openTime;
     }
 
     public String getOpenPrice() {
@@ -82,12 +69,20 @@ public class PriceDTO {
         this.volume = volume;
     }
 
-    public String getCloseTime() {
-        return closeTime;
+    public String getNumberOfTrades() {
+        return numberOfTrades;
     }
 
-    public void setCloseTime(String closeTime) {
-        this.closeTime = closeTime;
+    public void setNumberOfTrades(String numberOfTrades) {
+        this.numberOfTrades = numberOfTrades;
+    }
+
+    public String getIsKlineClosed() {
+        return isKlineClosed;
+    }
+
+    public void setIsKlineClosed(String isKlineClosed) {
+        this.isKlineClosed = isKlineClosed;
     }
 
     public String getBaseAssetVolume() {
@@ -98,14 +93,6 @@ public class PriceDTO {
         this.baseAssetVolume = baseAssetVolume;
     }
 
-    public String getNumberOfTrades() {
-        return numberOfTrades;
-    }
-
-    public void setNumberOfTrades(String numberOfTrades) {
-        this.numberOfTrades = numberOfTrades;
-    }
-
     public String getTakerBuyVolume() {
         return takerBuyVolume;
     }
@@ -114,28 +101,60 @@ public class PriceDTO {
         this.takerBuyVolume = takerBuyVolume;
     }
 
-    public String getTakerBuyBaseAssetVolume() {
-        return takerBuyBaseAssetVolume;
+    public String getTakerBuyBaseVolume() {
+        return takerBuyBaseVolume;
     }
 
-    public void setTakerBuyBaseAssetVolume(String takerBuyBaseAssetVolume) {
-        this.takerBuyBaseAssetVolume = takerBuyBaseAssetVolume;
+    public void setTakerBuyBaseVolume(String takerBuyBaseVolume) {
+        this.takerBuyBaseVolume = takerBuyBaseVolume;
     }
 
-    public Long getIgnore() {
-        return ignore;
+    public String getEventTime() {
+        return eventTime;
     }
 
-    public void setIgnore(Long ignore) {
-        this.ignore = ignore;
+    public void setEventTime(String eventTime) {
+        this.eventTime = eventTime;
     }
 
-    public PriceDTO(String symbol, String openPrice, String closePrice, String highPrice, String lowPrice) {
+    public String getKlineStartTime() {
+        return klineStartTime;
+    }
+
+    public void setKlineStartTime(String klineStartTime) {
+        this.klineStartTime = klineStartTime;
+    }
+
+    public String getKlineCloseTime() {
+        return klineCloseTime;
+    }
+
+    public void setKlineCloseTime(String klineCloseTime) {
+        this.klineCloseTime = klineCloseTime;
+    }
+
+    public PriceDTO(String symbol, String openPrice, String closePrice, String highPrice, String lowPrice, String volume, String numberOfTrades,
+                    String isKlineClosed,
+                    String baseAssetVolume,
+                    String takerBuyVolume,
+                    String takerBuyBaseVolume,
+                    String eventTime,
+                    String klineStartTime,
+                    String klineCloseTime) {
         this.symbol = symbol;
         this.openPrice = openPrice;
         this.closePrice = closePrice;
         this.highPrice = highPrice;
         this.lowPrice = lowPrice;
+        this.volume = volume;
+        this.numberOfTrades = numberOfTrades;
+        this.isKlineClosed = isKlineClosed;
+        this.baseAssetVolume = baseAssetVolume;
+        this.takerBuyVolume = takerBuyVolume;
+        this.takerBuyBaseVolume = takerBuyBaseVolume;
+        this.eventTime = eventTime;
+        this.klineStartTime=klineStartTime;
+        this.klineCloseTime = klineCloseTime;
     }
 
 }
