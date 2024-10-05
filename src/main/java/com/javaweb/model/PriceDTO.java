@@ -1,23 +1,24 @@
 package com.javaweb.model;
 
 public class PriceDTO {
-    private String symbol;
     private String price;
+    private String time;
 
     public PriceDTO() {}
 
-    public PriceDTO(String symbol, String price) {
-        this.symbol = symbol;
+    public PriceDTO(String time, String price) {
+        this.time = time
+        ;
         this.price = price;
     }
 
-    // Getters và Setters
-    public String getSymbol() {
-        return symbol;
+
+    public String getTime() {
+        return time;
     }
 
-    public void setSymbol(String symbol) {
-        this.symbol = symbol;
+    public void setTime(String time) {
+        this.time = time;
     }
 
     public String getPrice() {
