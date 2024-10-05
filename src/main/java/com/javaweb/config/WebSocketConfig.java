@@ -10,6 +10,9 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 import javax.annotation.PreDestroy;
 import java.util.concurrent.ExecutionException;
 
+import static org.apache.tomcat.jni.Socket.close;
+import static org.apache.tomcat.jni.Socket.shutdown;
+
 @Configuration
 public class WebSocketConfig {
 
@@ -29,9 +32,9 @@ public class WebSocketConfig {
         }
     }
 
-    @PreDestroy
     public void closeWebSocket() {
         try {
+            webSocketSession.close();
             if (this.webSocketSession != null && this.webSocketSession.isOpen()) {
                 this.webSocketSession.close();
                 System.out.println("WebSocket disconnected");

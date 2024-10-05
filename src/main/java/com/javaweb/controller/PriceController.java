@@ -32,8 +32,8 @@ public class PriceController {
     @Autowired
     private PriceDataService priceDataService;
 
-//    @Autowired
-//    private FutureWebSocketService futureWebSocketService;
+    @Autowired
+    private FutureWebSocketService futureWebSocketService;
 
     @GetMapping("/get-spot-price")
     public SseEmitter streamSpotPrices(@RequestParam List<String> symbols) {
@@ -41,6 +41,20 @@ public class PriceController {
 
         spotWebSocketService.connectToSpotWebSocket(symbols);
 
+        return getSseEmitter(emitter);
+    }
+
+
+    @GetMapping("/get-future-price")
+    public SseEmitter streamFuturePrices(@RequestParam List<String> symbols) {
+        SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
+
+        futureWebSocketService.connectToFutureWebSocket(symbols);
+
+        return getSseEmitter(emitter);
+    }
+
+    private SseEmitter getSseEmitter(SseEmitter emitter) {
         ScheduledFuture<?> scheduledFuture = executor.scheduleAtFixedRate(() -> {
             try {
                 emitter.send(priceDataService.getPriceDataMap());
@@ -61,35 +75,13 @@ public class PriceController {
         return emitter;
     }
 
+    @DeleteMapping("/close-websocket")
+    public void closeWebSocket(@RequestParam String type) {
+        if (type.equalsIgnoreCase("spot")) {
+            spotWebSocketService.closeWebSocket();  // Đóng kết nối Spot
+        } else if (type.equalsIgnoreCase("future")) {
+            futureWebSocketService.closeWebSocket();  // Đóng kết nối Future
+        }
+    }
 }
-
-//    @GetMapping("/get-future-price")
-//    public SseEmitter streamFuturePrices(@RequestParam List<String> symbols) {
-//        SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
-//
-//        futureWebSocketService.connectToFutureWebSocket(symbols);
-//
-//        ScheduledFuture<?> scheduledFuture = executor.scheduleAtFixedRate(() -> {
-//            try {
-//                emitter.send(priceDataService.getPriceDataMap());
-//            } catch (IOException e) {
-//                emitter.completeWithError(e);
-//            }
-//        }, 0, 1, TimeUnit.SECONDS);
-//
-//        Runnable cancelTask = () -> {
-//            scheduledFuture.cancel(true);
-//            webSocketConfig.closeWebSocket();
-//        };
-//
-//        emitter.onCompletion(cancelTask);
-//        emitter.onTimeout(cancelTask);
-//        emitter.onError((ex) -> cancelTask.run());
-//
-//        return emitter;
-//    }
-//
-//}
-//
-//
 

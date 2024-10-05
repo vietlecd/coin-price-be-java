@@ -67,4 +67,10 @@ public class SpotWebSocketServiceImpl extends TextWebSocketHandler implements Sp
 
         priceDataService.updatePriceData(formattedDateTime, symbol, price);
     }
+
+    public void closeWebSocket() {
+        webSocketConfig.closeWebSocket();
+        System.out.println("WebSocket closed from service.");
+    }
+
 }

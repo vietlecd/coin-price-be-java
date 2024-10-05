@@ -6,4 +6,5 @@ public interface SpotWebSocketService {
 
     void connectToSpotWebSocket(List<String> streams);
 
+    void closeWebSocket();
 }
