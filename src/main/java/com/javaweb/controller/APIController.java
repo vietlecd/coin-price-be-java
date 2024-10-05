@@ -20,7 +20,7 @@ public class APIController {
     @Autowired
     private BinanceWebSocketService binanceWebSocketService;
 
-    @GetMapping("/get-spot-price")
+    @GetMapping("/get-kline")
     public SseEmitter streamSpotPrices(@RequestParam List<String> symbols) {
         SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
 
@@ -53,7 +53,8 @@ public class APIController {
         return emitter;
     }
 
-    public void updatePriceData(String symbol, String price) {
-        priceDataMap.put(symbol.toUpperCase(), new PriceDTO(symbol, price));
+    public void updateKlineData(String symbol, String openPrice, String closePrice, String highPrice, String lowPrice ) {
+        priceDataMap.put(symbol.toUpperCase(), new PriceDTO(symbol, openPrice, closePrice, highPrice, lowPrice));
     }
+
 }

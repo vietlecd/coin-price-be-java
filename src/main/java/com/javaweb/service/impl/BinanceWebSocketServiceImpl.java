@@ -23,8 +23,9 @@ public class BinanceWebSocketServiceImpl extends TextWebSocketHandler implements
     private final ObjectMapper objectMapper = new ObjectMapper();
     private WebSocketSession webSocketSession;
 
+    // Thay đổi để hỗ trợ kline thay vì ticker
     private String buildWebSocketUrl(List<String> streams) {
-        String streamParam = streams.stream().map(s -> s.toLowerCase() + "@ticker").collect(Collectors.joining("/"));
+        String streamParam = streams.stream().map(s -> s.toLowerCase() + "@kline_1m").collect(Collectors.joining("/"));
         return "wss://stream.binance.com:9443/stream?streams=" + streamParam;
     }
 
@@ -46,14 +47,21 @@ public class BinanceWebSocketServiceImpl extends TextWebSocketHandler implements
         String payload = message.getPayload();
         System.out.println("Received from Binance: " + payload);
 
-        JsonNode data = objectMapper.readTree(payload).get("data");
+        // Lấy dữ liệu từ kline
+        JsonNode data = objectMapper.readTree(payload).get("data").get("k");
 
         String symbol = data.get("s").asText();
-        String price = data.get("c").asText();
+        String openPrice = data.get("o").asText();   // Giá mở
+        String closePrice = data.get("c").asText();  // Giá đóng
+        String highPrice = data.get("h").asText();   // Giá cao nhất
+        String lowPrice = data.get("l").asText();    // Giá thấp nhất
 
-        System.out.println("Symbol: " + symbol + ", Spot Price: " + price);
 
-        apiController.updatePriceData(symbol, price);
+        System.out.println("Symbol: " + symbol +  ", Open Price: " + openPrice + ", Close Price: " + closePrice +
+                ", High Price: " + highPrice + ", Low Price: " + lowPrice );
+
+        // Giả sử apiController được cập nhật để xử lý dữ liệu Kline
+        apiController.updateKlineData(symbol, openPrice, closePrice, highPrice, lowPrice);
     }
 
     @Override
