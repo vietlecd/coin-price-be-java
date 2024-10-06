@@ -1,11 +1,16 @@
 package com.javaweb.service;
 
+import com.javaweb.model.FundingRateDTO;
 import com.javaweb.model.PriceDTO;
 
 import java.util.Map;
 
 public interface PriceDataService {
-    void updatePriceData(String time, String symbol, String price);
+    void updatePriceData(PriceDTO priceDTO);
+
+    void updateFundingRate(FundingRateDTO fundingRateDTO);
 
     Map<String, PriceDTO> getPriceDataMap();
+
+    Map<String, FundingRateDTO> getFundingRateDataMap();
 }

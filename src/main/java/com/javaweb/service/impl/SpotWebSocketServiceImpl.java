@@ -3,6 +3,7 @@ package com.javaweb.service.impl;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.javaweb.config.WebSocketConfig;
+import com.javaweb.helper.PriceDTOHelper;
 import com.javaweb.service.PriceDataService;
 import com.javaweb.service.SpotWebSocketService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,7 +66,7 @@ public class SpotWebSocketServiceImpl extends TextWebSocketHandler implements Sp
 
         System.out.println("Event Time: " + formattedDateTime + "Symbol: " + symbol + ", Spot Price: " + price);
 
-        priceDataService.updatePriceData(formattedDateTime, symbol, price);
+        priceDataService.updatePriceData(PriceDTOHelper.createPriceDTO(formattedDateTime, symbol, price));
     }
 
     public void closeWebSocket() {

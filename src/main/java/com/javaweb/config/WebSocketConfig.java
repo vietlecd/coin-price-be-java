@@ -34,7 +34,6 @@ public class WebSocketConfig {
 
     public void closeWebSocket() {
         try {
-            webSocketSession.close();
             if (this.webSocketSession != null && this.webSocketSession.isOpen()) {
                 this.webSocketSession.close();
                 System.out.println("WebSocket disconnected");

@@ -1,7 +1,9 @@
 package com.javaweb.controller;
 
 import com.javaweb.config.WebSocketConfig;
+import com.javaweb.model.FundingRateDTO;
 import com.javaweb.model.PriceDTO;
+import com.javaweb.service.FundingRateWebSocketService;
 import com.javaweb.service.FutureWebSocketService;
 import com.javaweb.service.PriceDataService;
 import com.javaweb.service.SpotWebSocketService;
@@ -35,13 +37,16 @@ public class PriceController {
     @Autowired
     private FutureWebSocketService futureWebSocketService;
 
+    @Autowired
+    private FundingRateWebSocketService fundingRateWebSocketService;
+
     @GetMapping("/get-spot-price")
     public SseEmitter streamSpotPrices(@RequestParam List<String> symbols) {
         SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
 
         spotWebSocketService.connectToSpotWebSocket(symbols);
 
-        return getSseEmitter(emitter);
+        return getPriceSseEmitter(emitter);
     }
 
 
@@ -51,13 +56,26 @@ public class PriceController {
 
         futureWebSocketService.connectToFutureWebSocket(symbols);
 
-        return getSseEmitter(emitter);
+
+        return getPriceSseEmitter(emitter);
     }
 
-    private SseEmitter getSseEmitter(SseEmitter emitter) {
+    @GetMapping("/get-funding-rate")
+    public SseEmitter streamFundingRate(@RequestParam List<String> symbols) {
+        SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
+
+        fundingRateWebSocketService.connectToFundingRateWebSocket(symbols);
+
+        return getFundingRateSseEmitter(emitter);
+    }
+
+    private SseEmitter getPriceSseEmitter(SseEmitter emitter) {
         ScheduledFuture<?> scheduledFuture = executor.scheduleAtFixedRate(() -> {
             try {
-                emitter.send(priceDataService.getPriceDataMap());
+                Map<String, PriceDTO> priceData = priceDataService.getPriceDataMap();
+
+                emitter.send(priceData);
+
             } catch (IOException e) {
                 emitter.completeWithError(e);
             }
@@ -75,12 +93,39 @@ public class PriceController {
         return emitter;
     }
 
+    private SseEmitter getFundingRateSseEmitter(SseEmitter emitter) {
+        ScheduledFuture<?> scheduledFuture = executor.scheduleAtFixedRate(() -> {
+            try {
+                Map<String, FundingRateDTO> fundingRateData  = priceDataService.getFundingRateDataMap();
+
+                emitter.send(fundingRateData);
+
+            } catch (IOException e) {
+                emitter.completeWithError(e);
+            }
+        }, 0, 1, TimeUnit.SECONDS);
+
+        Runnable cancelTask = () -> {
+            scheduledFuture.cancel(true);
+            webSocketConfig.closeWebSocket();
+        };
+
+        emitter.onCompletion(cancelTask);
+        emitter.onTimeout(cancelTask);
+        emitter.onError((ex) -> cancelTask.run());
+
+        return emitter;
+    }
+
+
     @DeleteMapping("/close-websocket")
     public void closeWebSocket(@RequestParam String type) {
         if (type.equalsIgnoreCase("spot")) {
             spotWebSocketService.closeWebSocket();  // Đóng kết nối Spot
         } else if (type.equalsIgnoreCase("future")) {
             futureWebSocketService.closeWebSocket();  // Đóng kết nối Future
+        } else if (type.equalsIgnoreCase("funding-rate")) {
+            fundingRateWebSocketService.closeWebSocket();  // Đóng kết nối Funding-Rate
         }
     }
 }
