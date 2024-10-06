@@ -20,7 +20,9 @@ import java.util.concurrent.*;
 @RequestMapping("/api")
 public class PriceController {
 
-    private final Map<String, PriceDTO> priceDataMap = new ConcurrentHashMap<>();
+    private final Map<String, ScheduledFuture<?>> scheduledTasks = new ConcurrentHashMap<>();
+    private final Map<String, SseEmitter> emitters = new ConcurrentHashMap<>();
+
 
     @Autowired
     private ScheduledExecutorService executor;
@@ -46,7 +48,7 @@ public class PriceController {
 
         spotWebSocketService.connectToSpotWebSocket(symbols);
 
-        return getPriceSseEmitter(emitter);
+        return getPriceSseEmitter(emitter, "spot");
     }
 
 
@@ -57,7 +59,7 @@ public class PriceController {
         futureWebSocketService.connectToFutureWebSocket(symbols);
 
 
-        return getPriceSseEmitter(emitter);
+        return getPriceSseEmitter(emitter, "future");
     }
 
     @GetMapping("/get-funding-rate")
@@ -66,10 +68,10 @@ public class PriceController {
 
         fundingRateWebSocketService.connectToFundingRateWebSocket(symbols);
 
-        return getFundingRateSseEmitter(emitter);
+        return getFundingRateSseEmitter(emitter, "funding-rate");
     }
 
-    private SseEmitter getPriceSseEmitter(SseEmitter emitter) {
+    private SseEmitter getPriceSseEmitter(SseEmitter emitter, String type) {
         ScheduledFuture<?> scheduledFuture = executor.scheduleAtFixedRate(() -> {
             try {
                 Map<String, PriceDTO> priceData = priceDataService.getPriceDataMap();
@@ -80,6 +82,9 @@ public class PriceController {
                 emitter.completeWithError(e);
             }
         }, 0, 1, TimeUnit.SECONDS);
+
+        scheduledTasks.put(type, scheduledFuture);
+        emitters.put(type, emitter);
 
         Runnable cancelTask = () -> {
             scheduledFuture.cancel(true);
@@ -93,7 +98,7 @@ public class PriceController {
         return emitter;
     }
 
-    private SseEmitter getFundingRateSseEmitter(SseEmitter emitter) {
+    private SseEmitter getFundingRateSseEmitter(SseEmitter emitter, String type) {
         ScheduledFuture<?> scheduledFuture = executor.scheduleAtFixedRate(() -> {
             try {
                 Map<String, FundingRateDTO> fundingRateData  = priceDataService.getFundingRateDataMap();
@@ -104,6 +109,9 @@ public class PriceController {
                 emitter.completeWithError(e);
             }
         }, 0, 1, TimeUnit.SECONDS);
+
+        scheduledTasks.put(type, scheduledFuture);
+        emitters.put(type, emitter);
 
         Runnable cancelTask = () -> {
             scheduledFuture.cancel(true);
@@ -120,6 +128,20 @@ public class PriceController {
 
     @DeleteMapping("/close-websocket")
     public void closeWebSocket(@RequestParam String type) {
+        if (scheduledTasks.containsKey(type)) {
+            // Hủy lập lịch
+            ScheduledFuture<?> future = scheduledTasks.get(type);
+            future.cancel(true);
+            scheduledTasks.remove(type);
+
+            // Đóng SseEmitter
+            SseEmitter emitter = emitters.get(type);
+            if (emitter != null) {
+                emitter.complete();
+                emitters.remove(type);
+            }
+        }
+
         if (type.equalsIgnoreCase("spot")) {
             spotWebSocketService.closeWebSocket();  // Đóng kết nối Spot
         } else if (type.equalsIgnoreCase("future")) {
@@ -128,5 +150,6 @@ public class PriceController {
             fundingRateWebSocketService.closeWebSocket();  // Đóng kết nối Funding-Rate
         }
     }
+
 }
 
