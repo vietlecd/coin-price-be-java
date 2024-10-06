@@ -68,8 +68,7 @@ public class FundingRateWebSocketServiceImpl extends TextWebSocketHandler implem
         String estimatedSettlePrice = data.get("P").asText();
         String fundingRate = data.get("r").asText();
 
-        long currentTime = System.currentTimeMillis();
-        long countdownInSeconds = (nextFundingTime - currentTime) / 1000;
+        long countdownInSeconds = (nextFundingTime - eventTime) / 1000;
 
         long intervalInSeconds = (nextFundingTime - eventTime) / 1000;
 

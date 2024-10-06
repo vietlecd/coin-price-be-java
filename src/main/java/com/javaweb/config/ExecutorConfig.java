@@ -12,5 +12,6 @@ public class ExecutorConfig {
     @Bean(destroyMethod = "shutdown")
     public ScheduledExecutorService taskScheduler() {
         return Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors());
+//        return Executors.newScheduledThreadPool(3);  // 3 luồng cố định
     }
 }
