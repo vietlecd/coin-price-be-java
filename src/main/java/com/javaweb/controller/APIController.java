@@ -1,80 +1,31 @@
 package com.javaweb.controller;
 
-import com.javaweb.model.PriceDTO;
-import com.javaweb.service.BinanceWebSocketService;
+import com.javaweb.service.impl.BinanceServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.*;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/")
 public class APIController {
 
-    private final Map<String, PriceDTO> priceDataMap = new ConcurrentHashMap<>();
-
     @Autowired
-    private BinanceWebSocketService binanceWebSocketService;
+    private BinanceServiceImpl binanceService;
 
-    @GetMapping("/get-kline")
-    public SseEmitter streamSpotPrices(@RequestParam List<String> symbols) {
-        SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
+    // Endpoint nhận yêu cầu và trả về dữ liệu thị trường dưới dạng JSON
+    @GetMapping("/market-data")
+    public ResponseEntity<List<Map<String, Object>>> getMarketData(@RequestParam List<String> symbols) {
+        if (symbols == null || symbols.isEmpty()) {
+            return ResponseEntity.badRequest().build();  // Trả về lỗi 400 nếu danh sách symbols rỗng
+        }
 
-        binanceWebSocketService.connectToWebSocket(symbols);
+        // Gọi service để lấy dữ liệu
+        List<Map<String, Object>> marketData = binanceService.GetMarketData(symbols);
 
-        ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
-        executor.scheduleAtFixedRate(() -> {
-            try {
-                emitter.send(priceDataMap);
-            } catch (IOException e) {
-                emitter.completeWithError(e);
-            }
-        }, 0, 1, TimeUnit.SECONDS);
-
-        emitter.onCompletion(() -> {
-            executor.shutdown();
-            binanceWebSocketService.closeWebSocket();
-        });
-
-        emitter.onTimeout(() -> {
-            executor.shutdown();
-            binanceWebSocketService.closeWebSocket();
-        });
-
-        emitter.onError((ex) -> {
-            executor.shutdown();
-            binanceWebSocketService.closeWebSocket();
-        });
-
-        return emitter;
+        // Trả về dữ liệu thị trường dưới dạng JSON
+        return ResponseEntity.ok(marketData);
     }
-
-    public void updateKlineData(String symbol, String openPrice, String closePrice, String highPrice, String lowPrice, String volume, String numberOfTrades,
-                                String isKlineClosed,
-                                String baseAssetVolume,
-                                String takerBuyVolume,
-                                String takerBuyBaseVolume,
-                                String eventTime,
-                                String klineStartTime,
-                                String klineCloseTime ) {
-        priceDataMap.put(symbol.toUpperCase(), new PriceDTO(symbol,
-                openPrice,
-                closePrice,
-                highPrice,
-                lowPrice,
-                volume,
-                numberOfTrades,
-                isKlineClosed,
-                baseAssetVolume,
-                takerBuyVolume,
-                takerBuyBaseVolume,
-                eventTime,
-                klineStartTime,
-                klineCloseTime));
-    }
-
 }
