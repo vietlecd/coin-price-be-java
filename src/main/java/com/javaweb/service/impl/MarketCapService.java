@@ -2,7 +2,8 @@ package com.javaweb.service.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.javaweb.controller.APIController;
+import com.javaweb.controller.MarketCapController;
+import com.javaweb.service.IMarketCapService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -14,10 +15,10 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-public class BinanceServiceImpl {
+public class MarketCapService implements IMarketCapService {
 
     @Autowired
-    private APIController apiController;
+    private MarketCapController marketCapController;
     private final RestTemplate restTemplate = new RestTemplate();
     private final ObjectMapper objectMapper = new ObjectMapper(); // Dùng để tạo JSON
 

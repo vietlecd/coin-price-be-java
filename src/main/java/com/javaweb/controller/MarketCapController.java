@@ -1,6 +1,6 @@
 package com.javaweb.controller;
 
-import com.javaweb.service.impl.BinanceServiceImpl;
+import com.javaweb.service.impl.MarketCapService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,10 +10,10 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/")
-public class APIController {
+public class MarketCapController {
 
     @Autowired
-    private BinanceServiceImpl binanceService;
+    private MarketCapService binanceService;
 
     // Endpoint nhận yêu cầu và trả về dữ liệu thị trường dưới dạng JSON
     @GetMapping("/market-data")
