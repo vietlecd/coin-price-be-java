@@ -4,8 +4,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.javaweb.config.WebSocketConfig;
 import com.javaweb.helper.PriceDTOHelper;
-import com.javaweb.service.PriceDataService;
-import com.javaweb.service.SpotWebSocketService;
+import com.javaweb.service.IFutureWebSocketService;
+import com.javaweb.service.IPriceDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.TextMessage;
@@ -21,10 +21,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class SpotWebSocketServiceImpl extends TextWebSocketHandler implements SpotWebSocketService {
+public class FutureWebSocketService extends TextWebSocketHandler implements IFutureWebSocketService {
 
     @Autowired
-    private PriceDataService priceDataService;
+    private IPriceDataService IPriceDataService;
 
     @Autowired
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -37,14 +37,14 @@ public class SpotWebSocketServiceImpl extends TextWebSocketHandler implements Sp
 
 
 
-    private String buildSpotWebSocketUrl(List<String> streams) {
-        String streamParam = streams.stream().map(s -> s.toLowerCase() + "@ticker").collect(Collectors.joining("/"));
-        return "wss://stream.binance.com:9443/stream?streams=" + streamParam;
+    private String buildFutureWebSocketUrl(List<String> streams) {
+        String streamParam = streams.stream().map(s -> s.toLowerCase() + "@markPrice@1s").collect(Collectors.joining("/"));
+        return "wss://fstream.binance.com/stream?streams=" + streamParam;
     }
 
     @Override
-    public void connectToSpotWebSocket(List<String> streams) {
-        String wsUrl = buildSpotWebSocketUrl(streams);
+    public void connectToFutureWebSocket(List<String> streams) {
+        String wsUrl = buildFutureWebSocketUrl(streams);
         webSocketConfig.connectToWebSocket(wsUrl, webSocketClient, this);
     }
 
@@ -62,11 +62,12 @@ public class SpotWebSocketServiceImpl extends TextWebSocketHandler implements Sp
         String formattedDateTime = dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
         String symbol = data.get("s").asText();
-        String price = data.get("c").asText();
+        String price = data.get("p").asText();
 
-        System.out.println("Event Time: " + formattedDateTime + "Symbol: " + symbol + ", Spot Price: " + price);
+        System.out.println("Event Time: " + formattedDateTime + "Symbol: " + symbol + ", Future Price: " + price);
 
-        priceDataService.updatePriceData(PriceDTOHelper.createPriceDTO(formattedDateTime, symbol, price));
+
+        IPriceDataService.updatePriceData(PriceDTOHelper.createPriceDTO(formattedDateTime, symbol, price));
     }
 
     public void closeWebSocket() {

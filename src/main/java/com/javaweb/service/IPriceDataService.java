@@ -5,7 +5,7 @@ import com.javaweb.model.PriceDTO;
 
 import java.util.Map;
 
-public interface PriceDataService {
+public interface IPriceDataService {
     void updatePriceData(PriceDTO priceDTO);
 
     void updateFundingRate(FundingRateDTO fundingRateDTO);

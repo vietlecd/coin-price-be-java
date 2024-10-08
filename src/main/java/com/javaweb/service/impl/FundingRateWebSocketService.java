@@ -4,9 +4,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.javaweb.config.WebSocketConfig;
 import com.javaweb.helper.FundingRateDTOHelper;
-import com.javaweb.model.FundingRateDTO;
-import com.javaweb.service.FundingRateWebSocketService;
-import com.javaweb.service.PriceDataService;
+import com.javaweb.service.IFundingRateWebSocketService;
+import com.javaweb.service.IPriceDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.TextMessage;
@@ -23,10 +22,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service
-public class FundingRateWebSocketServiceImpl extends TextWebSocketHandler implements FundingRateWebSocketService {
+public class FundingRateWebSocketService extends TextWebSocketHandler implements IFundingRateWebSocketService {
 
     @Autowired
-    private PriceDataService priceDataService;
+    private IPriceDataService IPriceDataService;
 
     @Autowired
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -92,7 +91,7 @@ public class FundingRateWebSocketServiceImpl extends TextWebSocketHandler implem
         System.out.println("Funding Rate Interval: " + intervalFormatted);
         System.out.println("Event Time: " + formattedDateTime);
 
-        priceDataService.updateFundingRate(FundingRateDTOHelper.createFundingRateDTO(
+        IPriceDataService.updateFundingRate(FundingRateDTOHelper.createFundingRateDTO(
                 symbol,
                 fundingRate,
                 countdownFormatted,

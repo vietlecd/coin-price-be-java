@@ -4,9 +4,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.javaweb.config.WebSocketConfig;
 import com.javaweb.helper.PriceDTOHelper;
-import com.javaweb.service.FutureWebSocketService;
-import com.javaweb.service.PriceDataService;
-import com.javaweb.service.SpotWebSocketService;
+import com.javaweb.service.IPriceDataService;
+import com.javaweb.service.ISpotWebSocketService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.TextMessage;
@@ -22,10 +21,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class FutureWebSocketServiceImpl extends TextWebSocketHandler implements FutureWebSocketService {
+public class SpotWebSocketService extends TextWebSocketHandler implements ISpotWebSocketService {
 
     @Autowired
-    private PriceDataService priceDataService;
+    private IPriceDataService IPriceDataService;
 
     @Autowired
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -38,14 +37,14 @@ public class FutureWebSocketServiceImpl extends TextWebSocketHandler implements 
 
 
 
-    private String buildFutureWebSocketUrl(List<String> streams) {
-        String streamParam = streams.stream().map(s -> s.toLowerCase() + "@markPrice@1s").collect(Collectors.joining("/"));
-        return "wss://fstream.binance.com/stream?streams=" + streamParam;
+    private String buildSpotWebSocketUrl(List<String> streams) {
+        String streamParam = streams.stream().map(s -> s.toLowerCase() + "@ticker").collect(Collectors.joining("/"));
+        return "wss://stream.binance.com:9443/stream?streams=" + streamParam;
     }
 
     @Override
-    public void connectToFutureWebSocket(List<String> streams) {
-        String wsUrl = buildFutureWebSocketUrl(streams);
+    public void connectToSpotWebSocket(List<String> streams) {
+        String wsUrl = buildSpotWebSocketUrl(streams);
         webSocketConfig.connectToWebSocket(wsUrl, webSocketClient, this);
     }
 
@@ -63,12 +62,11 @@ public class FutureWebSocketServiceImpl extends TextWebSocketHandler implements 
         String formattedDateTime = dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
         String symbol = data.get("s").asText();
-        String price = data.get("p").asText();
+        String price = data.get("c").asText();
 
-        System.out.println("Event Time: " + formattedDateTime + "Symbol: " + symbol + ", Future Price: " + price);
+        System.out.println("Event Time: " + formattedDateTime + "Symbol: " + symbol + ", Spot Price: " + price);
 
-
-        priceDataService.updatePriceData(PriceDTOHelper.createPriceDTO(formattedDateTime, symbol, price));
+        IPriceDataService.updatePriceData(PriceDTOHelper.createPriceDTO(formattedDateTime, symbol, price));
     }
 
     public void closeWebSocket() {

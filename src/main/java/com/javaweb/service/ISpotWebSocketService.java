@@ -2,7 +2,7 @@ package com.javaweb.service;
 
 import java.util.List;
 
-public interface SpotWebSocketService {
+public interface ISpotWebSocketService {
 
     void connectToSpotWebSocket(List<String> streams);
 

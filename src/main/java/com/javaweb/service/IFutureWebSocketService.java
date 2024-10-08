@@ -2,7 +2,7 @@ package com.javaweb.service;
 
 import java.util.List;
 
-public interface FutureWebSocketService {
+public interface IFutureWebSocketService {
     void connectToFutureWebSocket(List<String> streams);
 
     void closeWebSocket();

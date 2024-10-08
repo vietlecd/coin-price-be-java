@@ -1,16 +1,15 @@
 package com.javaweb.service.impl;
 
-import com.javaweb.helper.FundingRateDTOHelper;
 import com.javaweb.model.FundingRateDTO;
 import com.javaweb.model.PriceDTO;
-import com.javaweb.service.PriceDataService;
+import com.javaweb.service.IPriceDataService;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Service
-public class PriceDataServiceImpl implements PriceDataService {
+public class PriceDataService implements IPriceDataService {
     private final Map<String, PriceDTO> priceDataMap = new ConcurrentHashMap<>();
     private final Map<String, FundingRateDTO> fundingRateDataMap = new ConcurrentHashMap<>();
 

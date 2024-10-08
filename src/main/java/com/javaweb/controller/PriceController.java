@@ -3,10 +3,10 @@ package com.javaweb.controller;
 import com.javaweb.config.WebSocketConfig;
 import com.javaweb.model.FundingRateDTO;
 import com.javaweb.model.PriceDTO;
-import com.javaweb.service.FundingRateWebSocketService;
-import com.javaweb.service.FutureWebSocketService;
-import com.javaweb.service.PriceDataService;
-import com.javaweb.service.SpotWebSocketService;
+import com.javaweb.service.IFundingRateWebSocketService;
+import com.javaweb.service.IFutureWebSocketService;
+import com.javaweb.service.IPriceDataService;
+import com.javaweb.service.ISpotWebSocketService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -31,22 +31,22 @@ public class PriceController {
     private WebSocketConfig webSocketConfig;
 
     @Autowired
-    private SpotWebSocketService spotWebSocketService;
+    private ISpotWebSocketService ISpotWebSocketService;
 
     @Autowired
-    private PriceDataService priceDataService;
+    private IPriceDataService IPriceDataService;
 
     @Autowired
-    private FutureWebSocketService futureWebSocketService;
+    private IFutureWebSocketService IFutureWebSocketService;
 
     @Autowired
-    private FundingRateWebSocketService fundingRateWebSocketService;
+    private IFundingRateWebSocketService IFundingRateWebSocketService;
 
     @GetMapping("/get-spot-price")
     public SseEmitter streamSpotPrices(@RequestParam List<String> symbols) {
         SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
 
-        spotWebSocketService.connectToSpotWebSocket(symbols);
+        ISpotWebSocketService.connectToSpotWebSocket(symbols);
 
         return getPriceSseEmitter(emitter, "spot");
     }
@@ -56,7 +56,7 @@ public class PriceController {
     public SseEmitter streamFuturePrices(@RequestParam List<String> symbols) {
         SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
 
-        futureWebSocketService.connectToFutureWebSocket(symbols);
+        IFutureWebSocketService.connectToFutureWebSocket(symbols);
 
 
         return getPriceSseEmitter(emitter, "future");
@@ -66,7 +66,7 @@ public class PriceController {
     public SseEmitter streamFundingRate(@RequestParam List<String> symbols) {
         SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
 
-        fundingRateWebSocketService.connectToFundingRateWebSocket(symbols);
+        IFundingRateWebSocketService.connectToFundingRateWebSocket(symbols);
 
         return getFundingRateSseEmitter(emitter, "funding-rate");
     }
@@ -74,7 +74,7 @@ public class PriceController {
     private SseEmitter getPriceSseEmitter(SseEmitter emitter, String type) {
         ScheduledFuture<?> scheduledFuture = executor.scheduleAtFixedRate(() -> {
             try {
-                Map<String, PriceDTO> priceData = priceDataService.getPriceDataMap();
+                Map<String, PriceDTO> priceData = IPriceDataService.getPriceDataMap();
 
                 emitter.send(priceData);
 
@@ -101,7 +101,7 @@ public class PriceController {
     private SseEmitter getFundingRateSseEmitter(SseEmitter emitter, String type) {
         ScheduledFuture<?> scheduledFuture = executor.scheduleAtFixedRate(() -> {
             try {
-                Map<String, FundingRateDTO> fundingRateData  = priceDataService.getFundingRateDataMap();
+                Map<String, FundingRateDTO> fundingRateData  = IPriceDataService.getFundingRateDataMap();
 
                 emitter.send(fundingRateData);
 
@@ -143,11 +143,11 @@ public class PriceController {
         }
 
         if (type.equalsIgnoreCase("spot")) {
-            spotWebSocketService.closeWebSocket();  // Đóng kết nối Spot
+            ISpotWebSocketService.closeWebSocket();  // Đóng kết nối Spot
         } else if (type.equalsIgnoreCase("future")) {
-            futureWebSocketService.closeWebSocket();  // Đóng kết nối Future
+            IFutureWebSocketService.closeWebSocket();  // Đóng kết nối Future
         } else if (type.equalsIgnoreCase("funding-rate")) {
-            fundingRateWebSocketService.closeWebSocket();  // Đóng kết nối Funding-Rate
+            IFundingRateWebSocketService.closeWebSocket();  // Đóng kết nối Funding-Rate
         }
     }
 
