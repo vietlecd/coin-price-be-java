@@ -2,8 +2,8 @@ package com.javaweb.service.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.javaweb.controller.APIController;
-import com.javaweb.service.BinanceWebSocketService;
+import com.javaweb.controller.KlineController;
+import com.javaweb.service.IKlineService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.TextMessage;
@@ -15,10 +15,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class BinanceWebSocketServiceImpl extends TextWebSocketHandler implements BinanceWebSocketService {
+public class KlineService extends TextWebSocketHandler implements IKlineService {
 
     @Autowired
-    private APIController apiController;
+    private KlineController klineController;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
     private WebSocketSession webSocketSession;
@@ -93,7 +93,7 @@ public class BinanceWebSocketServiceImpl extends TextWebSocketHandler implements
                 ", Kline Close Time: " + klineCloseTime);
 
         // Giả sử apiController được cập nhật để xử lý dữ liệu Kline
-        apiController.updateKlineData(
+        klineController.updateKlineData(
                 symbol,
                 openPrice,
                 closePrice,

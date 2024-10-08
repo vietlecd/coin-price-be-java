@@ -1,10 +1,8 @@
 package com.javaweb.service;
 
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 
-public interface BinanceWebSocketService {
+public interface IKlineService {
 
     void connectToWebSocket(List<String> streams);
 

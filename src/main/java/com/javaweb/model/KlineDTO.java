@@ -1,6 +1,6 @@
 package com.javaweb.model;
 
-public class PriceDTO {
+public class KlineDTO {
     private String symbol;
 
 
@@ -18,7 +18,7 @@ public class PriceDTO {
     private String klineStartTime;
     private String klineCloseTime;
 
-    public PriceDTO() {}
+    public KlineDTO() {}
 
 
     public String getSymbol() {
@@ -133,7 +133,7 @@ public class PriceDTO {
         this.klineCloseTime = klineCloseTime;
     }
 
-    public PriceDTO(String symbol, String openPrice, String closePrice, String highPrice, String lowPrice, String volume, String numberOfTrades,
+    public KlineDTO(String symbol, String openPrice, String closePrice, String highPrice, String lowPrice, String volume, String numberOfTrades,
                     String isKlineClosed,
                     String baseAssetVolume,
                     String takerBuyVolume,

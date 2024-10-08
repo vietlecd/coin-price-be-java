@@ -1,7 +1,7 @@
 package com.javaweb.controller;
 
-import com.javaweb.model.PriceDTO;
-import com.javaweb.service.BinanceWebSocketService;
+import com.javaweb.model.KlineDTO;
+import com.javaweb.service.IKlineService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -13,18 +13,18 @@ import java.util.concurrent.*;
 
 @RestController
 @RequestMapping("/api")
-public class APIController {
+public class KlineController {
 
-    private final Map<String, PriceDTO> priceDataMap = new ConcurrentHashMap<>();
+    private final Map<String, KlineDTO> priceDataMap = new ConcurrentHashMap<>();
 
     @Autowired
-    private BinanceWebSocketService binanceWebSocketService;
+    private IKlineService IKlineService;
 
     @GetMapping("/get-kline")
-    public SseEmitter streamSpotPrices(@RequestParam List<String> symbols) {
+    public SseEmitter KlinePrices(@RequestParam List<String> symbols) {
         SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
 
-        binanceWebSocketService.connectToWebSocket(symbols);
+        IKlineService.connectToWebSocket(symbols);
 
         ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
         executor.scheduleAtFixedRate(() -> {
@@ -37,17 +37,17 @@ public class APIController {
 
         emitter.onCompletion(() -> {
             executor.shutdown();
-            binanceWebSocketService.closeWebSocket();
+            IKlineService.closeWebSocket();
         });
 
         emitter.onTimeout(() -> {
             executor.shutdown();
-            binanceWebSocketService.closeWebSocket();
+            IKlineService.closeWebSocket();
         });
 
         emitter.onError((ex) -> {
             executor.shutdown();
-            binanceWebSocketService.closeWebSocket();
+            IKlineService.closeWebSocket();
         });
 
         return emitter;
@@ -61,7 +61,7 @@ public class APIController {
                                 String eventTime,
                                 String klineStartTime,
                                 String klineCloseTime ) {
-        priceDataMap.put(symbol.toUpperCase(), new PriceDTO(symbol,
+        priceDataMap.put(symbol.toUpperCase(), new KlineDTO(symbol,
                 openPrice,
                 closePrice,
                 highPrice,
