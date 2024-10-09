@@ -1,12 +1,10 @@
-package com.javaweb.service.impl;
+package com.javaweb.connect.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.javaweb.config.WebSocketConfig;
-import com.javaweb.helper.DateTimeHelper;
-import com.javaweb.helper.FundingRateDTOHelper;
-import com.javaweb.service.IFundingRateWebSocketService;
-import com.javaweb.service.IPriceDataService;
+import com.javaweb.connect.IFundingRateWebSocketService;
+import com.javaweb.service.IFundingRateDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.TextMessage;
@@ -14,19 +12,14 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.client.WebSocketClient;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service
 public class FundingRateWebSocketService extends TextWebSocketHandler implements IFundingRateWebSocketService {
 
     @Autowired
-    private IPriceDataService IPriceDataService;
+    private IFundingRateDataService fundingRateDataService;
 
     @Autowired
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -57,32 +50,8 @@ public class FundingRateWebSocketService extends TextWebSocketHandler implements
 
         JsonNode data = objectMapper.readTree(payload).get("data");
 
-        long eventTimeLong = data.get("E").asLong();
-        long nextFundingTime = data.get("T").asLong();
+        fundingRateDataService.handleFundingRateWebSocketMessage(data);
 
-        String eventTime = DateTimeHelper.formatEventTime(eventTimeLong);
-
-        String symbol = data.get("s").asText();
-        String fundingRate = data.get("r").asText();
-
-        long countdownInSeconds = (nextFundingTime - eventTimeLong) / 1000;
-
-        String fundingCountdown = String.format("%02d:%02d:%02d",
-                TimeUnit.SECONDS.toHours(countdownInSeconds),
-                TimeUnit.SECONDS.toMinutes(countdownInSeconds) % 60,
-                countdownInSeconds % 60
-        );
-
-        System.out.println("Symbol: " + symbol);
-        System.out.println("Funding Rate: " + fundingRate);
-        System.out.println("Funding Rate Countdown: " + fundingCountdown);
-        System.out.println("Event Time: " + eventTime);
-
-        IPriceDataService.updateFundingRate(FundingRateDTOHelper.createFundingRateDTO(
-                symbol,
-                fundingRate,
-                fundingCountdown,
-                eventTime));
     }
 
     public void closeWebSocket() {

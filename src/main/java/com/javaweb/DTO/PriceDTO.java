@@ -1,5 +1,8 @@
 package com.javaweb.DTO;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
+@JsonDeserialize(builder = PriceDTO.Builder.class)
 public class PriceDTO {
     private String price;
     private String eventTime;

@@ -1,5 +1,8 @@
 package com.javaweb.DTO;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
+@JsonDeserialize(builder = FundingRateDTO.Builder.class)
 public class FundingRateDTO {
     private String symbol;
     private String fundingRate;

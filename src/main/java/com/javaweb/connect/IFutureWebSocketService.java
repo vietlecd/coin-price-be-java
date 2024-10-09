@@ -1,4 +1,4 @@
-package com.javaweb.service;
+package com.javaweb.connect;
 
 import java.util.List;
 

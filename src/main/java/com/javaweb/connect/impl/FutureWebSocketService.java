@@ -1,12 +1,10 @@
-package com.javaweb.service.impl;
+package com.javaweb.connect.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.javaweb.config.WebSocketConfig;
-import com.javaweb.helper.DateTimeHelper;
-import com.javaweb.helper.PriceDTOHelper;
-import com.javaweb.service.IFutureWebSocketService;
-import com.javaweb.service.IPriceDataService;
+import com.javaweb.connect.IFutureWebSocketService;
+import com.javaweb.service.IFuturePriceDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.TextMessage;
@@ -14,10 +12,6 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.client.WebSocketClient;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,7 +19,7 @@ import java.util.stream.Collectors;
 public class FutureWebSocketService extends TextWebSocketHandler implements IFutureWebSocketService {
 
     @Autowired
-    private IPriceDataService IPriceDataService;
+    private IFuturePriceDataService futurePriceDataService;
 
     @Autowired
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -42,7 +36,7 @@ public class FutureWebSocketService extends TextWebSocketHandler implements IFut
         String streamParam = streams.stream()
                 .map(s -> s.toLowerCase() + "@kline_1s")
                 .collect(Collectors.joining("/"));
-        return "wss://fstream.binance.com/stream?streams=" + streamParam;
+        return "wss://stream.binance.com/stream?streams=" + streamParam;
     }
 
     @Override
@@ -58,19 +52,7 @@ public class FutureWebSocketService extends TextWebSocketHandler implements IFut
 
         JsonNode data = objectMapper.readTree(payload).get("data");
 
-        Long eventTimeLong = data.get("E").asLong();
-
-        String symbol = data.get("s").asText();
-
-        String eventTime = DateTimeHelper.formatEventTime(eventTimeLong);
-
-        JsonNode data1 = objectMapper.readTree(payload).get("data").get("k");
-
-        String price = data1.get("c").asText();
-
-        System.out.println("Event Time: " + eventTime + "Symbol: " + symbol + ", Spot Price: " + price);
-
-        IPriceDataService.updatePriceData(PriceDTOHelper.createPriceDTO(eventTime, symbol, price));
+        futurePriceDataService.handleFutureWebSocketMessage(data);
     }
 
     public void closeWebSocket() {

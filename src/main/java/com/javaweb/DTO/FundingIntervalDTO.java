@@ -1,5 +1,8 @@
 package com.javaweb.DTO;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
+@JsonDeserialize(builder = FundingIntervalDTO.Builder.class)
 public class FundingIntervalDTO {
     private String symbol;
     private String adjustedFundingRateCap;
@@ -25,12 +28,12 @@ public class FundingIntervalDTO {
             return this;
         }
 
-        public Builder fundingRate(String adjustedFundingRateCap) {
+        public Builder adjustedFundingRateCap(String adjustedFundingRateCap) {
             this.adjustedFundingRateCap = adjustedFundingRateCap;
             return this;
         }
 
-        public Builder fundingCountdown(String adjustedFundingRateFloor) {
+        public Builder adjustedFundingRateFloor(String adjustedFundingRateFloor) {
             this.adjustedFundingRateFloor = adjustedFundingRateFloor;
             return this;
         }

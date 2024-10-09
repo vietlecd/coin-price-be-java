@@ -1,4 +1,4 @@
-package com.javaweb.helper;
+package com.javaweb.helpers;
 
 import com.javaweb.DTO.PriceDTO;
 
