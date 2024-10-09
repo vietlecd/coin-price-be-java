@@ -25,9 +25,16 @@ public class KlineService extends TextWebSocketHandler implements IKlineService 
 
     // Thay đổi để hỗ trợ kline thay vì ticker
     private String buildWebSocketUrl(List<String> streams) {
-        String streamParam = streams.stream().map(s -> s.toLowerCase() + "@kline_1m").collect(Collectors.joining("/"));
-        return "wss://stream.binance.com:9443/stream?streams=" + streamParam;
+        // Create the stream parameter with the correct format and kline interval (e.g., kline_1m)
+        String streamParam = streams.stream()
+                .map(s -> s.toLowerCase() + "@kline_1m") // Ensure lowercase and append "@kline_1m"
+                .collect(Collectors.joining("/")); // Join streams with "/"
+
+        // Return the constructed URL using the base URL wss://fstream.binance.com
+        return "wss://fstream.binance.com/stream?streams=" + streamParam;
     }
+
+
 
     @Override
     public void connectToWebSocket(List<String> streams) {
