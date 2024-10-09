@@ -1,5 +1,6 @@
 package com.javaweb.service.impl;
 
+import com.javaweb.DTO.FundingIntervalDTO;
 import com.javaweb.DTO.FundingRateDTO;
 import com.javaweb.DTO.PriceDTO;
 import com.javaweb.service.IPriceDataService;
@@ -12,6 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class PriceDataService implements IPriceDataService {
     private final Map<String, PriceDTO> priceDataMap = new ConcurrentHashMap<>();
     private final Map<String, FundingRateDTO> fundingRateDataMap = new ConcurrentHashMap<>();
+    private final Map<String, FundingIntervalDTO> fundingIntervalDataMap = new ConcurrentHashMap<String, FundingIntervalDTO>();
 
     public void updatePriceData(PriceDTO priceDTO) {
         priceDataMap.put(priceDTO.getSymbol(), priceDTO);
@@ -29,4 +31,12 @@ public class PriceDataService implements IPriceDataService {
         return fundingRateDataMap;
     }
 
+
+    public void updateFundingInterval(FundingIntervalDTO fundingIntervalDTO) {
+        fundingIntervalDataMap.put(fundingIntervalDTO.getSymbol(), fundingIntervalDTO);
+    }
+
+    public Map<String, FundingIntervalDTO> getFundingIntervalDataMap() {
+        return fundingIntervalDataMap;
+    }
 }

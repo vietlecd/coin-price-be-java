@@ -3,6 +3,7 @@ package com.javaweb.service.impl;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.javaweb.config.WebSocketConfig;
+import com.javaweb.helper.DateTimeHelper;
 import com.javaweb.helper.PriceDTOHelper;
 import com.javaweb.service.IPriceDataService;
 import com.javaweb.service.ISpotWebSocketService;
@@ -57,9 +58,7 @@ public class SpotWebSocketService extends TextWebSocketHandler implements ISpotW
 
         long eventTimeLong = data.get("E").asLong();
 
-        Instant instant = Instant.ofEpochMilli(eventTimeLong);
-        ZonedDateTime dateTime = instant.atZone(ZoneId.systemDefault());
-        String eventTime = dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        String eventTime = DateTimeHelper.formatEventTime(eventTimeLong);
 
         String symbol = data.get("s").asText();
         String price = data.get("c").asText();

@@ -4,13 +4,13 @@ public class FundingRateDTO {
     private String symbol;
     private String fundingRate;
     private String fundingCountdown;
-    private String time;
+    private String eventTime;
 
     private FundingRateDTO(Builder builder) {
         this.symbol = builder.symbol;
         this.fundingRate = builder.fundingRate;
         this.fundingCountdown = builder.fundingCountdown;
-        this.time = builder.time;
+        this.eventTime = builder.eventTime;
     }
 
     // Builder class
@@ -18,7 +18,7 @@ public class FundingRateDTO {
         private String symbol;
         private String fundingRate;
         private String fundingCountdown;
-        private String time;
+        private String eventTime;
 
         public Builder symbol(String symbol) {
             this.symbol = symbol;
@@ -35,8 +35,8 @@ public class FundingRateDTO {
             return this;
         }
 
-        public Builder time(String time) {
-            this.time = time;
+        public Builder eventTime(String eventTime) {
+            this.eventTime = eventTime;
             return this;
         }
 
@@ -57,8 +57,8 @@ public class FundingRateDTO {
         return fundingCountdown;
     }
 
-    public String getTime() {
-        return time;
+    public String getEventTime() {
+        return eventTime;
     }
 
 }

@@ -3,6 +3,7 @@ package com.javaweb.service.impl;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.javaweb.config.WebSocketConfig;
+import com.javaweb.helper.DateTimeHelper;
 import com.javaweb.helper.PriceDTOHelper;
 import com.javaweb.service.IFutureWebSocketService;
 import com.javaweb.service.IPriceDataService;
@@ -61,9 +62,7 @@ public class FutureWebSocketService extends TextWebSocketHandler implements IFut
 
         String symbol = data.get("s").asText();
 
-        Instant instant = Instant.ofEpochMilli(eventTimeLong);
-        ZonedDateTime dateTime = instant.atZone(ZoneId.systemDefault());
-        String eventTime = dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        String eventTime = DateTimeHelper.formatEventTime(eventTimeLong);
 
         JsonNode data1 = objectMapper.readTree(payload).get("data").get("k");
 
