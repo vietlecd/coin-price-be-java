@@ -55,7 +55,11 @@ public class SpotWebSocketService extends TextWebSocketHandler implements ISpotW
 
         JsonNode data = objectMapper.readTree(payload).get("data");
 
-        long eventTime = data.get("E").asLong();
+        long eventTimeLong = data.get("E").asLong();
+
+        Instant instant = Instant.ofEpochMilli(eventTimeLong);
+        ZonedDateTime dateTime = instant.atZone(ZoneId.systemDefault());
+        String eventTime = dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
         String symbol = data.get("s").asText();
         String price = data.get("c").asText();

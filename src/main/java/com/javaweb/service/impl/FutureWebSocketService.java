@@ -57,9 +57,13 @@ public class FutureWebSocketService extends TextWebSocketHandler implements IFut
 
         JsonNode data = objectMapper.readTree(payload).get("data");
 
-        Long eventTime = data.get("E").asLong();
+        Long eventTimeLong = data.get("E").asLong();
 
         String symbol = data.get("s").asText();
+
+        Instant instant = Instant.ofEpochMilli(eventTimeLong);
+        ZonedDateTime dateTime = instant.atZone(ZoneId.systemDefault());
+        String eventTime = dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
         JsonNode data1 = objectMapper.readTree(payload).get("data").get("k");
 
