@@ -1,8 +1,8 @@
 package com.javaweb.controller;
 
 import com.javaweb.config.WebSocketConfig;
-import com.javaweb.model.FundingRateDTO;
-import com.javaweb.model.PriceDTO;
+import com.javaweb.DTO.FundingRateDTO;
+import com.javaweb.DTO.PriceDTO;
 import com.javaweb.service.IFundingRateWebSocketService;
 import com.javaweb.service.IFutureWebSocketService;
 import com.javaweb.service.IPriceDataService;
@@ -41,6 +41,55 @@ public class PriceController {
 
     @Autowired
     private IFundingRateWebSocketService IFundingRateWebSocketService;
+
+
+//    @GetMapping("/get_all")
+//    public SseEmitter streamAllData(@RequestParam List<String> symbols) {
+//        SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
+//
+//        // Kết nối đến tất cả các WebSocket
+//        ISpotWebSocketService.connectToSpotWebSocket(symbols);
+//        IFutureWebSocketService.connectToFutureWebSocket(symbols);
+//        IFundingRateWebSocketService.connectToFundingRateWebSocket(symbols);
+//
+//        // Tạo các CompletableFuture để lấy dữ liệu bất đồng bộ
+//        CompletableFuture<Map<String, PriceDTO>> spotPricesFuture = CompletableFuture.supplyAsync(() -> {
+//            return IPriceDataService.getSpotPriceData(symbols); // Lấy dữ liệu Spot Price
+//        });
+//
+//        CompletableFuture<Map<String, PriceDTO>> futurePricesFuture = CompletableFuture.supplyAsync(() -> {
+//            return IPriceDataService.getFuturePriceData(symbols); // Lấy dữ liệu Future Price
+//        });
+//
+//        CompletableFuture<Map<String, FundingRateDTO>> fundingRatesFuture = CompletableFuture.supplyAsync(() -> {
+//            return IPriceDataService.getFundingRateData(symbols); // Lấy dữ liệu Funding Rate
+//        });
+//
+//        // Khi tất cả các dữ liệu được lấy hoàn tất
+//        CompletableFuture.allOf(spotPricesFuture, futurePricesFuture, fundingRatesFuture)
+//                .thenRun(() -> {
+//                    try {
+//                        // Lấy kết quả từ các CompletableFuture
+//                        Map<String, PriceDTO> spotPrices = spotPricesFuture.get();
+//                        Map<String, PriceDTO> futurePrices = futurePricesFuture.get();
+//                        Map<String, FundingRateDTO> fundingRates = fundingRatesFuture.get();
+//
+//                        // Tạo đối tượng để chứa tất cả dữ liệu
+//                        Map<String, Object> allData = new HashMap<>();
+//                        allData.put("spotPrices", spotPrices);
+//                        allData.put("futurePrices", futurePrices);
+//                        allData.put("fundingRates", fundingRates);
+//
+//                        // Gửi dữ liệu qua SseEmitter
+//                        emitter.send(allData);
+//
+//                    } catch (Exception e) {
+//                        emitter.completeWithError(e);
+//                    }
+//                });
+//
+//        return emitter;
+//    }
 
     @GetMapping("/get-spot-price")
     public SseEmitter streamSpotPrices(@RequestParam List<String> symbols) {

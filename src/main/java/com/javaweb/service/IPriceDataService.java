@@ -1,7 +1,7 @@
 package com.javaweb.service;
 
-import com.javaweb.model.FundingRateDTO;
-import com.javaweb.model.PriceDTO;
+import com.javaweb.DTO.FundingRateDTO;
+import com.javaweb.DTO.PriceDTO;
 
 import java.util.Map;
 

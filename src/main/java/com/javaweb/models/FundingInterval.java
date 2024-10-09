@@ -7,21 +7,19 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "products")
+@Table(name = "funding_interval")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class FundingIntervalEntity {
+public class FundingInterval {
 
     @Id
     private Long id;
-    
+
     private String symbol;
     private String adjustedFundingRateCap;
     private String adjustedFundingRateFloor;
     private Long fundingIntervalHours;
-
-
 }

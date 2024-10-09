@@ -1,2 +1,5 @@
-package com.javaweb.service;public interface IFundingInterval {
+package com.javaweb.service;
+
+public interface IFundingIntervalService {
+
 }

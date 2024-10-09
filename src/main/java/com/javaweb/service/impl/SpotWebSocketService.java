@@ -57,16 +57,12 @@ public class SpotWebSocketService extends TextWebSocketHandler implements ISpotW
 
         long eventTime = data.get("E").asLong();
 
-        Instant instant = Instant.ofEpochMilli(eventTime);
-        ZonedDateTime dateTime = instant.atZone(ZoneId.systemDefault());
-        String formattedDateTime = dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-
         String symbol = data.get("s").asText();
         String price = data.get("c").asText();
 
-        System.out.println("Event Time: " + formattedDateTime + "Symbol: " + symbol + ", Spot Price: " + price);
+        System.out.println("Event Time: " + eventTime + "Symbol: " + symbol + ", Spot Price: " + price);
 
-        IPriceDataService.updatePriceData(PriceDTOHelper.createPriceDTO(formattedDateTime, symbol, price));
+        IPriceDataService.updatePriceData(PriceDTOHelper.createPriceDTO(eventTime, symbol, price));
     }
 
     public void closeWebSocket() {

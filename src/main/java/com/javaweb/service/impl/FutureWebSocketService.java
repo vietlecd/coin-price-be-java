@@ -38,7 +38,9 @@ public class FutureWebSocketService extends TextWebSocketHandler implements IFut
 
 
     private String buildFutureWebSocketUrl(List<String> streams) {
-        String streamParam = streams.stream().map(s -> s.toLowerCase() + "@markPrice@1s").collect(Collectors.joining("/"));
+        String streamParam = streams.stream()
+                .map(s -> s.toLowerCase() + "@kline_1s")
+                .collect(Collectors.joining("/"));
         return "wss://fstream.binance.com/stream?streams=" + streamParam;
     }
 
@@ -55,19 +57,17 @@ public class FutureWebSocketService extends TextWebSocketHandler implements IFut
 
         JsonNode data = objectMapper.readTree(payload).get("data");
 
-        long eventTime = data.get("E").asLong();
-
-        Instant instant = Instant.ofEpochMilli(eventTime);
-        ZonedDateTime dateTime = instant.atZone(ZoneId.systemDefault());
-        String formattedDateTime = dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        Long eventTime = data.get("E").asLong();
 
         String symbol = data.get("s").asText();
-        String price = data.get("p").asText();
 
-        System.out.println("Event Time: " + formattedDateTime + "Symbol: " + symbol + ", Future Price: " + price);
+        JsonNode data1 = objectMapper.readTree(payload).get("data").get("k");
 
+        String price = data1.get("c").asText();
 
-        IPriceDataService.updatePriceData(PriceDTOHelper.createPriceDTO(formattedDateTime, symbol, price));
+        System.out.println("Event Time: " + eventTime + "Symbol: " + symbol + ", Spot Price: " + price);
+
+        IPriceDataService.updatePriceData(PriceDTOHelper.createPriceDTO(eventTime, symbol, price));
     }
 
     public void closeWebSocket() {

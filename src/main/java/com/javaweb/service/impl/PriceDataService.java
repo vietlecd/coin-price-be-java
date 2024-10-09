@@ -1,7 +1,7 @@
 package com.javaweb.service.impl;
 
-import com.javaweb.model.FundingRateDTO;
-import com.javaweb.model.PriceDTO;
+import com.javaweb.DTO.FundingRateDTO;
+import com.javaweb.DTO.PriceDTO;
 import com.javaweb.service.IPriceDataService;
 import org.springframework.stereotype.Service;
 

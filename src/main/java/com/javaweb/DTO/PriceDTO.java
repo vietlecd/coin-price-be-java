@@ -1,8 +1,8 @@
-package com.javaweb.model;
+package com.javaweb.DTO;
 
 public class PriceDTO {
     private String price;
-    private String time;
+    private Long time;
     private String symbol;
 
     // Private constructor, chỉ có thể tạo đối tượng qua Builder
@@ -15,7 +15,7 @@ public class PriceDTO {
     // Static inner Builder class
     public static class Builder {
         private String price;
-        private String time;
+        private Long time;
         private String symbol;
 
         public Builder price(String price) {
@@ -23,7 +23,7 @@ public class PriceDTO {
             return this;
         }
 
-        public Builder time(String time) {
+        public Builder time(Long time) {
             this.time = time;
             return this;
         }
@@ -40,16 +40,8 @@ public class PriceDTO {
 
     // Getters
 
-    public String getTime() {
+    public Long getTime() {
         return time;
-    }
-
-    public void setPrice(String price) {
-        this.price = price;
-    }
-
-    public void setTime(String time) {
-        this.time = time;
     }
 
     public String getSymbol() {

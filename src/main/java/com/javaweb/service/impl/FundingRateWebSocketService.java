@@ -64,22 +64,11 @@ public class FundingRateWebSocketService extends TextWebSocketHandler implements
         String formattedDateTime = dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
         String symbol = data.get("s").asText();
-        String estimatedSettlePrice = data.get("P").asText();
         String fundingRate = data.get("r").asText();
 
         long countdownInSeconds = (nextFundingTime - eventTime) / 1000;
 
-        long intervalInSeconds = (nextFundingTime - eventTime) / 1000;
-
-        String intervalFormatted;
-        if (intervalInSeconds <= 4 * 60 * 60) {
-            intervalFormatted = "04:00:00";
-        } else {
-            intervalFormatted = "08:00:00";
-        }
-
-        // Convert countdown to HH:mm:ss format
-        String countdownFormatted = String.format("%02d:%02d:%02d",
+        String fundingCountdown = String.format("%02d:%02d:%02d",
                 TimeUnit.SECONDS.toHours(countdownInSeconds),
                 TimeUnit.SECONDS.toMinutes(countdownInSeconds) % 60,
                 countdownInSeconds % 60
@@ -87,15 +76,13 @@ public class FundingRateWebSocketService extends TextWebSocketHandler implements
 
         System.out.println("Symbol: " + symbol);
         System.out.println("Funding Rate: " + fundingRate);
-        System.out.println("Funding Rate Countdown: " + countdownFormatted);
-        System.out.println("Funding Rate Interval: " + intervalFormatted);
+        System.out.println("Funding Rate Countdown: " + fundingCountdown);
         System.out.println("Event Time: " + formattedDateTime);
 
         IPriceDataService.updateFundingRate(FundingRateDTOHelper.createFundingRateDTO(
                 symbol,
                 fundingRate,
-                countdownFormatted,
-                intervalFormatted,
+                fundingCountdown,
                 formattedDateTime));
     }
 

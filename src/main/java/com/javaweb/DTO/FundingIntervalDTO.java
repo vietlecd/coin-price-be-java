@@ -1,4 +1,4 @@
-package com.javaweb.model;
+package com.javaweb.DTO;
 
 public class FundingIntervalDTO {
     private String symbol;
