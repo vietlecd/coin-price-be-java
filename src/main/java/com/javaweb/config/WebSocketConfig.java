@@ -32,15 +32,15 @@ public class WebSocketConfig {
         }
     }
 
-    public void closeWebSocket() {
-        try {
-            if (this.webSocketSession != null && this.webSocketSession.isOpen()) {
-                this.webSocketSession.close();
-                System.out.println("WebSocket disconnected");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+//    public void closeWebSocket() {
+//        try {
+//            if (this.webSocketSession != null && this.webSocketSession.isOpen()) {
+//                //this.webSocketSession.close();
+//                System.out.println("WebSocket disconnected");
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//    }
 
 }
