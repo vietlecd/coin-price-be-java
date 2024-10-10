@@ -1,6 +1,7 @@
 package com.javaweb.controller;
 
 import com.javaweb.model.LoginRequest;
+import com.javaweb.model.RegisterRequest;
 import com.javaweb.model.mongo_entity.userData;
 import com.javaweb.repository.UserRepository;
 import com.javaweb.service.CreateToken;
@@ -71,10 +72,12 @@ public class AuthController {
         throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Sai tên đăng nhập hoặc mật khẩu");
     }
 
-//    @GetMapping("/res")
-//    public String res(@RequestBody LoginRequest loginRequest) {
-//
-//    }
+    @GetMapping("/resgister")
+    public void register(@RequestBody RegisterRequest req, HttpServletResponse res) {
+        if(req.getName() == null || req.getName().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "username required!");
+        }
+    }
 
     @GetMapping("/logOut")
     public ResponseEntity<?> logout(HttpServletResponse res) {

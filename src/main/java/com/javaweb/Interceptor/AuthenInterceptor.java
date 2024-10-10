@@ -27,7 +27,7 @@ public class AuthenInterceptor implements HandlerInterceptor {
 
         String token = getCookieValue(request, "token");
 
-        if(token == null || token.startsWith("Bearer ")) {
+        if(token == null) {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Missing or invalid Authorization header");
             return false;
         }
