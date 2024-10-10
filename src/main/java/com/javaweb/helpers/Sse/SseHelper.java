@@ -1,7 +1,7 @@
 package com.javaweb.helpers.Sse;
 
-import com.javaweb.DTO.FundingRateDTO;
-import com.javaweb.DTO.PriceDTO;
+import com.javaweb.dto.FundingRateDTO;
+import com.javaweb.dto.PriceDTO;
 import com.javaweb.config.WebSocketConfig;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;

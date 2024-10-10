@@ -1,6 +1,6 @@
 package com.javaweb.helpers.Service;
 
-import com.javaweb.DTO.PriceDTO;
+import com.javaweb.dto.PriceDTO;
 
 public class PriceDTOHelper {
 

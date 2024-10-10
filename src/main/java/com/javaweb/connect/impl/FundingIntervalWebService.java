@@ -2,7 +2,7 @@ package com.javaweb.connect.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.javaweb.DTO.FundingIntervalDTO;
+import com.javaweb.dto.FundingIntervalDTO;
 import com.javaweb.connect.IFundingIntervalWebService;
 import com.javaweb.service.impl.FundingIntervalDataService;
 import org.springframework.beans.factory.annotation.Autowired;

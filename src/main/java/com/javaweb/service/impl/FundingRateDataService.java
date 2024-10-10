@@ -1,7 +1,7 @@
 package com.javaweb.service.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.javaweb.DTO.FundingRateDTO;
+import com.javaweb.dto.FundingRateDTO;
 import com.javaweb.helpers.Service.DateTimeHelper;
 import com.javaweb.helpers.Service.FundingRateDTOHelper;
 import com.javaweb.service.IFundingRateDataService;

@@ -1,8 +1,8 @@
 package com.javaweb.controller;
 
-import com.javaweb.DTO.FundingIntervalDTO;
-import com.javaweb.DTO.FundingRateDTO;
-import com.javaweb.DTO.PriceDTO;
+import com.javaweb.dto.FundingIntervalDTO;
+import com.javaweb.dto.FundingRateDTO;
+import com.javaweb.dto.PriceDTO;
 import com.javaweb.config.WebSocketConfig;
 import com.javaweb.connect.IFundingIntervalWebService;
 import com.javaweb.connect.IFundingRateWebSocketService;

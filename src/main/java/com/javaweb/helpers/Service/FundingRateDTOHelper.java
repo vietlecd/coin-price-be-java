@@ -1,6 +1,6 @@
 package com.javaweb.helpers.Service;
 
-import com.javaweb.DTO.FundingRateDTO;
+import com.javaweb.dto.FundingRateDTO;
 
 public class FundingRateDTOHelper {
 

@@ -1,9 +1,7 @@
 package com.javaweb.connect;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.javaweb.DTO.FundingIntervalDTO;
-import com.javaweb.DTO.FundingRateDTO;
-import com.javaweb.DTO.PriceDTO;
+import com.javaweb.dto.FundingIntervalDTO;
+import com.javaweb.dto.FundingRateDTO;
 
 import java.util.List;
 import java.util.Map;

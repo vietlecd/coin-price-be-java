@@ -1,6 +1,6 @@
 package com.javaweb.connect;
 
-import com.javaweb.DTO.FundingIntervalDTO;
+import com.javaweb.dto.FundingIntervalDTO;
 
 import java.util.List;
 import java.util.Map;

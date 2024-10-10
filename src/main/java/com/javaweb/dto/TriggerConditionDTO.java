@@ -1,4 +1,4 @@
-package com.javaweb.DTO;
+package com.javaweb.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Getter;
