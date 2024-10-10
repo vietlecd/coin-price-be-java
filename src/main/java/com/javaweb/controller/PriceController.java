@@ -23,13 +23,12 @@ import java.util.Map;
 import java.util.concurrent.*;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/price")
 public class PriceController {
     private final ConcurrentHashMap<String, SseEmitter> sseEmitters = new ConcurrentHashMap<>();
 
     @Autowired
     private SseHelper sseHelper;
-
     @Autowired
     private WebSocketConfig webSocketConfig;
 

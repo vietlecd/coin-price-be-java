@@ -20,13 +20,11 @@ public class TriggerConditionDTO {
         this.symbol = builder.symbol;
     }
 
-    // Builder Class
     public static class Builder {
         private String spotPrice;
         private String futurePrice;
         private String fundingRate;
         private boolean fundingRateInterval;
-
         private String symbol;
 
 
