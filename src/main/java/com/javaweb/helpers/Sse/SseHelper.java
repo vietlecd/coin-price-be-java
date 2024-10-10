@@ -27,7 +27,7 @@ public class SseHelper {
 
         Runnable cancelTask = () -> {
             scheduledFuture.cancel(true);
-            webSocketConfig.closeWebSocket();
+            //webSocketConfig.closeWebSocket();
         };
 
         emitter.onCompletion(cancelTask);
@@ -69,7 +69,7 @@ public class SseHelper {
     public void closeWebSocket(String type, WebSocketConfig webSocketConfig) {
         if (scheduledTasks.containsKey(type)) {
             ScheduledFuture<?> future = scheduledTasks.get(type);
-            future.cancel(true);
+            //future.cancel(true);
             scheduledTasks.remove(type);
 
             SseEmitter emitter = emitters.get(type);
@@ -79,7 +79,7 @@ public class SseHelper {
             }
         }
 
-        webSocketConfig.closeWebSocket();
+        //webSocketConfig.closeWebSocket();
     }
 
     public void closeAllWebSockets(WebSocketConfig webSocketConfig) {
@@ -100,7 +100,7 @@ public class SseHelper {
         emitters.clear();
 
 
-        webSocketConfig.closeWebSocket();
+        //webSocketConfig.closeWebSocket();
     }
 
 }

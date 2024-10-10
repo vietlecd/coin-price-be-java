@@ -53,9 +53,9 @@ public class SpotWebSocketService extends TextWebSocketHandler implements ISpotW
         spotPriceDataService.handleSpotWebSocketMessage(data);
     }
 
-    public void closeWebSocket() {
-        webSocketConfig.closeWebSocket();
-        System.out.println("WebSocket closed from service.");
-    }
+//    public void closeWebSocket() {
+//        webSocketConfig.closeWebSocket();
+//        System.out.println("WebSocket closed from service.");
+//    }
 
 }

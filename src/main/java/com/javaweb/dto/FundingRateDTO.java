@@ -18,7 +18,6 @@ public class FundingRateDTO {
         this.eventTime = builder.eventTime;
     }
 
-    // Builder class
     public static class Builder {
         private String symbol;
         private String fundingRate;

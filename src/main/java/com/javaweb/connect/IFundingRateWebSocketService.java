@@ -10,17 +10,5 @@ public interface IFundingRateWebSocketService {
     // Connect to WebSocket for Funding Rate
     void connectToFundingRateWebSocket(List<String> streams);
 
-    void closeWebSocket();
-
-
-
-    interface IFundingDataService {
-        void updateFundingRate(FundingRateDTO fundingRateDTO);
-
-        void updateFundingInterval(FundingIntervalDTO fundingIntervalDTO);
-
-        Map<String, FundingRateDTO> getFundingRateDataMap();
-
-        Map<String, FundingIntervalDTO> getFundingIntervalDataMap();
-    }
+//    void closeWebSocket();
 }

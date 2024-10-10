@@ -32,10 +32,10 @@ public class FundingRateDataService implements IFundingRateDataService {
                 countdownInSeconds % 60
         );
 
-//        System.out.println("Symbol: " + symbol);
-//        System.out.println("Funding Rate: " + fundingRate);
-//        System.out.println("Funding Rate Countdown: " + fundingCountdown);
-//        System.out.println("Event Time: " + eventTime);
+        System.out.println("Symbol: " + symbol);
+        System.out.println("Funding Rate: " + fundingRate);
+        System.out.println("Funding Rate Countdown: " + fundingCountdown);
+        System.out.println("Event Time: " + eventTime);
 
         FundingRateDTO fundingRateDTO = FundingRateDTOHelper.createFundingRateDTO(symbol, fundingRate, fundingCountdown, eventTime);
         fundingRateDataMap.put("FundingRate:" + symbol, fundingRateDTO);
@@ -44,5 +44,4 @@ public class FundingRateDataService implements IFundingRateDataService {
     public Map<String, FundingRateDTO> getFundingRateDataMap() {
         return fundingRateDataMap;
     }
-
 }

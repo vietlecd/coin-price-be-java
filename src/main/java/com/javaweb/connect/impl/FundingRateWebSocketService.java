@@ -30,13 +30,10 @@ public class FundingRateWebSocketService extends TextWebSocketHandler implements
     @Autowired
     private WebSocketClient webSocketClient;
 
-    // Build the WebSocket URL for funding rate streams
     private String buildFundingRateWebSocketUrl(List<String> streams) {
         String streamParam = streams.stream().map(s -> s.toLowerCase() + "@markPrice@1s").collect(Collectors.joining("/"));
         return "wss://fstream.binance.com/stream?streams=" + streamParam;
     }
-
-    // Connect to WebSocket for Funding Rate
     @Override
     public void connectToFundingRateWebSocket(List<String> streams) {
         String wsUrl = buildFundingRateWebSocketUrl(streams);
@@ -54,8 +51,8 @@ public class FundingRateWebSocketService extends TextWebSocketHandler implements
 
     }
 
-    public void closeWebSocket() {
-        webSocketConfig.closeWebSocket();
-        System.out.println("WebSocket closed from service.");
-    }
+//    public void closeWebSocket() {
+//        webSocketConfig.closeWebSocket();
+//        System.out.println("WebSocket closed from service.");
+//    }
 }

@@ -55,9 +55,9 @@ public class FutureWebSocketService extends TextWebSocketHandler implements IFut
         futurePriceDataService.handleFutureWebSocketMessage(data);
     }
 
-    public void closeWebSocket() {
-        webSocketConfig.closeWebSocket();
-        System.out.println("WebSocket closed from service.");
-    }
+//    public void closeWebSocket() {
+//        webSocketConfig.closeWebSocket();
+//        System.out.println("WebSocket closed from service.");
+//    }
 
 }

@@ -23,7 +23,7 @@ import java.util.Map;
 import java.util.concurrent.*;
 
 @RestController
-@RequestMapping("/api/price")
+@RequestMapping("/vip0")
 public class PriceController {
     private final ConcurrentHashMap<String, SseEmitter> sseEmitters = new ConcurrentHashMap<>();
 
