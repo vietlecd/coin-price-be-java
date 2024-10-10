@@ -1,55 +1,54 @@
 package com.javaweb.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Getter;
 
 @Getter
 @JsonDeserialize(builder = TriggerConditionDTO.Builder.class)
 public class TriggerConditionDTO {
-    private final String spotPrice;
-    private final String futurePrice;
-    private final String fundingRate;
-    private final boolean fundingRateInterval;
     private final String symbol;
+    private final double thresholdValue;
+    private final String comparisonOperator;
+    private final String action;
 
     private TriggerConditionDTO(Builder builder) {
-        this.spotPrice = builder.spotPrice;
-        this.futurePrice = builder.futurePrice;
-        this.fundingRate = builder.fundingRate;
-        this.fundingRateInterval = builder.fundingRateInterval;
         this.symbol = builder.symbol;
+        this.thresholdValue = builder.thresholdValue;
+        this.comparisonOperator = builder.comparisonOperator;
+        this.action = builder.action;
     }
 
     public static class Builder {
-        private String spotPrice;
-        private String futurePrice;
-        private String fundingRate;
-        private boolean fundingRateInterval;
+        @JsonProperty("symbol")
         private String symbol;
 
+        @JsonProperty("thresholdValue")
+        private double thresholdValue;
 
-        public Builder spotPrice(String spotPrice) {
-            this.spotPrice = spotPrice;
-            return this;
-        }
+        @JsonProperty("comparisonOperator")
+        private String comparisonOperator;
 
-        public Builder futurePrice(String futurePrice) {
-            this.futurePrice = futurePrice;
-            return this;
-        }
+        @JsonProperty("action")
+        private String action;
 
-        public Builder fundingRate(String fundingRate) {
-            this.fundingRate = fundingRate;
-            return this;
-        }
-
-        public Builder fundingRateInterval(boolean fundingRateInterval) {
-            this.fundingRateInterval = fundingRateInterval;
-            return this;
-        }
-
-        public Builder symbol(String symbol) {
+        public Builder setSymbol(String symbol) {
             this.symbol = symbol;
+            return this;
+        }
+
+        public Builder setThresholdValue(double thresholdValue) {
+            this.thresholdValue = thresholdValue;
+            return this;
+        }
+
+        public Builder setComparisonOperator(String comparisonOperator) {
+            this.comparisonOperator = comparisonOperator;
+            return this;
+        }
+
+        public Builder setAction(String action) {
+            this.action = action;
             return this;
         }
 

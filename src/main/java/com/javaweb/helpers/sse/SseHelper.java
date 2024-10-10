@@ -1,4 +1,4 @@
-package com.javaweb.helpers.Sse;
+package com.javaweb.helpers.sse;
 
 import com.javaweb.dto.FundingRateDTO;
 import com.javaweb.dto.PriceDTO;

@@ -1,4 +1,4 @@
-package com.javaweb.helpers.Controller;
+package com.javaweb.helpers.controller;
 
 import java.util.ArrayList;
 import java.util.List;

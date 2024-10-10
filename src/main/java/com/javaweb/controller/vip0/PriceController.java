@@ -1,4 +1,4 @@
-package com.javaweb.controller;
+package com.javaweb.controller.vip0;
 
 import com.javaweb.dto.FundingIntervalDTO;
 import com.javaweb.dto.FundingRateDTO;
@@ -8,8 +8,8 @@ import com.javaweb.connect.IFundingIntervalWebService;
 import com.javaweb.connect.IFundingRateWebSocketService;
 import com.javaweb.connect.IFutureWebSocketService;
 import com.javaweb.connect.ISpotWebSocketService;
-import com.javaweb.helpers.Sse.SseHelper;
-import com.javaweb.helpers.Controller.UpperCaseHelper;
+import com.javaweb.helpers.sse.SseHelper;
+import com.javaweb.helpers.controller.UpperCaseHelper;
 import com.javaweb.service.IFundingRateDataService;
 import com.javaweb.service.IFuturePriceDataService;
 import com.javaweb.service.ISpotPriceDataService;
