@@ -15,4 +15,5 @@ public class userData {
     private String username;
     private String name;
     private String password;
+    private String token;
 }

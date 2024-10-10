@@ -1,1 +1,11 @@
-.env
+HELP.md
+
+*.env
+
+target/
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr

@@ -14,7 +14,6 @@ import java.util.concurrent.*;
 @RestController
 @RequestMapping("/api")
 public class APIController {
-
     private final Map<String, PriceDTO> priceDataMap = new ConcurrentHashMap<>();
 
     @Autowired
