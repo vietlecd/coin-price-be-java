@@ -25,8 +25,8 @@ public class SpotPriceDataService implements ISpotPriceDataService {
 
         System.out.println("Event Time: " + eventTime + ", Symbol: " + symbol + ", Spot Price: " + price);
 
-        PriceDTO priceDTO = PriceDTOHelper.createPriceDTO(eventTime, symbol, price);
-        spotPriceDataMap.put("SpotPrice:" + symbol, priceDTO);
+        PriceDTO priceDTO = PriceDTOHelper.createPriceDTO(symbol, price, eventTime);
+        spotPriceDataMap.put("SpotPrice:", priceDTO);
     }
 
     public Map<String, PriceDTO> getSpotPriceDataMap(){

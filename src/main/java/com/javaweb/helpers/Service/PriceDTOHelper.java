@@ -3,12 +3,10 @@ package com.javaweb.helpers.Service;
 import com.javaweb.dto.PriceDTO;
 
 public class PriceDTOHelper {
-
-    // Hàm để tạo đối tượng PriceDTO từ các tham số đầu vào
-    public static PriceDTO createPriceDTO(String eventTime, String symbol, String price) {
+    public static PriceDTO createPriceDTO(String symbol, String price, String eventTime) {
         return new PriceDTO.Builder()
-                .eventTime(eventTime)
                 .symbol(symbol)
+                .eventTime(eventTime)
                 .price(price)
                 .build();
     }
