@@ -8,8 +8,8 @@ import com.javaweb.connect.IFundingIntervalWebService;
 import com.javaweb.connect.IFundingRateWebSocketService;
 import com.javaweb.connect.IFutureWebSocketService;
 import com.javaweb.connect.ISpotWebSocketService;
-import com.javaweb.helpers.SseHelper;
-import com.javaweb.helpers.UpperCaseHelper;
+import com.javaweb.helpers.Sse.SseHelper;
+import com.javaweb.helpers.Controller.UpperCaseHelper;
 import com.javaweb.service.IFundingRateDataService;
 import com.javaweb.service.IFuturePriceDataService;
 import com.javaweb.service.ISpotPriceDataService;
@@ -18,8 +18,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
@@ -50,72 +48,6 @@ public class PriceController {
     private IFundingRateWebSocketService fundingRateWebSocketService;
     @Autowired
     private IFundingIntervalWebService fundingIntervalWebService;
-
-    private final ExecutorService executorService = Executors.newFixedThreadPool(3);
-
-    @GetMapping("/start-websockets-sse")
-    public SseEmitter startWebsocketsWithSSE(@RequestParam String clientId, @RequestParam List<String> symbols) {
-        // Kiểm tra và hủy SSE cũ nếu có
-        if (sseEmitters.containsKey(clientId)) {
-            SseEmitter oldEmitter = sseEmitters.get(clientId);
-            oldEmitter.complete();
-        }
-
-        SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
-        sseEmitters.put(clientId, emitter);
-
-
-        executorService.submit(() -> {
-            try {
-                executorService.submit(() -> {
-                    spotWebSocketService.connectToSpotWebSocket(symbols);
-                    while (true) {
-                        Map<String, PriceDTO> spotPriceData = spotPriceDataService.getSpotPriceDataMap();
-                        try {
-                            emitter.send(spotPriceData);
-                            Thread.sleep(1000);
-                        } catch (IOException | InterruptedException e) {
-                            emitter.completeWithError(e);
-                            break;
-                        }
-                    }
-                });
-
-                executorService.submit(() -> {
-                    futureWebSocketService.connectToFutureWebSocket(symbols);
-                    while (true) {
-                        Map<String, PriceDTO> futurePriceData = futurePriceDataService.getFuturePriceDataMap();
-                        try {
-                            emitter.send(futurePriceData);
-                            Thread.sleep(1000);
-                        } catch (IOException | InterruptedException e) {
-                            emitter.completeWithError(e);
-                            break;
-                        }
-                    }
-                });
-
-                executorService.submit(() -> {
-                    fundingRateWebSocketService.connectToFundingRateWebSocket(symbols);
-                    while (true) {
-                        Map<String, FundingRateDTO> fundingRateData = fundingRateDataService.getFundingRateDataMap();
-                        try {
-                            emitter.send(fundingRateData);
-                            Thread.sleep(1000);
-                        } catch (IOException | InterruptedException e) {
-                            emitter.completeWithError(e);
-                            break;
-                        }
-                    }
-                });
-
-            } catch (Exception e) {
-                emitter.completeWithError(e);
-            }
-        });
-
-        return emitter;
-    }
 
     @GetMapping("/get-spot-price")
     public SseEmitter streamSpotPrices(@RequestParam List<String> symbols) {
@@ -156,4 +88,10 @@ public class PriceController {
     public void closeWebSocket(@RequestParam String type) {
         sseHelper.closeWebSocket(type, webSocketConfig);
     }
+
+    @DeleteMapping("/close-all-websocket")
+    public void closeAllWebSocket() {
+        sseHelper.closeAllWebSockets(webSocketConfig);
+    }
+
 }

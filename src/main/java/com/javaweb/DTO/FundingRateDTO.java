@@ -1,13 +1,15 @@
 package com.javaweb.DTO;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import lombok.Getter;
 
+@Getter
 @JsonDeserialize(builder = FundingRateDTO.Builder.class)
 public class FundingRateDTO {
-    private String symbol;
-    private String fundingRate;
-    private String fundingCountdown;
-    private String eventTime;
+    private final String symbol;
+    private final String fundingRate;
+    private final String fundingCountdown;
+    private final String eventTime;
 
     private FundingRateDTO(Builder builder) {
         this.symbol = builder.symbol;
@@ -46,22 +48,6 @@ public class FundingRateDTO {
         public FundingRateDTO build() {
             return new FundingRateDTO(this);
         }
-    }
-
-    public String getSymbol() {
-        return symbol;
-    }
-
-    public String getFundingRate() {
-        return fundingRate;
-    }
-
-    public String getFundingCountdown() {
-        return fundingCountdown;
-    }
-
-    public String getEventTime() {
-        return eventTime;
     }
 
 }

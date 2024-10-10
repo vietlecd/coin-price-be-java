@@ -3,8 +3,8 @@ package com.javaweb.service.impl;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.javaweb.DTO.PriceDTO;
-import com.javaweb.helpers.DateTimeHelper;
-import com.javaweb.helpers.PriceDTOHelper;
+import com.javaweb.helpers.Service.DateTimeHelper;
+import com.javaweb.helpers.Service.PriceDTOHelper;
 import com.javaweb.service.IFuturePriceDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,7 +32,7 @@ public class FuturePriceDataService implements IFuturePriceDataService {
 
         String price = data1.get("c").asText();
 
-        System.out.println("Event Time: " + eventTime + "Symbol: " + symbol + ", Future Price: " + price);
+        //System.out.println("Event Time: " + eventTime + "Symbol: " + symbol + ", Future Price: " + price);
 
 
         // Tạo DTO và cập nhật dữ liệu

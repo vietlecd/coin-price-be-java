@@ -1,13 +1,15 @@
 package com.javaweb.DTO;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import lombok.Getter;
 
+@Getter
 @JsonDeserialize(builder = FundingIntervalDTO.Builder.class)
 public class FundingIntervalDTO {
-    private String symbol;
-    private String adjustedFundingRateCap;
-    private String adjustedFundingRateFloor;
-    private Long fundingIntervalHours;
+    private final String symbol;
+    private final String adjustedFundingRateCap;
+    private final String adjustedFundingRateFloor;
+    private final Long fundingIntervalHours;
 
     private FundingIntervalDTO(Builder builder) {
         this.symbol = builder.symbol;
@@ -16,7 +18,6 @@ public class FundingIntervalDTO {
         this.fundingIntervalHours = builder.fundingIntervalHours;
     }
 
-    // Builder class
     public static class Builder {
         private String symbol;
         private String adjustedFundingRateCap;
@@ -48,19 +49,4 @@ public class FundingIntervalDTO {
         }
     }
 
-    public String getSymbol() {
-        return symbol;
-    }
-
-    public String getAdjustedFundingRateCap() {
-        return adjustedFundingRateCap;
-    }
-
-    public String getAdjustedFundingRateFloor() {
-        return adjustedFundingRateFloor;
-    }
-
-    public Long getFundingIntervalHours() {
-        return fundingIntervalHours;
-    }
 }

@@ -2,8 +2,8 @@ package com.javaweb.service.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.javaweb.DTO.FundingRateDTO;
-import com.javaweb.helpers.DateTimeHelper;
-import com.javaweb.helpers.FundingRateDTOHelper;
+import com.javaweb.helpers.Service.DateTimeHelper;
+import com.javaweb.helpers.Service.FundingRateDTOHelper;
 import com.javaweb.service.IFundingRateDataService;
 import org.springframework.stereotype.Service;
 
@@ -32,10 +32,10 @@ public class FundingRateDataService implements IFundingRateDataService {
                 countdownInSeconds % 60
         );
 
-        System.out.println("Symbol: " + symbol);
-        System.out.println("Funding Rate: " + fundingRate);
-        System.out.println("Funding Rate Countdown: " + fundingCountdown);
-        System.out.println("Event Time: " + eventTime);
+//        System.out.println("Symbol: " + symbol);
+//        System.out.println("Funding Rate: " + fundingRate);
+//        System.out.println("Funding Rate Countdown: " + fundingCountdown);
+//        System.out.println("Event Time: " + eventTime);
 
         FundingRateDTO fundingRateDTO = FundingRateDTOHelper.createFundingRateDTO(symbol, fundingRate, fundingCountdown, eventTime);
         fundingRateDataMap.put("FundingRate:" + symbol, fundingRateDTO);

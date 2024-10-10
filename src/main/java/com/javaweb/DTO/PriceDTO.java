@@ -1,21 +1,21 @@
 package com.javaweb.DTO;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import lombok.Getter;
 
+@Getter
 @JsonDeserialize(builder = PriceDTO.Builder.class)
 public class PriceDTO {
-    private String price;
-    private String eventTime;
-    private String symbol;
+    private final String price;
+    private final String eventTime;
+    private final String symbol;
 
-    // Private constructor, chỉ có thể tạo đối tượng qua Builder
     private PriceDTO(Builder builder) {
         this.price = builder.price;
         this.eventTime = builder.eventTime;
         this.symbol = builder.symbol;
     }
 
-    // Static inner Builder class
     public static class Builder {
         private String price;
         private String eventTime;
@@ -39,23 +39,5 @@ public class PriceDTO {
         public PriceDTO build() {
             return new PriceDTO(this);
         }
-    }
-
-    // Getters
-
-    public String getEventTime() {
-        return eventTime;
-    }
-
-    public String getSymbol() {
-        return symbol;
-    }
-
-    public void setSymbol(String symbol) {
-        this.symbol = symbol;
-    }
-
-    public String getPrice() {
-        return price;
     }
 }

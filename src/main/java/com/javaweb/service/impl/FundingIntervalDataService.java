@@ -2,7 +2,7 @@ package com.javaweb.service.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.javaweb.DTO.FundingIntervalDTO;
-import com.javaweb.helpers.FundingIntervalDTOHelper;
+import com.javaweb.helpers.Service.FundingIntervalDTOHelper;
 import com.javaweb.service.IFundingIntervalDataService;
 import org.springframework.stereotype.Service;
 
@@ -21,10 +21,8 @@ public class FundingIntervalDataService implements IFundingIntervalDataService {
             String adjustedFundingRateFloor = fundingIntervalData.get("adjustedFundingRateFloor").asText();
             Long fundingIntervalHours = fundingIntervalData.get("fundingIntervalHours").asLong();
 
-            // Tạo DTO từ dữ liệu đã xử lý
             FundingIntervalDTO fundingIntervalDTO = FundingIntervalDTOHelper.createFundingRateDTO(symbol,adjustedFundingRateCap,adjustedFundingRateFloor,fundingIntervalHours);
 
-            // Thêm vào map với key là symbol
             fundingDataMap.put(symbol, fundingIntervalDTO);
         }
 

@@ -1,4 +1,4 @@
-package com.javaweb.helpers;
+package com.javaweb.helpers.Sse;
 
 import com.javaweb.DTO.FundingRateDTO;
 import com.javaweb.DTO.PriceDTO;
@@ -17,21 +17,14 @@ public class SseHelper {
     private final Map<String, ScheduledFuture<?>> scheduledTasks = new ConcurrentHashMap<>();
     private final Map<String, SseEmitter> emitters = new ConcurrentHashMap<>();
 
-    public SseEmitter createPriceSseEmitter(SseEmitter emitter, String type,
-                                            Map<String, PriceDTO> priceDataMap,
-                                            WebSocketConfig webSocketConfig) {
-        ScheduledFuture<?> scheduledFuture = executor.scheduleAtFixedRate(() -> {
-            try {
-                emitter.send(priceDataMap);
-            } catch (IOException e) {
-                emitter.completeWithError(e);
-            }
-        }, 0, 1, TimeUnit.SECONDS);
+    public SseEmitter createSseEmitter(SseEmitter emitter, String type,
+                                       Runnable sendTask,
+                                       WebSocketConfig webSocketConfig) {
+        ScheduledFuture<?> scheduledFuture = executor.scheduleAtFixedRate(sendTask, 0, 1, TimeUnit.SECONDS);
 
         scheduledTasks.put(type, scheduledFuture);
         emitters.put(type, emitter);
 
-        // Cancel task on emitter completion
         Runnable cancelTask = () -> {
             scheduledFuture.cancel(true);
             webSocketConfig.closeWebSocket();
@@ -44,31 +37,33 @@ public class SseHelper {
         return emitter;
     }
 
+    public SseEmitter createPriceSseEmitter(SseEmitter emitter, String type,
+                                            Map<String, PriceDTO> priceDataMap,
+                                            WebSocketConfig webSocketConfig) {
+        Runnable sendPriceTask = () -> {
+            try {
+                emitter.send(priceDataMap);
+            } catch (IOException e) {
+                emitter.completeWithError(e);
+            }
+        };
+
+        return createSseEmitter(emitter, type, sendPriceTask, webSocketConfig);
+    }
+
     public SseEmitter createFundingRateSseEmitter(SseEmitter emitter, String type,
                                                   Map<String, FundingRateDTO> fundingRateDataMap,
                                                   WebSocketConfig webSocketConfig) {
-        ScheduledFuture<?> scheduledFuture = executor.scheduleAtFixedRate(() -> {
+        Runnable sendFundingRateTask = () -> {
             try {
                 emitter.send(fundingRateDataMap);
             } catch (IOException e) {
                 emitter.completeWithError(e);
             }
-        }, 0, 1, TimeUnit.SECONDS);
-
-        scheduledTasks.put(type, scheduledFuture);
-        emitters.put(type, emitter);
-
-        // Cancel task on emitter completion
-        Runnable cancelTask = () -> {
-            scheduledFuture.cancel(true);
-            webSocketConfig.closeWebSocket();
         };
 
-        emitter.onCompletion(cancelTask);
-        emitter.onTimeout(cancelTask);
-        emitter.onError((ex) -> cancelTask.run());
+        return createSseEmitter(emitter, type, sendFundingRateTask, webSocketConfig);
 
-        return emitter;
     }
 
     public void closeWebSocket(String type, WebSocketConfig webSocketConfig) {
@@ -77,7 +72,6 @@ public class SseHelper {
             future.cancel(true);
             scheduledTasks.remove(type);
 
-            // Close the associated emitter
             SseEmitter emitter = emitters.get(type);
             if (emitter != null) {
                 emitter.complete();
@@ -87,4 +81,26 @@ public class SseHelper {
 
         webSocketConfig.closeWebSocket();
     }
+
+    public void closeAllWebSockets(WebSocketConfig webSocketConfig) {
+
+        for (Map.Entry<String, ScheduledFuture<?>> entry : scheduledTasks.entrySet()) {
+            ScheduledFuture<?> future = entry.getValue();
+            future.cancel(true);
+        }
+        scheduledTasks.clear();
+
+
+        for (Map.Entry<String, SseEmitter> entry : emitters.entrySet()) {
+            SseEmitter emitter = entry.getValue();
+            if (emitter != null) {
+                emitter.complete();
+            }
+        }
+        emitters.clear();
+
+
+        webSocketConfig.closeWebSocket();
+    }
+
 }
