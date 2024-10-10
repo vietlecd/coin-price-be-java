@@ -9,6 +9,7 @@ import com.javaweb.connect.IFundingRateWebSocketService;
 import com.javaweb.connect.IFutureWebSocketService;
 import com.javaweb.connect.ISpotWebSocketService;
 import com.javaweb.helpers.SseHelper;
+import com.javaweb.helpers.UpperCaseHelper;
 import com.javaweb.service.IFundingRateDataService;
 import com.javaweb.service.IFuturePriceDataService;
 import com.javaweb.service.ISpotPriceDataService;
@@ -21,14 +22,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
 
 @RestController
 @RequestMapping("/api")
 public class PriceController {
+    private final ConcurrentHashMap<String, SseEmitter> sseEmitters = new ConcurrentHashMap<>();
 
     @Autowired
     private SseHelper sseHelper;
@@ -55,33 +54,25 @@ public class PriceController {
     private final ExecutorService executorService = Executors.newFixedThreadPool(3);
 
     @GetMapping("/start-websockets-sse")
-    public SseEmitter startWebsocketsWithSSE(@RequestParam List<String> symbols) {
-        SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);  // Duy trì kết nối vô hạn
+    public SseEmitter startWebsocketsWithSSE(@RequestParam String clientId, @RequestParam List<String> symbols) {
+        // Kiểm tra và hủy SSE cũ nếu có
+        if (sseEmitters.containsKey(clientId)) {
+            SseEmitter oldEmitter = sseEmitters.get(clientId);
+            oldEmitter.complete();
+        }
+
+        SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
+        sseEmitters.put(clientId, emitter);
+
 
         executorService.submit(() -> {
             try {
-                // Khởi động Spot WebSocket trong một luồng khác
                 executorService.submit(() -> {
                     spotWebSocketService.connectToSpotWebSocket(symbols);
-                    while (true) {  // Duy trì kết nối liên tục
+                    while (true) {
                         Map<String, PriceDTO> spotPriceData = spotPriceDataService.getSpotPriceDataMap();
                         try {
-                            emitter.send(spotPriceData);  // Gửi dữ liệu liên tục
-                            Thread.sleep(1000);  // Giả lập gửi dữ liệu liên tục mỗi 1 giây
-                        } catch (IOException | InterruptedException e) {
-                            emitter.completeWithError(e);
-                            break;
-                        }
-                    }
-                });
-
-                // Khởi động Future WebSocket trong một luồng khác
-                executorService.submit(() -> {
-                    futureWebSocketService.connectToFutureWebSocket(symbols);
-                    while (true) {  // Duy trì kết nối liên tục
-                        Map<String, PriceDTO> futurePriceData = futurePriceDataService.getFuturePriceDataMap();
-                        try {
-                            emitter.send(futurePriceData);  // Gửi dữ liệu liên tục
+                            emitter.send(spotPriceData);
                             Thread.sleep(1000);
                         } catch (IOException | InterruptedException e) {
                             emitter.completeWithError(e);
@@ -90,13 +81,26 @@ public class PriceController {
                     }
                 });
 
-                // Khởi động Funding Rate WebSocket trong một luồng khác
+                executorService.submit(() -> {
+                    futureWebSocketService.connectToFutureWebSocket(symbols);
+                    while (true) {
+                        Map<String, PriceDTO> futurePriceData = futurePriceDataService.getFuturePriceDataMap();
+                        try {
+                            emitter.send(futurePriceData);
+                            Thread.sleep(1000);
+                        } catch (IOException | InterruptedException e) {
+                            emitter.completeWithError(e);
+                            break;
+                        }
+                    }
+                });
+
                 executorService.submit(() -> {
                     fundingRateWebSocketService.connectToFundingRateWebSocket(symbols);
-                    while (true) {  // Duy trì kết nối liên tục
+                    while (true) {
                         Map<String, FundingRateDTO> fundingRateData = fundingRateDataService.getFundingRateDataMap();
                         try {
-                            emitter.send(fundingRateData);  // Gửi dữ liệu liên tục
+                            emitter.send(fundingRateData);
                             Thread.sleep(1000);
                         } catch (IOException | InterruptedException e) {
                             emitter.completeWithError(e);
@@ -106,11 +110,11 @@ public class PriceController {
                 });
 
             } catch (Exception e) {
-                emitter.completeWithError(e);  // Nếu có lỗi xảy ra, SSE gửi thông báo lỗi
+                emitter.completeWithError(e);
             }
         });
 
-        return emitter;  // Trả về SseEmitter để client nhận dữ liệu liên tục
+        return emitter;
     }
 
     @GetMapping("/get-spot-price")
@@ -142,19 +146,9 @@ public class PriceController {
 
     @GetMapping("/get-funding-interval")
     public ResponseEntity<List<Map<String, FundingIntervalDTO>>> getFundingInterval(@RequestParam List<String> symbols) {
-        if (symbols == null || symbols.isEmpty()) {
-            return ResponseEntity.badRequest().build();  // Trả về lỗi 400 nếu danh sách symbols rỗng
-        }
+        List<String> upperCasesymbols = UpperCaseHelper.converttoUpperCase(symbols);
 
-        List<String> upperCaseSymbols = new ArrayList<>();
-        for (String symbol : symbols) {
-            upperCaseSymbols.add(symbol.toUpperCase());
-        }
-
-        // Gọi service để lấy dữ liệu
-        List<Map<String, FundingIntervalDTO>> fundingIntervalData = fundingIntervalWebService.handleFundingIntervalWeb(upperCaseSymbols);
-
-        // Trả về dữ liệu thị trường dưới dạng JSON
+        List<Map<String, FundingIntervalDTO>> fundingIntervalData = fundingIntervalWebService.handleFundingIntervalWeb(upperCasesymbols);
         return ResponseEntity.ok(fundingIntervalData);
     }
 
