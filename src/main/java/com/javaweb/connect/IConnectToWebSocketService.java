@@ -6,9 +6,9 @@ import com.javaweb.dto.FundingRateDTO;
 import java.util.List;
 import java.util.Map;
 
-public interface IFundingRateWebSocketService {
+public interface IConnectToWebSocketService {
     // Connect to WebSocket for Funding Rate
-    void connectToFundingRateWebSocket(List<String> streams);
+    void connectToWebSocket(List<String> streams);
 
 //    void closeWebSocket();
 }

@@ -4,19 +4,19 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.javaweb.dto.PriceDTO;
 import com.javaweb.helpers.service.DateTimeHelper;
 import com.javaweb.helpers.service.PriceDTOHelper;
-import com.javaweb.service.ISpotPriceDataService;
+import com.javaweb.service.IPriceDataService;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Service
-public class SpotPriceDataService implements ISpotPriceDataService {
+public class SpotPriceDataService implements IPriceDataService {
 
     private final Map<String, PriceDTO> spotPriceDataMap = new ConcurrentHashMap<>();
 
     @Override
-    public void handleSpotWebSocketMessage(JsonNode data) {
+    public void handleWebSocketMessage(JsonNode data) {
         long eventTimeLong = data.get("E").asLong();
         String eventTime = DateTimeHelper.formatEventTime(eventTimeLong);
 
@@ -29,7 +29,7 @@ public class SpotPriceDataService implements ISpotPriceDataService {
         spotPriceDataMap.put("SpotPrice:", priceDTO);
     }
 
-    public Map<String, PriceDTO> getSpotPriceDataMap(){
+    public Map<String, PriceDTO> getPriceDataMap(){
             return spotPriceDataMap;
     }
 

@@ -1,36 +1,32 @@
-package com.javaweb.dto;
+package com.javaweb.dto.trigger;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Getter;
 
 @Getter
-@JsonDeserialize(builder = TriggerConditionDTO.Builder.class)
-public class TriggerConditionDTO {
+public class SpotFuturePriceTriggerDTO {
     private final String symbol;
     private final double thresholdValue;
     private final String comparisonOperator;
     private final String action;
+    private final double spotPriceThreshold;
+    private final double futurePriceThreshold;
 
-    private TriggerConditionDTO(Builder builder) {
+    private SpotFuturePriceTriggerDTO(Builder builder) {
         this.symbol = builder.symbol;
         this.thresholdValue = builder.thresholdValue;
         this.comparisonOperator = builder.comparisonOperator;
         this.action = builder.action;
+        this.spotPriceThreshold = builder.spotPriceThreshold;
+        this.futurePriceThreshold = builder.futurePriceThreshold;
     }
 
     public static class Builder {
-        @JsonProperty("symbol")
         private String symbol;
-
-        @JsonProperty("thresholdValue")
         private double thresholdValue;
-
-        @JsonProperty("comparisonOperator")
         private String comparisonOperator;
-
-        @JsonProperty("action")
         private String action;
+        private double spotPriceThreshold;
+        private double futurePriceThreshold;
 
         public Builder setSymbol(String symbol) {
             this.symbol = symbol;
@@ -52,8 +48,18 @@ public class TriggerConditionDTO {
             return this;
         }
 
-        public TriggerConditionDTO build() {
-            return new TriggerConditionDTO(this);
+        public Builder setSpotPriceThreshold(double spotPriceThreshold) {
+            this.spotPriceThreshold = spotPriceThreshold;
+            return this;
+        }
+
+        public Builder setFuturePriceThreshold(double futurePriceThreshold) {
+            this.futurePriceThreshold = futurePriceThreshold;
+            return this;
+        }
+
+        public SpotFuturePriceTriggerDTO build() {
+            return new SpotFuturePriceTriggerDTO(this);
         }
     }
 }

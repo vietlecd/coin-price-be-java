@@ -1,5 +1,5 @@
 package com.javaweb.helpers.trigger;
-import com.javaweb.models.TriggerCondition;
+import com.javaweb.model.trigger.TriggerCondition;
 import org.springframework.stereotype.Component;
 
 @Component

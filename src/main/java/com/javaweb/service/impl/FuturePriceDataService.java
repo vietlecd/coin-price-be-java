@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.javaweb.dto.PriceDTO;
 import com.javaweb.helpers.service.DateTimeHelper;
 import com.javaweb.helpers.service.PriceDTOHelper;
-import com.javaweb.service.IFuturePriceDataService;
+import com.javaweb.service.IPriceDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Service
-public class FuturePriceDataService implements IFuturePriceDataService {
+public class FuturePriceDataService implements IPriceDataService {
 
     @Autowired
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -21,7 +21,7 @@ public class FuturePriceDataService implements IFuturePriceDataService {
     private final Map<String, PriceDTO> futurePriceDataMap = new ConcurrentHashMap<>();
 
     @Override
-    public void handleFutureWebSocketMessage(JsonNode data) {
+    public void handleWebSocketMessage(JsonNode data) {
         Long eventTimeLong = data.get("E").asLong();
 
         String symbol = data.get("s").asText();
@@ -38,7 +38,7 @@ public class FuturePriceDataService implements IFuturePriceDataService {
         futurePriceDataMap.put("FuturePrice:", priceDTO);
     }
 
-    public Map<String, PriceDTO> getFuturePriceDataMap() {
+    public Map<String, PriceDTO> getPriceDataMap() {
         return futurePriceDataMap;
     }
 }

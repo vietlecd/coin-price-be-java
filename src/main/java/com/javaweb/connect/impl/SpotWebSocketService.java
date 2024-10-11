@@ -3,8 +3,8 @@ package com.javaweb.connect.impl;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.javaweb.config.WebSocketConfig;
-import com.javaweb.connect.ISpotWebSocketService;
-import com.javaweb.service.ISpotPriceDataService;
+import com.javaweb.connect.IConnectToWebSocketService;
+import com.javaweb.service.impl.SpotPriceDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.TextMessage;
@@ -16,10 +16,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class SpotWebSocketService extends TextWebSocketHandler implements ISpotWebSocketService {
+public class SpotWebSocketService extends TextWebSocketHandler implements IConnectToWebSocketService {
 
     @Autowired
-    private ISpotPriceDataService spotPriceDataService;
+    private SpotPriceDataService spotPriceDataService;
 
     @Autowired
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -38,7 +38,7 @@ public class SpotWebSocketService extends TextWebSocketHandler implements ISpotW
     }
 
     @Override
-    public void connectToSpotWebSocket(List<String> streams) {
+    public void connectToWebSocket(List<String> streams) {
         String wsUrl = buildSpotWebSocketUrl(streams);
         webSocketConfig.connectToWebSocket(wsUrl, webSocketClient, this);
     }
@@ -50,7 +50,7 @@ public class SpotWebSocketService extends TextWebSocketHandler implements ISpotW
 
         JsonNode data = objectMapper.readTree(payload).get("data");
 
-        spotPriceDataService.handleSpotWebSocketMessage(data);
+        spotPriceDataService.handleWebSocketMessage(data);
     }
 
 //    public void closeWebSocket() {

@@ -3,8 +3,8 @@ package com.javaweb.connect.impl;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.javaweb.config.WebSocketConfig;
-import com.javaweb.connect.IFundingRateWebSocketService;
-import com.javaweb.service.IFundingRateDataService;
+import com.javaweb.connect.IConnectToWebSocketService;
+import com.javaweb.service.impl.FundingRateDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.TextMessage;
@@ -16,10 +16,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class FundingRateWebSocketService extends TextWebSocketHandler implements IFundingRateWebSocketService {
+public class FundingRateWebSocketService extends TextWebSocketHandler implements IConnectToWebSocketService {
 
     @Autowired
-    private IFundingRateDataService fundingRateDataService;
+    private FundingRateDataService fundingRateDataService;
 
     @Autowired
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -35,7 +35,7 @@ public class FundingRateWebSocketService extends TextWebSocketHandler implements
         return "wss://fstream.binance.com/stream?streams=" + streamParam;
     }
     @Override
-    public void connectToFundingRateWebSocket(List<String> streams) {
+    public void connectToWebSocket(List<String> streams) {
         String wsUrl = buildFundingRateWebSocketUrl(streams);
         webSocketConfig.connectToWebSocket(wsUrl, webSocketClient, this);
     }

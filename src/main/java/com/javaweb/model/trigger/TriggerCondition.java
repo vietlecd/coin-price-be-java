@@ -1,4 +1,4 @@
-package com.javaweb.models;
+package com.javaweb.model.trigger;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,10 +11,10 @@ import javax.persistence.*;
 
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
+@Entity
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "trigger_type", discriminatorType = DiscriminatorType.STRING)
 @Document(collection = "trigger_conditions")
-@TypeAlias("triggerCondition")
 public class TriggerCondition {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
