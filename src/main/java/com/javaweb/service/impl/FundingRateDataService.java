@@ -5,6 +5,7 @@ import com.javaweb.dto.FundingRateDTO;
 import com.javaweb.helpers.service.DateTimeHelper;
 import com.javaweb.helpers.service.FundingRateDTOHelper;
 import com.javaweb.service.IFundingRateDataService;
+import com.javaweb.service.IPriceDataService;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -38,7 +39,7 @@ public class FundingRateDataService implements IFundingRateDataService {
         System.out.println("Event Time: " + eventTime);
 
         FundingRateDTO fundingRateDTO = FundingRateDTOHelper.createFundingRateDTO(symbol, fundingRate, fundingCountdown, eventTime);
-        fundingRateDataMap.put("FundingRate:", fundingRateDTO);
+        fundingRateDataMap.put("FundingRate:" + symbol, fundingRateDTO);
     }
 
     public Map<String, FundingRateDTO> getFundingRateDataMap() {

@@ -1,20 +1,27 @@
 package com.javaweb.helpers.trigger;
 
 import com.javaweb.dto.trigger.*;
-import com.javaweb.model.*;
 import com.javaweb.model.trigger.FundingRateTrigger;
+import com.javaweb.model.trigger.FuturePriceTrigger;
 import com.javaweb.model.trigger.PriceDifferenceTrigger;
-import com.javaweb.model.trigger.SpotFuturePriceTrigger;
+import com.javaweb.model.trigger.SpotPriceTrigger;
 import org.springframework.stereotype.Component;
 
 @Component
 public class TriggerHelper {
-    public SpotFuturePriceTrigger mapSpotFuturePriceTrigger(SpotFuturePriceTriggerDTO dto) {
-        SpotFuturePriceTrigger trigger = new SpotFuturePriceTrigger();
+    public SpotPriceTrigger mapSpotPriceTrigger(SpotPriceTriggerDTO dto) {
+        SpotPriceTrigger trigger = new SpotPriceTrigger();
         trigger.setSymbol(dto.getSymbol());
         trigger.setAction(dto.getAction());
         trigger.setComparisonOperator(dto.getComparisonOperator());
         trigger.setSpotPriceThreshold(dto.getSpotPriceThreshold());
+        return trigger;
+    }
+    public FuturePriceTrigger mapFuturePriceTrigger(FuturePriceTriggerDTO dto) {
+        FuturePriceTrigger trigger = new FuturePriceTrigger();
+        trigger.setSymbol(dto.getSymbol());
+        trigger.setAction(dto.getAction());
+        trigger.setComparisonOperator(dto.getComparisonOperator());
         trigger.setFuturePriceThreshold(dto.getFuturePriceThreshold());
         return trigger;
     }
@@ -24,7 +31,8 @@ public class TriggerHelper {
         trigger.setSymbol(dto.getSymbol());
         trigger.setAction(dto.getAction());
         trigger.setComparisonOperator(dto.getComparisonOperator());
-        trigger.setPriceDifferenceThreshold(dto.getPriceDifferenceThreshold());
+
+        double priceDifference = Math.abs(dto.getSpotPrice() - dto.getFuturePrice());
         return trigger;
     }
 

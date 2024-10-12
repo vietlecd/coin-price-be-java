@@ -6,8 +6,7 @@ import com.javaweb.dto.FundingRateDTO;
 import java.util.Map;
 
 public interface IFundingRateDataService {
-
-    void handleFundingRateWebSocketMessage(JsonNode data);
+    public void handleFundingRateWebSocketMessage(JsonNode data);
 
     Map<String, FundingRateDTO> getFundingRateDataMap();
 }

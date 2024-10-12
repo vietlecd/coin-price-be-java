@@ -43,16 +43,9 @@ public class FundingRateWebSocketService extends TextWebSocketHandler implements
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         String payload = message.getPayload();
-        System.out.println("Received from Binance: " + payload);
-
         JsonNode data = objectMapper.readTree(payload).get("data");
 
         fundingRateDataService.handleFundingRateWebSocketMessage(data);
 
     }
-
-//    public void closeWebSocket() {
-//        webSocketConfig.closeWebSocket();
-//        System.out.println("WebSocket closed from service.");
-//    }
 }

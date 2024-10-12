@@ -48,8 +48,6 @@ public class FutureWebSocketService extends TextWebSocketHandler implements ICon
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         String payload = message.getPayload();
-        System.out.println("Received from Binance: " + payload);
-
         JsonNode data = objectMapper.readTree(payload).get("data");
 
         futurePriceDataService.handleWebSocketMessage(data);

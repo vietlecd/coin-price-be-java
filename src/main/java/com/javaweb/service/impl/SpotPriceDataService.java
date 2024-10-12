@@ -4,16 +4,25 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.javaweb.dto.PriceDTO;
 import com.javaweb.helpers.service.DateTimeHelper;
 import com.javaweb.helpers.service.PriceDTOHelper;
+import com.javaweb.helpers.sse.SseHelper;
+import com.javaweb.helpers.trigger.TriggerCheckHelper;
 import com.javaweb.service.IPriceDataService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+import java.util.Arrays;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class SpotPriceDataService implements IPriceDataService {
+    @Autowired
+    private TriggerCheckHelper triggerCheckHelper;
+    @Autowired
+    private SseHelper sseHelper;
 
-    private final Map<String, PriceDTO> spotPriceDataMap = new ConcurrentHashMap<>();
+    private Map<String, PriceDTO> spotPriceDataMap = new ConcurrentHashMap<>();
 
     @Override
     public void handleWebSocketMessage(JsonNode data) {
@@ -23,10 +32,20 @@ public class SpotPriceDataService implements IPriceDataService {
         String symbol = data.get("s").asText();
         String price = data.get("c").asText();
 
-        System.out.println("Event Time: " + eventTime + ", Symbol: " + symbol + ", Spot Price: " + price);
+        //System.out.println("Event Time: " + eventTime + ", Symbol: " + symbol + ", Spot Price: " + price);
 
         PriceDTO priceDTO = PriceDTOHelper.createPriceDTO(symbol, price, eventTime);
-        spotPriceDataMap.put("SpotPrice:", priceDTO);
+
+        spotPriceDataMap.put("Spot Price: " + symbol, priceDTO);
+
+        // Lấy SseEmitter với key đúng định dạng "Spot Price: " + symbol
+        SseEmitter emitter = sseHelper.getSseEmitterBySymbol(symbol);
+
+        if (emitter != null) {
+            triggerCheckHelper.checkSymbolAndTriggerAlert(Arrays.asList(symbol), spotPriceDataMap, "spot", emitter);
+        } else {
+            System.out.println("No emitter found for symbol: " + symbol);
+        }
     }
 
     public Map<String, PriceDTO> getPriceDataMap(){

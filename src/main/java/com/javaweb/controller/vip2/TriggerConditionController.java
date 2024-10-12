@@ -1,20 +1,29 @@
 package com.javaweb.controller.vip2;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.javaweb.dto.trigger.FundingRateTriggerDTO;
+import com.javaweb.dto.trigger.FuturePriceTriggerDTO;
 import com.javaweb.dto.trigger.PriceDifferenceTriggerDTO;
-import com.javaweb.dto.trigger.SpotFuturePriceTriggerDTO;
+import com.javaweb.dto.trigger.SpotPriceTriggerDTO;
 import com.javaweb.service.trigger.FundingRateTriggerService;
+import com.javaweb.service.trigger.FuturePriceTriggerService;
 import com.javaweb.service.trigger.PriceDifferenceTriggerService;
-import com.javaweb.service.trigger.SpotFuturePriceTriggerService;
+import com.javaweb.service.trigger.SpotPriceTriggerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/vip2")
 public class TriggerConditionController {
     @Autowired
-    private SpotFuturePriceTriggerService spotFuturePriceTriggerService;
+    private ObjectMapper objectMapper;
+    @Autowired
+    private SpotPriceTriggerService spotPriceTriggerService;
+    @Autowired
+    private FuturePriceTriggerService futurePriceTriggerService;
 
     @Autowired
     private PriceDifferenceTriggerService priceDifferenceTriggerService;
@@ -22,17 +31,33 @@ public class TriggerConditionController {
     @Autowired
     private FundingRateTriggerService fundingRateTriggerService;
     @PostMapping("/create")
-    public ResponseEntity<?> createTriggerCondition(@RequestBody Object dto) {
-        if (dto instanceof SpotFuturePriceTriggerDTO) {
-            spotFuturePriceTriggerService.createTrigger((SpotFuturePriceTriggerDTO) dto);
-        } else if (dto instanceof PriceDifferenceTriggerDTO) {
-            priceDifferenceTriggerService.createTrigger((PriceDifferenceTriggerDTO) dto);
-        } else if (dto instanceof FundingRateTriggerDTO) {
-            fundingRateTriggerService.createTrigger((FundingRateTriggerDTO) dto);
-        } else {
-            return ResponseEntity.badRequest().body("Invalid trigger type");
+    public ResponseEntity<?> createTriggerCondition(@RequestParam("triggerType") String triggerType, @RequestBody Map<String, Object> dtoMap) {
+        try {
+            switch (triggerType) {
+                case "spot":
+                    SpotPriceTriggerDTO spotDTO = objectMapper.convertValue(dtoMap, SpotPriceTriggerDTO.class);
+                    spotPriceTriggerService.createTrigger(spotDTO);
+                    break;
+                case "future":
+                    FuturePriceTriggerDTO futureDTO = objectMapper.convertValue(dtoMap, FuturePriceTriggerDTO.class);
+                    futurePriceTriggerService.createTrigger(futureDTO);
+                    break;
+                case "price-difference":
+                    PriceDifferenceTriggerDTO priceDTO = objectMapper.convertValue(dtoMap, PriceDifferenceTriggerDTO.class);
+                    priceDifferenceTriggerService.createTrigger(priceDTO);
+                    break;
+                case "funding-rate":
+                    FundingRateTriggerDTO fundingDTO = objectMapper.convertValue(dtoMap, FundingRateTriggerDTO.class);
+                    fundingRateTriggerService.createTrigger(fundingDTO);
+                    break;
+                default:
+                    return ResponseEntity.badRequest().body("Invalid trigger type");
+            }
         }
-        return ResponseEntity.ok("Trigger condition created successfully.");
+        catch (Exception e){
+            return ResponseEntity.status(500).body("Error processing trigger: " + e.getMessage());
+        }
+            return ResponseEntity.ok("Trigger condition created successfully.");
     }
 
 //    @GetMapping("/get/{symbol}")

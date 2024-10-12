@@ -5,20 +5,18 @@ import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import lombok.Getter;
 
 @Getter
-@JsonDeserialize(builder = FundingRateTriggerDTO.Builder.class)
-public class FundingRateTriggerDTO {
+@JsonDeserialize(builder = FuturePriceTriggerDTO.Builder.class)
+public class FuturePriceTriggerDTO {
     private final String symbol;
     private final String comparisonOperator;
     private final String action;
-    private final double fundingRateThreshold;
-    private final double fundingRateInterval;
+    private final double futurePriceThreshold;
 
-    private FundingRateTriggerDTO(Builder builder) {
+    private FuturePriceTriggerDTO(Builder builder) {
         this.symbol = builder.symbol;
         this.comparisonOperator = builder.comparisonOperator;
         this.action = builder.action;
-        this.fundingRateThreshold = builder.fundingRateThreshold;
-        this.fundingRateInterval = builder.fundingRateInterval;
+        this.futurePriceThreshold = builder.futurePriceThreshold;
     }
 
     @JsonPOJOBuilder(withPrefix = "set")
@@ -26,8 +24,7 @@ public class FundingRateTriggerDTO {
         private String symbol;
         private String comparisonOperator;
         private String action;
-        private double fundingRateThreshold;
-        private double fundingRateInterval;
+        private double futurePriceThreshold;
 
         public Builder setSymbol(String symbol) {
             this.symbol = symbol;
@@ -44,18 +41,13 @@ public class FundingRateTriggerDTO {
             return this;
         }
 
-        public Builder setFundingRateThreshold(double fundingRateThreshold) {
-            this.fundingRateThreshold = fundingRateThreshold;
+        public Builder setFuturePriceThreshold(double futurePriceThreshold) {
+            this.futurePriceThreshold = futurePriceThreshold;
             return this;
         }
 
-        public Builder setFundingRateInterval(double fundingRateInterval) {
-            this.fundingRateInterval = fundingRateInterval;
-            return this;
-        }
-
-        public FundingRateTriggerDTO build() {
-            return new FundingRateTriggerDTO(this);
+        public FuturePriceTriggerDTO build() {
+            return new FuturePriceTriggerDTO(this);
         }
     }
 }

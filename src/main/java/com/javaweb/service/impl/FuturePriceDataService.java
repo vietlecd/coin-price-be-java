@@ -32,10 +32,10 @@ public class FuturePriceDataService implements IPriceDataService {
 
         String price = data1.get("c").asText();
 
-        System.out.println("Event Time: " + eventTime + "Symbol: " + symbol + ", Future Price: " + price);
+        //System.out.println("Event Time: " + eventTime + "Symbol: " + symbol + ", Future Price: " + price);
 
         PriceDTO priceDTO = PriceDTOHelper.createPriceDTO(symbol, price, eventTime);
-        futurePriceDataMap.put("FuturePrice:", priceDTO);
+        futurePriceDataMap.put("FuturePrice: " + symbol, priceDTO);
     }
 
     public Map<String, PriceDTO> getPriceDataMap() {

@@ -10,6 +10,7 @@ import com.javaweb.dto.PriceDTO;
 import com.javaweb.config.WebSocketConfig;
 import com.javaweb.helpers.sse.SseHelper;
 import com.javaweb.helpers.controller.UpperCaseHelper;
+import com.javaweb.helpers.trigger.TriggerCheckHelper;
 import com.javaweb.service.impl.FundingRateDataService;
 import com.javaweb.service.impl.FuturePriceDataService;
 import com.javaweb.service.impl.SpotPriceDataService;
@@ -29,6 +30,8 @@ public class PriceController {
 
     @Autowired
     private SseHelper sseHelper;
+    @Autowired
+    private TriggerCheckHelper triggerCheckHelper;
     @Autowired
     private WebSocketConfig webSocketConfig;
 
@@ -54,7 +57,12 @@ public class PriceController {
         spotWebSocketService.connectToWebSocket(symbols);
 
         Map<String, PriceDTO> priceDataMap = spotPriceDataService.getPriceDataMap();
-        return sseHelper.createPriceSseEmitter(emitter, "spot", priceDataMap, webSocketConfig);
+
+        for (String symbol : symbols) {
+            sseHelper.createPriceSseEmitter(emitter, "Spot", symbol, priceDataMap, webSocketConfig);
+        }
+        return emitter;
+        //return sseHelper.createPriceSseEmitter(emitter, "spot", priceDataMap, webSocketConfig);
     }
 
     @GetMapping("/get-future-price")
@@ -63,17 +71,20 @@ public class PriceController {
         futureWebSocketService.connectToWebSocket(symbols);
 
         Map<String, PriceDTO> priceDataMap = futurePriceDataService.getPriceDataMap();
-        return sseHelper.createPriceSseEmitter(emitter, "future", priceDataMap, webSocketConfig);
+        for (String symbol : symbols) {
+            sseHelper.createPriceSseEmitter(emitter, "Future", symbol, priceDataMap, webSocketConfig);
+        }
+        return emitter;
     }
 
-    @GetMapping("/get-funding-rate")
-    public SseEmitter streamFundingRate(@RequestParam List<String> symbols) {
-        SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
-        fundingRateWebSocketService.connectToWebSocket(symbols);
-
-        Map<String, FundingRateDTO> fundingRateDataMap = fundingRateDataService.getFundingRateDataMap();
-        return sseHelper.createFundingRateSseEmitter(emitter, "funding-rate", fundingRateDataMap, webSocketConfig);
-    }
+//    @GetMapping("/get-funding-rate")
+//    public SseEmitter streamFundingRate(@RequestParam List<String> symbols) {
+//        SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
+//        fundingRateWebSocketService.connectToWebSocket(symbols);
+//
+//        Map<String, FundingRateDTO> fundingRateDataMap = fundingRateDataService.getFundingRateDataMap();
+//        return sseHelper.createFundingRateSseEmitter(emitter, "Funding-rate", fundingRateDataMap, webSocketConfig);
+//    }
 
     @GetMapping("/get-funding-interval")
     public ResponseEntity<List<Map<String, FundingIntervalDTO>>> getFundingInterval(@RequestParam List<String> symbols) {

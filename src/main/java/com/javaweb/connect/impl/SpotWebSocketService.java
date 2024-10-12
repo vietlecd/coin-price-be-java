@@ -46,16 +46,10 @@ public class SpotWebSocketService extends TextWebSocketHandler implements IConne
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         String payload = message.getPayload();
-        System.out.println("Received from Binance: " + payload);
 
         JsonNode data = objectMapper.readTree(payload).get("data");
 
         spotPriceDataService.handleWebSocketMessage(data);
     }
-
-//    public void closeWebSocket() {
-//        webSocketConfig.closeWebSocket();
-//        System.out.println("WebSocket closed from service.");
-//    }
 
 }
