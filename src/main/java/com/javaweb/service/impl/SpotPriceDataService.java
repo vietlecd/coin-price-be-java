@@ -10,6 +10,8 @@ import com.javaweb.service.IPriceDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+
+import java.io.IOException;
 import java.util.Arrays;
 
 import java.util.Map;
@@ -32,19 +34,26 @@ public class SpotPriceDataService implements IPriceDataService {
         String symbol = data.get("s").asText();
         String price = data.get("c").asText();
 
-        //System.out.println("Event Time: " + eventTime + ", Symbol: " + symbol + ", Spot Price: " + price);
+        System.out.println("Event Time: " + eventTime + ", Symbol: " + symbol + ", Spot Price: " + price);
 
         PriceDTO priceDTO = PriceDTOHelper.createPriceDTO(symbol, price, eventTime);
 
         spotPriceDataMap.put("Spot Price: " + symbol, priceDTO);
 
-        // Lấy SseEmitter với key đúng định dạng "Spot Price: " + symbol
-        SseEmitter emitter = sseHelper.getSseEmitterBySymbol(symbol);
+        boolean conditionMet = triggerCheckHelper.checkSymbolAndTriggerAlert(Arrays.asList(symbol), spotPriceDataMap, "spot");
 
-        if (emitter != null) {
-            triggerCheckHelper.checkSymbolAndTriggerAlert(Arrays.asList(symbol), spotPriceDataMap, "spot", emitter);
-        } else {
-            System.out.println("No emitter found for symbol: " + symbol);
+        if (conditionMet) {
+            // Nếu có SseEmitter thì gửi thông báo qua SSE
+            SseEmitter emitter = sseHelper.getSseEmitterBySymbol(symbol, "Spot");
+            if (emitter != null) {
+                try {
+                    emitter.send(SseEmitter.event().name("price-alert").data("spot price condition met for " + symbol));
+                } catch (IOException e) {
+                    emitter.completeWithError(e);
+                }
+            } else {
+                System.out.println("No emitter found for symbol: " + symbol);
+            }
         }
     }
 

@@ -83,8 +83,8 @@ public class SseHelper {
 //
 //    }
 
-    public SseEmitter getSseEmitterBySymbol(String symbol) {
-       String key = "Spot Price: " + symbol;
+    public SseEmitter getSseEmitterBySymbol(String symbol, String type ) {
+       String key = type + " Price: " + symbol.toUpperCase();
         return emitters.get(key);
     }
 
