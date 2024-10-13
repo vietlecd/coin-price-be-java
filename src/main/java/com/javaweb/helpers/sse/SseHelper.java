@@ -1,6 +1,7 @@
 package com.javaweb.helpers.sse;
 
 import com.javaweb.dto.FundingRateDTO;
+import com.javaweb.dto.KlineDTO;
 import com.javaweb.dto.PriceDTO;
 import com.javaweb.config.WebSocketConfig;
 import org.springframework.stereotype.Component;
@@ -13,7 +14,7 @@ import java.util.concurrent.*;
 @Component
 public class SseHelper {
 
-    private final ScheduledExecutorService executor = Executors.newScheduledThreadPool(3);
+    private final ScheduledExecutorService executor = Executors.newScheduledThreadPool(10);
     private final Map<String, ScheduledFuture<?>> scheduledTasks = new ConcurrentHashMap<>();
     private final Map<String, SseEmitter> emitters = new ConcurrentHashMap<>();
 
@@ -68,20 +69,35 @@ public class SseHelper {
         return createSseEmitter(emitter, type, symbol, sendPriceTask, webSocketConfig);
     }
 
-//    public SseEmitter createFundingRateSseEmitter(SseEmitter emitter, String type, String symbol,
-//                                                  Map<String, FundingRateDTO> fundingRateDataMap,
-//                                                  WebSocketConfig webSocketConfig) {
-//        Runnable sendFundingRateTask = () -> {
-//            try {
-//                emitter.send(fundingRateDataMap);
-//            } catch (IOException e) {
-//                emitter.completeWithError(e);
-//            }
-//        };
-//
-//        return createSseEmitter(emitter, type, symbol, sendFundingRateTask, webSocketConfig);
-//
-//    }
+    public SseEmitter createFundingRateSseEmitter(SseEmitter emitter, String type, String symbol,
+                                                  Map<String, FundingRateDTO> fundingRateDataMap,
+                                                  WebSocketConfig webSocketConfig) {
+        Runnable sendFundingRateTask = () -> {
+            try {
+                emitter.send(fundingRateDataMap);
+            } catch (IOException e) {
+                emitter.completeWithError(e);
+            }
+        };
+
+        return createSseEmitter(emitter, type, symbol, sendFundingRateTask, webSocketConfig);
+
+    }
+
+    public SseEmitter createKlineSseEmitter(SseEmitter emitter, String type, String symbol,
+                                            Map<String, KlineDTO> klineDataMap,
+                                            WebSocketConfig webSocketConfig) {
+        Runnable sendKlineTask = () -> {
+            try {
+                emitter.send(klineDataMap);
+            } catch (IOException e) {
+                emitter.completeWithError(e);
+            }
+        };
+
+        return createSseEmitter(emitter, type, symbol, sendKlineTask, webSocketConfig);
+
+    }
 
     public SseEmitter getSseEmitterBySymbol(String symbol, String type ) {
        String key = type + " Price: " + symbol.toUpperCase();

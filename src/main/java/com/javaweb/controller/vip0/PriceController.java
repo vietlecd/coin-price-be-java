@@ -13,6 +13,7 @@ import com.javaweb.helpers.controller.UpperCaseHelper;
 import com.javaweb.helpers.trigger.TriggerCheckHelper;
 import com.javaweb.service.impl.FundingRateDataService;
 import com.javaweb.service.impl.FuturePriceDataService;
+import com.javaweb.service.impl.MarketCapService;
 import com.javaweb.service.impl.SpotPriceDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -41,6 +42,8 @@ public class PriceController {
     private FuturePriceDataService futurePriceDataService;
     @Autowired
     private FundingRateDataService fundingRateDataService;
+    @Autowired
+    private MarketCapService marketCapService;
 
     @Autowired
     private SpotWebSocketService spotWebSocketService;
@@ -77,14 +80,17 @@ public class PriceController {
         return emitter;
     }
 
-//    @GetMapping("/get-funding-rate")
-//    public SseEmitter streamFundingRate(@RequestParam List<String> symbols) {
-//        SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
-//        fundingRateWebSocketService.connectToWebSocket(symbols);
-//
-//        Map<String, FundingRateDTO> fundingRateDataMap = fundingRateDataService.getFundingRateDataMap();
-//        return sseHelper.createFundingRateSseEmitter(emitter, "Funding-rate", fundingRateDataMap, webSocketConfig);
-//    }
+    @GetMapping("/get-funding-rate")
+    public SseEmitter streamFundingRate(@RequestParam List<String> symbols) {
+        SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
+        fundingRateWebSocketService.connectToWebSocket(symbols);
+
+        Map<String, FundingRateDTO> fundingRateDataMap = fundingRateDataService.getFundingRateDataMap();
+        for (String symbol : symbols) {
+            sseHelper.createFundingRateSseEmitter(emitter, "FundingRate", symbol, fundingRateDataMap, webSocketConfig);
+        }
+        return emitter;
+    }
 
     @GetMapping("/get-funding-interval")
     public ResponseEntity<List<Map<String, FundingIntervalDTO>>> getFundingInterval(@RequestParam List<String> symbols) {
@@ -92,6 +98,17 @@ public class PriceController {
 
         List<Map<String, FundingIntervalDTO>> fundingIntervalData = fundingIntervalWebService.handleFundingIntervalWeb(upperCasesymbols);
         return ResponseEntity.ok(fundingIntervalData);
+    }
+
+    @GetMapping("/get-market")
+    public ResponseEntity<List<Map<String, Object>>> getMarketData(@RequestParam List<String> symbols) {
+        if (symbols == null || symbols.isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        List<Map<String, Object>> marketData = marketCapService.getMarketData(symbols);
+
+        return ResponseEntity.ok(marketData);
     }
 
     @DeleteMapping("/close-websocket")

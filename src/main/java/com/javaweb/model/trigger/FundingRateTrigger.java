@@ -6,13 +6,10 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.persistence.Entity;
 
-@Entity
 @Getter
 @Setter
-@Document(collection = "funding_trigger")
+@Document(collection = "funding_rate_trigger")
 public class FundingRateTrigger extends TriggerCondition {
 
     private double fundingRateThreshold;
-    private double fundingRateInterval;
-
 }

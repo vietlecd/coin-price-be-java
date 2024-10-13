@@ -1,7 +1,7 @@
 package com.javaweb.service.trigger;
 
 import com.javaweb.dto.trigger.FundingRateTriggerDTO;
-import com.javaweb.helpers.trigger.TriggerHelper;
+import com.javaweb.helpers.trigger.TriggerMapHelper;
 import com.javaweb.model.trigger.FundingRateTrigger;
 import com.javaweb.repository.FundingRateTriggerRepository;
 import com.javaweb.service.ITriggerService;
@@ -14,10 +14,10 @@ public class FundingRateTriggerService implements ITriggerService<FundingRateTri
     private FundingRateTriggerRepository fundingRateTriggerRepository;
 
     @Autowired
-    private TriggerHelper triggerHelper;
+    private TriggerMapHelper triggerMapHelper;
 
     public void createTrigger(FundingRateTriggerDTO dto) {
-        FundingRateTrigger trigger = triggerHelper.mapFundingRateTrigger(dto);
+        FundingRateTrigger trigger = triggerMapHelper.mapFundingRateTrigger(dto);
         fundingRateTriggerRepository.save(trigger);
     }
 }

@@ -6,6 +6,7 @@ import com.javaweb.dto.FundingIntervalDTO;
 import com.javaweb.connect.IFundingIntervalWebService;
 import com.javaweb.service.impl.FundingIntervalDataService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 

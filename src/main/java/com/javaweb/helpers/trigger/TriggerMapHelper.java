@@ -8,7 +8,7 @@ import com.javaweb.model.trigger.SpotPriceTrigger;
 import org.springframework.stereotype.Component;
 
 @Component
-public class TriggerHelper {
+public class TriggerMapHelper {
     public SpotPriceTrigger mapSpotPriceTrigger(SpotPriceTriggerDTO dto) {
         SpotPriceTrigger trigger = new SpotPriceTrigger();
         trigger.setSymbol(dto.getSymbol());
@@ -42,7 +42,7 @@ public class TriggerHelper {
         trigger.setAction(dto.getAction());
         trigger.setComparisonOperator(dto.getComparisonOperator());
         trigger.setFundingRateThreshold(dto.getFundingRateThreshold());
-        trigger.setFundingRateInterval(dto.getFundingRateInterval());
+        //trigger.setFundingRateInterval(dto.getFundingRateInterval());
         return trigger;
     }
 }
