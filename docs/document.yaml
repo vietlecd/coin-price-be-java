@@ -1,0 +1,44 @@
+openapi: 3.0.0
+info:
+  title: API Documentation for My Project
+  version: 1.0.0
+  description: |
+    This project aims to develop a system that supports tracking cryptocurrency market information, focusing
+    on aspects such as prices, transaction fees, and formed transaction. User can look up transaction statistics, monitor real-time market data, and receive alerts based on specific price condition.
+
+    _This project is suitable for users who wish to monitor the cryptocurrency market, perform technical analysis, and automatically receive alerts based on price movements and technical indicators._  
+    ## Libraries used in the Project:
+    
+    ### Spring Boot Dependencies
+    - **spring-boot-starter-web**: 
+      - GroupId: `org.springframework.boot`
+      - ArtifactId: `spring-boot-starter-web`
+    
+    - **spring-boot-starter-data-jpa**: 
+      - GroupId: `org.springframework.boot`
+      - ArtifactId: `spring-boot-starter-data-jpa`
+    
+    - **spring-boot-starter-security**:
+      - GroupId: `org.springframework.boot`
+      - ArtifactId: `spring-boot-starter-security`
+
+    ### Other:
+    - **Java-WebSocket**:
+      - GroupId: `org.java-websocket`
+      - ArtifactId: `Java-WebSocket`
+      - Version: `1.5.4`
+      
+    - **spring-boot-starter-tomcat**:
+      - GroupId: `org.springframework.boot`
+      - ArtifactId: `spring-boot-starter-tomcat`
+      - Version: `2.4.4`
+      - Scope: `provided`
+paths:
+  /example:
+    get:
+      summary: test
+      description: test
+      responses:
+        '200':
+          description: test
+
