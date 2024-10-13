@@ -41,4 +41,6 @@ paths:
       responses:
         '200':
           description: test
-
+tags:
+  - name: Seed
+    description: FundingIntervalDataService, FundingRateDTO
