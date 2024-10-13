@@ -1,5 +1,6 @@
 package com.javaweb.helpers.trigger;
 
+import com.javaweb.connect.impl.FundingRateWebSocketService;
 import com.javaweb.connect.impl.FutureWebSocketService;
 import com.javaweb.connect.impl.SpotWebSocketService;
 import com.javaweb.service.trigger.TriggerSymbolService;
@@ -19,18 +20,34 @@ public class WebSocketInitializer {
     private FutureWebSocketService futureWebSocketService;
 
     @Autowired
+    private FundingRateWebSocketService fundingRateWebSocketService;
+
+    @Autowired
     private TriggerSymbolService triggerSymbolService;
 
     @PostConstruct
     public void initWebSocketConnections() {
         // Lấy tất cả symbols có triggers
-        List<String> symbolsWithTriggers = triggerSymbolService.getAllSymbolsWithTriggers();
+        List<String> spotSymbols = triggerSymbolService.getSpotSymbolsWithTriggers();
+        List<String> futureSymbols = triggerSymbolService.getFutureSymbolsWithTriggers();
+        List<String> fundingRateSymbols = triggerSymbolService.getFundingRateSymbolsWithTriggers();
 
-        if (!symbolsWithTriggers.isEmpty()) {
-            // Khởi động WebSocket kết nối cho các symbols có triggers
-            System.out.println("Initializing WebSocket for symbols: " + symbolsWithTriggers);
-            spotWebSocketService.connectToWebSocket(symbolsWithTriggers);  // Tự động kết nối Spot WebSocket
-            futureWebSocketService.connectToWebSocket(symbolsWithTriggers); // Tự động kết nối Future WebSocket
+        // Khởi động WebSocket cho Spot symbols
+        if (!spotSymbols.isEmpty()) {
+            System.out.println("Initializing Spot WebSocket for symbols: " + spotSymbols);
+            spotWebSocketService.connectToWebSocket(spotSymbols);
+        }
+
+        // Khởi động WebSocket cho Future symbols
+        if (!futureSymbols.isEmpty()) {
+            System.out.println("Initializing Future WebSocket for symbols: " + futureSymbols);
+            futureWebSocketService.connectToWebSocket(futureSymbols);
+        }
+
+        // Khởi động WebSocket cho FundingRate symbols
+        if (!fundingRateSymbols.isEmpty()) {
+            System.out.println("Initializing FundingRate WebSocket for symbols: " + fundingRateSymbols);
+            fundingRateWebSocketService.connectToWebSocket(fundingRateSymbols);
         }
     }
 }

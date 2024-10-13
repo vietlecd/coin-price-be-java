@@ -1,5 +1,6 @@
 package com.javaweb.helpers.trigger;
 
+import com.javaweb.connect.impl.FundingRateWebSocketService;
 import com.javaweb.connect.impl.FutureWebSocketService;
 import com.javaweb.connect.impl.SpotWebSocketService;
 import com.javaweb.service.trigger.TriggerSymbolService;
@@ -21,15 +22,31 @@ public class WebSocketScheduler {
     @Autowired
     private FutureWebSocketService futureWebSocketService;
 
-    // Chạy mỗi 5 phút (hoặc thời gian bạn muốn)
-    @Scheduled(fixedRate = 300000)
-    public void checkAndConnectToWebSocket() {
-        List<String> symbolsWithTriggers = triggerSymbolService.getAllSymbolsWithTriggers();
+    @Autowired
+    private FundingRateWebSocketService fundingRateWebSocketService;
 
-        if (!symbolsWithTriggers.isEmpty()) {
-            System.out.println("Checking WebSocket connections for symbols: " + symbolsWithTriggers);
-            spotWebSocketService.connectToWebSocket(symbolsWithTriggers);  // Kết nối lại cho Spot
-            futureWebSocketService.connectToWebSocket(symbolsWithTriggers); // Kết nối lại cho Future
+    // Chạy mỗi 5 phút để kiểm tra và kết nối lại WebSocket nếu cần
+    @Scheduled(fixedRate = 30000) // 300000 ms = 5 phút
+    public void checkAndConnectToWebSocket() {
+        // Lấy symbols cho Spot triggers
+        List<String> spotSymbolsWithTriggers = triggerSymbolService.getSpotSymbolsWithTriggers();
+        if (!spotSymbolsWithTriggers.isEmpty()) {
+            System.out.println("Checking Spot WebSocket connections for symbols: " + spotSymbolsWithTriggers);
+            spotWebSocketService.connectToWebSocket(spotSymbolsWithTriggers);
+        }
+
+        // Lấy symbols cho Future triggers
+        List<String> futureSymbolsWithTriggers = triggerSymbolService.getFutureSymbolsWithTriggers();
+        if (!futureSymbolsWithTriggers.isEmpty()) {
+            System.out.println("Checking Future WebSocket connections for symbols: " + futureSymbolsWithTriggers);
+            futureWebSocketService.connectToWebSocket(futureSymbolsWithTriggers);
+        }
+
+        // Lấy symbols cho FundingRate triggers
+        List<String> fundingRateSymbolsWithTriggers = triggerSymbolService.getFundingRateSymbolsWithTriggers();
+        if (!fundingRateSymbolsWithTriggers.isEmpty()) {
+            System.out.println("Checking FundingRate WebSocket connections for symbols: " + fundingRateSymbolsWithTriggers);
+            fundingRateWebSocketService.connectToWebSocket(fundingRateSymbolsWithTriggers);
         }
     }
 }

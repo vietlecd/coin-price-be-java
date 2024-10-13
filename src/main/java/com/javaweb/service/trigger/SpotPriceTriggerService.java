@@ -1,8 +1,7 @@
 package com.javaweb.service.trigger;
 
 import com.javaweb.dto.trigger.SpotPriceTriggerDTO;
-import com.javaweb.dto.trigger.SpotPriceTriggerDTO;
-import com.javaweb.helpers.trigger.TriggerHelper;
+import com.javaweb.helpers.trigger.TriggerMapHelper;
 import com.javaweb.model.trigger.SpotPriceTrigger;
 import com.javaweb.repository.SpotPriceTriggerRepository;
 import com.javaweb.service.ITriggerService;
@@ -16,10 +15,10 @@ public class SpotPriceTriggerService implements ITriggerService<SpotPriceTrigger
     private SpotPriceTriggerRepository spotPriceTriggerRepository;
 
     @Autowired
-    private TriggerHelper triggerHelper;
+    private TriggerMapHelper triggerMapHelper;
 
     public void createTrigger(SpotPriceTriggerDTO dto) {
-        SpotPriceTrigger trigger = triggerHelper.mapSpotPriceTrigger(dto);
+        SpotPriceTrigger trigger = triggerMapHelper.mapSpotPriceTrigger(dto);
         spotPriceTriggerRepository.save(trigger);
     }
 }

@@ -7,7 +7,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
-@Entity
 @Getter
 @Setter
 @Document(collection = "spot_price_trigger")

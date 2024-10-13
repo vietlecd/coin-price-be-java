@@ -1,5 +1,6 @@
 package com.javaweb.service.trigger;
 
+import com.javaweb.repository.FundingRateTriggerRepository;
 import com.javaweb.repository.FuturePriceTriggerRepository;
 import com.javaweb.repository.SpotPriceTriggerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,17 +19,24 @@ public class TriggerSymbolService {
     @Autowired
     private FuturePriceTriggerRepository futurePriceTriggerRepository;
 
-    public List<String> getAllSymbolsWithTriggers() {
-        // Lấy tất cả các symbols đã có trigger từ cả Spot và Future trigger
-        List<String> spotSymbols = spotPriceTriggerRepository.findAll().stream()
-                .map(SpotPriceTrigger::getSymbol)
-                .collect(Collectors.toList());
+    @Autowired
+    private FundingRateTriggerRepository fundingRateTriggerRepository;
 
-        List<String> futureSymbols = futurePriceTriggerRepository.findAll().stream()
+    public List<String> getSpotSymbolsWithTriggers() {
+        return spotPriceTriggerRepository.findAll().stream()
+                .map(SpotPriceTrigger :: getSymbol)
+                .collect(Collectors.toList());
+    }
+
+    public List<String> getFutureSymbolsWithTriggers() {
+        return futurePriceTriggerRepository.findAll().stream()
                 .map(FuturePriceTrigger::getSymbol)
                 .collect(Collectors.toList());
+    }
 
-        spotSymbols.addAll(futureSymbols);
-        return spotSymbols;
+    public List<String> getFundingRateSymbolsWithTriggers() {
+        return fundingRateTriggerRepository.findAll().stream()
+                .map(FundingRateTrigger::getSymbol)
+                .collect(Collectors.toList());
     }
 }

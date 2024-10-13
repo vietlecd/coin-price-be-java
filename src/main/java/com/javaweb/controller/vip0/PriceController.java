@@ -77,14 +77,17 @@ public class PriceController {
         return emitter;
     }
 
-//    @GetMapping("/get-funding-rate")
-//    public SseEmitter streamFundingRate(@RequestParam List<String> symbols) {
-//        SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
-//        fundingRateWebSocketService.connectToWebSocket(symbols);
-//
-//        Map<String, FundingRateDTO> fundingRateDataMap = fundingRateDataService.getFundingRateDataMap();
-//        return sseHelper.createFundingRateSseEmitter(emitter, "Funding-rate", fundingRateDataMap, webSocketConfig);
-//    }
+    @GetMapping("/get-funding-rate")
+    public SseEmitter streamFundingRate(@RequestParam List<String> symbols) {
+        SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
+        fundingRateWebSocketService.connectToWebSocket(symbols);
+
+        Map<String, FundingRateDTO> fundingRateDataMap = fundingRateDataService.getFundingRateDataMap();
+        for (String symbol : symbols) {
+            sseHelper.createFundingRateSseEmitter(emitter, "FundingRate", symbol, fundingRateDataMap, webSocketConfig);
+        }
+        return emitter;
+    }
 
     @GetMapping("/get-funding-interval")
     public ResponseEntity<List<Map<String, FundingIntervalDTO>>> getFundingInterval(@RequestParam List<String> symbols) {

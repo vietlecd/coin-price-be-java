@@ -11,19 +11,14 @@ import javax.persistence.*;
 
 @Getter
 @Setter
-@Entity
 public abstract class TriggerCondition {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String id;
 
-    @Column(name = "symbol")
     private String symbol;
 
-    @Column(name = "comparisonOperator")
     private String comparisonOperator;
 
-    @Column(name = "action")
     private String action;
 
 }

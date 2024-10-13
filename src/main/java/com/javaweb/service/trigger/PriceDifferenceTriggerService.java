@@ -1,7 +1,7 @@
 package com.javaweb.service.trigger;
 
 import com.javaweb.dto.trigger.PriceDifferenceTriggerDTO;
-import com.javaweb.helpers.trigger.TriggerHelper;
+import com.javaweb.helpers.trigger.TriggerMapHelper;
 import com.javaweb.model.trigger.PriceDifferenceTrigger;
 import com.javaweb.repository.PriceDifferenceTriggerRepository;
 import com.javaweb.service.ITriggerService;
@@ -15,10 +15,10 @@ public class PriceDifferenceTriggerService implements ITriggerService<PriceDiffe
     private PriceDifferenceTriggerRepository priceDifferenceTriggerRepository;
 
     @Autowired
-    private TriggerHelper triggerHelper;
+    private TriggerMapHelper triggerMapHelper;
 
     public void createTrigger(PriceDifferenceTriggerDTO dto) {
-        PriceDifferenceTrigger trigger = triggerHelper.mapPriceDifferenceTrigger(dto);
+        PriceDifferenceTrigger trigger = triggerMapHelper.mapPriceDifferenceTrigger(dto);
         priceDifferenceTriggerRepository.save(trigger);
     }
 }
