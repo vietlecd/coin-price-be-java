@@ -13,6 +13,7 @@ import com.javaweb.helpers.controller.UpperCaseHelper;
 import com.javaweb.helpers.trigger.TriggerCheckHelper;
 import com.javaweb.service.impl.FundingRateDataService;
 import com.javaweb.service.impl.FuturePriceDataService;
+import com.javaweb.service.impl.MarketCapService;
 import com.javaweb.service.impl.SpotPriceDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -41,6 +42,8 @@ public class PriceController {
     private FuturePriceDataService futurePriceDataService;
     @Autowired
     private FundingRateDataService fundingRateDataService;
+    @Autowired
+    private MarketCapService marketCapService;
 
     @Autowired
     private SpotWebSocketService spotWebSocketService;
@@ -95,6 +98,17 @@ public class PriceController {
 
         List<Map<String, FundingIntervalDTO>> fundingIntervalData = fundingIntervalWebService.handleFundingIntervalWeb(upperCasesymbols);
         return ResponseEntity.ok(fundingIntervalData);
+    }
+
+    @GetMapping("/get-market")
+    public ResponseEntity<List<Map<String, Object>>> getMarketData(@RequestParam List<String> symbols) {
+        if (symbols == null || symbols.isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        List<Map<String, Object>> marketData = marketCapService.getMarketData(symbols);
+
+        return ResponseEntity.ok(marketData);
     }
 
     @DeleteMapping("/close-websocket")
