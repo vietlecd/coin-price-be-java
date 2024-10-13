@@ -3,8 +3,8 @@ package com.javaweb.connect.impl;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.javaweb.config.WebSocketConfig;
-import com.javaweb.connect.IFutureWebSocketService;
-import com.javaweb.service.IFuturePriceDataService;
+import com.javaweb.connect.IConnectToWebSocketService;
+import com.javaweb.service.impl.FuturePriceDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.TextMessage;
@@ -16,10 +16,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class FutureWebSocketService extends TextWebSocketHandler implements IFutureWebSocketService {
+public class FutureWebSocketService extends TextWebSocketHandler implements IConnectToWebSocketService {
 
     @Autowired
-    private IFuturePriceDataService futurePriceDataService;
+    private FuturePriceDataService futurePriceDataService;
 
     @Autowired
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -40,7 +40,7 @@ public class FutureWebSocketService extends TextWebSocketHandler implements IFut
     }
 
     @Override
-    public void connectToFutureWebSocket(List<String> streams) {
+    public void connectToWebSocket(List<String> streams) {
         String wsUrl = buildFutureWebSocketUrl(streams);
         webSocketConfig.connectToWebSocket(wsUrl, webSocketClient, this);
     }
@@ -48,16 +48,9 @@ public class FutureWebSocketService extends TextWebSocketHandler implements IFut
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         String payload = message.getPayload();
-        System.out.println("Received from Binance: " + payload);
-
         JsonNode data = objectMapper.readTree(payload).get("data");
 
-        futurePriceDataService.handleFutureWebSocketMessage(data);
+        futurePriceDataService.handleWebSocketMessage(data);
     }
-
-//    public void closeWebSocket() {
-//        webSocketConfig.closeWebSocket();
-//        System.out.println("WebSocket closed from service.");
-//    }
 
 }

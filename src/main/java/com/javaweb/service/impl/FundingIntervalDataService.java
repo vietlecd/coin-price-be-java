@@ -2,7 +2,7 @@ package com.javaweb.service.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.javaweb.dto.FundingIntervalDTO;
-import com.javaweb.helpers.Service.FundingIntervalDTOHelper;
+import com.javaweb.helpers.service.FundingIntervalDTOHelper;
 import com.javaweb.service.IFundingIntervalDataService;
 import org.springframework.stereotype.Service;
 

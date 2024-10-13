@@ -6,6 +6,7 @@ import com.javaweb.dto.FundingIntervalDTO;
 import com.javaweb.connect.IFundingIntervalWebService;
 import com.javaweb.service.impl.FundingIntervalDataService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -20,9 +21,7 @@ public class FundingIntervalWebService implements IFundingIntervalWebService {
     private FundingIntervalDataService fundingIntervalDataService;
 
     private final RestTemplate restTemplate = new RestTemplate();
-    private final ObjectMapper objectMapper = new ObjectMapper();
 
-    // API từ Binance
     private static final String FUNDINGINTERVAL_API_URL = "https://fapi.binance.com/fapi/v1/fundingInfo?symbol=";
 
     @Override
@@ -30,23 +29,16 @@ public class FundingIntervalWebService implements IFundingIntervalWebService {
         List<Map<String, FundingIntervalDTO>> fundingIntervalDataList = new ArrayList<>();
 
         for (String symbol : symbols) {
-            // Cấu trúc URL với query parameter ?symbol=
             String url = FUNDINGINTERVAL_API_URL + symbol;
-
-            // Gửi yêu cầu đến API và nhận phản hồi
             JsonNode response = restTemplate.getForObject(url, JsonNode.class);
 
             if (response != null && response.isArray()) {
-                // Duyệt qua mảng JSON và lọc theo symbol
                 for (JsonNode fundingInfo : response) {
                     if (fundingInfo.get("symbol").asText().equals(symbol)) {
-                        // In trực tiếp JSON cho symbol được lọc
-                        System.out.println("Received JSON for symbol " + symbol + ": " + fundingInfo.toString());
 
                         // Xử lý dữ liệu từ JSON node
                         Map<String, FundingIntervalDTO> processedData = fundingIntervalDataService.processFundingIntervalData(fundingInfo);
 
-                        // Thêm kết quả xử lý vào danh sách
                         fundingIntervalDataList.add(processedData);
                     }
                 }

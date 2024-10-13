@@ -1,6 +1,7 @@
 package com.javaweb.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import lombok.Getter;
 
 @Getter
@@ -11,15 +12,17 @@ public class PriceDTO {
     private final String symbol;
 
     private PriceDTO(Builder builder) {
+        this.symbol = builder.symbol;
         this.price = builder.price;
         this.eventTime = builder.eventTime;
-        this.symbol = builder.symbol;
     }
 
+    @JsonPOJOBuilder(withPrefix = "set")
     public static class Builder {
+        private String symbol;
         private String price;
         private String eventTime;
-        private String symbol;
+
 
         public Builder price(String price) {
             this.price = price;

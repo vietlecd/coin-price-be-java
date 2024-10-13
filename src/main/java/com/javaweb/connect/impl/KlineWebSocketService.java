@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.javaweb.config.WebSocketConfig;
 import com.javaweb.connect.IConnectToWebSocketService;
+import com.javaweb.service.impl.KlineDataService;
 import com.javaweb.service.impl.SpotPriceDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,10 +17,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class SpotWebSocketService extends TextWebSocketHandler implements IConnectToWebSocketService {
-
+public class KlineWebSocketService extends TextWebSocketHandler implements IConnectToWebSocketService {
     @Autowired
-    private SpotPriceDataService spotPriceDataService;
+    private KlineDataService klineDataService;
 
     @Autowired
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -32,14 +32,16 @@ public class SpotWebSocketService extends TextWebSocketHandler implements IConne
 
 
 
-    private String buildSpotWebSocketUrl(List<String> streams) {
-        String streamParam = streams.stream().map(s -> s.toLowerCase() + "@ticker").collect(Collectors.joining("/"));
-        return "wss://stream.binance.com:9443/stream?streams=" + streamParam;
+    private String buildKlineWebSocketUrl(List<String> streams) {
+        String streamParam = streams.stream()
+                .map(s -> s.toLowerCase() + "@kline_1s")
+                .collect(Collectors.joining("/"));
+        return "wss://stream.binance.com/stream?streams=" + streamParam;
     }
 
     @Override
     public void connectToWebSocket(List<String> streams) {
-        String wsUrl = buildSpotWebSocketUrl(streams);
+        String wsUrl = buildKlineWebSocketUrl(streams);
         webSocketConfig.connectToWebSocket(wsUrl, webSocketClient, this);
     }
 
@@ -49,7 +51,7 @@ public class SpotWebSocketService extends TextWebSocketHandler implements IConne
 
         JsonNode data = objectMapper.readTree(payload).get("data");
 
-        spotPriceDataService.handleWebSocketMessage(data);
+        klineDataService.handleWebSocketMessage(data);
     }
 
 }
