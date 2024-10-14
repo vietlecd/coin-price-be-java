@@ -65,7 +65,6 @@ public class PriceController {
             sseHelper.createPriceSseEmitter(emitter, "Spot", symbol, priceDataMap, webSocketConfig);
         }
         return emitter;
-        //return sseHelper.createPriceSseEmitter(emitter, "spot", priceDataMap, webSocketConfig);
     }
 
     @GetMapping("/get-future-price")
