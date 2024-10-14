@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -33,32 +35,43 @@ public class TriggerConditionController {
     @PostMapping("/create")
     public ResponseEntity<?> createTriggerCondition(@RequestParam("triggerType") String triggerType, @RequestBody Map<String, Object> dtoMap) {
         try {
+            String alertId = "";
             switch (triggerType) {
                 case "spot":
                     SpotPriceTriggerDTO spotDTO = objectMapper.convertValue(dtoMap, SpotPriceTriggerDTO.class);
-                    spotPriceTriggerService.createTrigger(spotDTO);
+                    alertId = spotPriceTriggerService.createTrigger(spotDTO);
                     break;
                 case "future":
                     FuturePriceTriggerDTO futureDTO = objectMapper.convertValue(dtoMap, FuturePriceTriggerDTO.class);
-                    futurePriceTriggerService.createTrigger(futureDTO);
+                    alertId = futurePriceTriggerService.createTrigger(futureDTO);
                     break;
                 case "price-difference":
                     PriceDifferenceTriggerDTO priceDTO = objectMapper.convertValue(dtoMap, PriceDifferenceTriggerDTO.class);
-                    priceDifferenceTriggerService.createTrigger(priceDTO);
+                    alertId = priceDifferenceTriggerService.createTrigger(priceDTO);
                     break;
                 case "funding-rate":
                     FundingRateTriggerDTO fundingDTO = objectMapper.convertValue(dtoMap, FundingRateTriggerDTO.class);
-                    fundingRateTriggerService.createTrigger(fundingDTO);
+                    alertId = fundingRateTriggerService.createTrigger(fundingDTO);
                     break;
                 default:
                     return ResponseEntity.badRequest().body("Invalid trigger type");
             }
+
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Alert created successfully");
+            response.put("alert_id", alertId);
+
+            return ResponseEntity.status(201).body(response);
+        } catch (Exception e) {
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("message", "Error processing trigger");
+            errorResponse.put("error", e.getMessage());
+
+            return ResponseEntity.status(500).body(errorResponse);
+
         }
-        catch (Exception e){
-            return ResponseEntity.status(500).body("Error processing trigger: " + e.getMessage());
-        }
-            return ResponseEntity.ok("Trigger condition created successfully.");
     }
+
 
 //    @GetMapping("/get/{symbol}")
 //    public ResponseEntity<?> getTriggerCondition(@PathVariable String symbol) {

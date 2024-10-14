@@ -1,8 +1,10 @@
 package com.javaweb.service.trigger;
 
 import com.javaweb.dto.trigger.FundingRateTriggerDTO;
+import com.javaweb.helpers.trigger.CheckSymbolExisted;
 import com.javaweb.helpers.trigger.TriggerMapHelper;
 import com.javaweb.model.trigger.FundingRateTrigger;
+import com.javaweb.model.trigger.SpotPriceTrigger;
 import com.javaweb.repository.FundingRateTriggerRepository;
 import com.javaweb.service.ITriggerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +18,15 @@ public class FundingRateTriggerService implements ITriggerService<FundingRateTri
     @Autowired
     private TriggerMapHelper triggerMapHelper;
 
-    public void createTrigger(FundingRateTriggerDTO dto) {
-        FundingRateTrigger trigger = triggerMapHelper.mapFundingRateTrigger(dto);
-        fundingRateTriggerRepository.save(trigger);
+    @Autowired
+    private CheckSymbolExisted checkSymbolExisted;
+
+    public String createTrigger(FundingRateTriggerDTO dto) {
+        if (checkSymbolExisted.symbolExistsInFundingRate(dto.getSymbol())) {
+            throw new IllegalArgumentException("Symbol already exists in database.");
+        }
+        FundingRateTrigger trigger= triggerMapHelper.mapFundingRateTrigger(dto);
+        FundingRateTrigger savedTrigger = fundingRateTriggerRepository.save(trigger);
+        return savedTrigger.getAlert_id();
     }
 }

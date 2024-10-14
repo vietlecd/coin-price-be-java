@@ -17,8 +17,9 @@ public class PriceDifferenceTriggerService implements ITriggerService<PriceDiffe
     @Autowired
     private TriggerMapHelper triggerMapHelper;
 
-    public void createTrigger(PriceDifferenceTriggerDTO dto) {
+    public String createTrigger(PriceDifferenceTriggerDTO dto) {
         PriceDifferenceTrigger trigger = triggerMapHelper.mapPriceDifferenceTrigger(dto);
-        priceDifferenceTriggerRepository.save(trigger);
+        PriceDifferenceTrigger savedtrigger =priceDifferenceTriggerRepository.save(trigger);
+        return savedtrigger.getAlert_id();
     }
 }
