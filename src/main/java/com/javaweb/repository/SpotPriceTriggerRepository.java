@@ -5,4 +5,6 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 public interface SpotPriceTriggerRepository extends MongoRepository<SpotPriceTrigger, String> {
     SpotPriceTrigger findBySymbol(String symbol);
+
+    boolean existsBySymbol(String symbol);
 }

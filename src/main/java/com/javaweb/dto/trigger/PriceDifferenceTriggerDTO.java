@@ -8,16 +8,16 @@ import lombok.Getter;
 @JsonDeserialize(builder = PriceDifferenceTriggerDTO.Builder.class)
 public class PriceDifferenceTriggerDTO {
     private final String symbol;
-    private final String comparisonOperator;
-    private final String action;
+    private final String condition;
+    private final String notification_method;
     private final double spotPrice;
     private final double futurePrice;
     private final double priceDifferenceThreshold;
 
     private PriceDifferenceTriggerDTO(Builder builder) {
         this.symbol = builder.symbol;
-        this.comparisonOperator = builder.comparisonOperator;
-        this.action = builder.action;
+        this.condition = builder.condition;
+        this.notification_method = builder.notification_method;
         this.spotPrice = builder.spotPrice;
         this.futurePrice = builder.futurePrice;
         this.priceDifferenceThreshold = builder.priceDifferenceThreshold;
@@ -27,8 +27,8 @@ public class PriceDifferenceTriggerDTO {
     @JsonPOJOBuilder(withPrefix = "set")
     public static class Builder {
         private String symbol;
-        private String comparisonOperator;
-        private String action;
+        private String condition;
+        private String notification_method;
         private double spotPrice;
         private double futurePrice;
         private double priceDifferenceThreshold;
@@ -39,13 +39,13 @@ public class PriceDifferenceTriggerDTO {
         }
 
 
-        public Builder setComparisonOperator(String comparisonOperator) {
-            this.comparisonOperator = comparisonOperator;
+        public Builder setCondition(String condition) {
+            this.condition = condition;
             return this;
         }
 
-        public Builder setAction(String action) {
-            this.action = action;
+        public Builder setNotification_method(String notification_method) {
+            this.notification_method = notification_method;
             return this;
         }
 

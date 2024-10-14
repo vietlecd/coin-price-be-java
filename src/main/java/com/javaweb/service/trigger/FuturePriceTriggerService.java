@@ -1,6 +1,7 @@
     package com.javaweb.service.trigger;
 
     import com.javaweb.dto.trigger.FuturePriceTriggerDTO;
+    import com.javaweb.helpers.trigger.CheckSymbolExisted;
     import com.javaweb.helpers.trigger.TriggerMapHelper;
     import com.javaweb.model.trigger.FuturePriceTrigger;
     import com.javaweb.repository.FuturePriceTriggerRepository;
@@ -16,8 +17,15 @@
         @Autowired
         private TriggerMapHelper triggerMapHelper;
 
-        public void createTrigger(FuturePriceTriggerDTO dto) {
+        @Autowired
+        private CheckSymbolExisted checkSymbolExisted;
+
+        public String createTrigger(FuturePriceTriggerDTO dto) {
+            if (checkSymbolExisted.symbolExistsInFuture(dto.getSymbol())) {
+                throw new IllegalArgumentException("Symbol already exists in database.");
+            }
             FuturePriceTrigger trigger = triggerMapHelper.mapFuturePriceTrigger(dto);
-            futurePriceTriggerRepository.save(trigger);
+            FuturePriceTrigger savedTrigger = futurePriceTriggerRepository.save(trigger);
+            return savedTrigger.getAlert_id();
         }
     }

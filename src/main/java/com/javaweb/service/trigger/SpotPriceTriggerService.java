@@ -1,6 +1,7 @@
 package com.javaweb.service.trigger;
 
 import com.javaweb.dto.trigger.SpotPriceTriggerDTO;
+import com.javaweb.helpers.trigger.CheckSymbolExisted;
 import com.javaweb.helpers.trigger.TriggerMapHelper;
 import com.javaweb.model.trigger.SpotPriceTrigger;
 import com.javaweb.repository.SpotPriceTriggerRepository;
@@ -17,8 +18,15 @@ public class SpotPriceTriggerService implements ITriggerService<SpotPriceTrigger
     @Autowired
     private TriggerMapHelper triggerMapHelper;
 
-    public void createTrigger(SpotPriceTriggerDTO dto) {
+    @Autowired
+    private CheckSymbolExisted checkSymbolExisted;
+
+    public String createTrigger(SpotPriceTriggerDTO dto) {
+        if (checkSymbolExisted.symbolExistsInSpot(dto.getSymbol())) {
+            throw new IllegalArgumentException("Symbol already exists in database.");
+        }
         SpotPriceTrigger trigger = triggerMapHelper.mapSpotPriceTrigger(dto);
-        spotPriceTriggerRepository.save(trigger);
+        SpotPriceTrigger savedTrigger = spotPriceTriggerRepository.save(trigger);
+        return savedTrigger.getAlert_id();
     }
 }

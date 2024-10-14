@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface FundingRateTriggerRepository extends MongoRepository<FundingRateTrigger, String> {
     FundingRateTrigger findBySymbol(String symbol);
+
+    boolean existsBySymbol(String symbol);
 }

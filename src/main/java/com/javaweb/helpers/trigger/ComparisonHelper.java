@@ -26,10 +26,10 @@ public class ComparisonHelper {
         }
 
 
-        switch (trigger.getComparisonOperator()) {
-            case "greater_than":
-                return currentSpotPrice > trigger.getSpotPriceThreshold();
-            case "less_than":
+        switch (trigger.getCondition()) {
+            case ">=":
+                return currentSpotPrice >= trigger.getSpotPriceThreshold();
+            case "<":
                 return currentSpotPrice < trigger.getSpotPriceThreshold();
             default:
                 throw new IllegalArgumentException("Invalid comparison operator for spot price");
@@ -47,10 +47,10 @@ public class ComparisonHelper {
             throw new IllegalArgumentException("Invalid current future price: must be a valid number", e);
         }
 
-        switch (trigger.getComparisonOperator()) {
-            case "greater_than":
-                return currentFuturePrice > trigger.getFuturePriceThreshold();
-            case "less_than":
+        switch (trigger.getCondition()) {
+            case ">=":
+                return currentFuturePrice >= trigger.getFuturePriceThreshold();
+            case "<":
                 return currentFuturePrice < trigger.getFuturePriceThreshold();
             default:
                 throw new IllegalArgumentException("Invalid comparison operator for future price");
@@ -67,10 +67,10 @@ public class ComparisonHelper {
             throw new IllegalArgumentException("Invalid current spot price: must be a valid number", e);
         }
 
-        switch (trigger.getComparisonOperator()) {
-            case "greater_than":
-                return currentFundingRate > trigger.getFundingRateThreshold();
-            case "less_than":
+        switch (trigger.getCondition()) {
+            case ">=":
+                return currentFundingRate >= trigger.getFundingRateThreshold();
+            case "<":
                 return currentFundingRate < trigger.getFundingRateThreshold();
             default:
                 throw new IllegalArgumentException("Invalid comparison operator for funding rate");
