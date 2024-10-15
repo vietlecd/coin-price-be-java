@@ -47,6 +47,8 @@ public class AuthenInterceptor implements HandlerInterceptor {
         }
 
         if(user.getPassword().equals(temp_data.getPassword())) {
+            request.setAttribute("username", user.getUsername());
+
             return true;
         }
 
