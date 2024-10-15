@@ -21,7 +21,7 @@ public class CreateToken {
                     .subject(username)
                     .claim("password", password)
                     .issuer("MK")
-                    .expirationTime(new Date(System.currentTimeMillis() + 1000 * 60 * 30))
+                    .expirationTime(new Date(System.currentTimeMillis() + 1000 * 60))
                     .build();
 
             JWSSigner signer = new MACSigner(SECRET.getBytes(StandardCharsets.UTF_8));
