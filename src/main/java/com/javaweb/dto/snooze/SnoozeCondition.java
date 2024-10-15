@@ -14,17 +14,27 @@ public class SnoozeCondition {
     private String conditionType; // "One-time", "Once-in-duration", "Repeat"
     private LocalDateTime startTime;
     private LocalDateTime endTime;
-    private boolean active;
+
+    private String specificTime; // sửa lại từ SpecificTime thành specificTime
+
+
+    public String getSpecificTime() {
+        return specificTime;
+    }
+
+    public void setSpecificTime(String specificTime) {
+        this.specificTime = specificTime;
+    }
 
     // Constructors
     public SnoozeCondition() {}
 
-    public SnoozeCondition(String triggerId, String conditionType, LocalDateTime startTime, LocalDateTime endTime, boolean active) {
+    public SnoozeCondition(String triggerId, String conditionType, LocalDateTime startTime, LocalDateTime endTime, String specificTime) {
         this.triggerId = triggerId;
         this.conditionType = conditionType;
         this.startTime = startTime;
         this.endTime = endTime;
-        this.active = active;
+        this.specificTime =specificTime;
     }
 
     // Getters and Setters
@@ -45,7 +55,7 @@ public class SnoozeCondition {
         this.triggerId = triggerId;
     }
 
-    public String getConditionType() {
+    public String getSnoozeType() {
         return conditionType;
     }
 
@@ -69,11 +79,5 @@ public class SnoozeCondition {
         this.endTime = endTime;
     }
 
-    public boolean isActive() {
-        return active;
-    }
 
-    public void setActive(boolean active) {
-        this.active = active;
-    }
 }
