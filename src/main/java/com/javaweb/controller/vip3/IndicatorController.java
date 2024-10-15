@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/vip3")
+@RequestMapping("/api/vip3")
 public class IndicatorController {
     @Autowired
     private IndicatorService indicatorService;
