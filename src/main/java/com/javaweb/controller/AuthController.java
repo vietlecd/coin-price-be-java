@@ -148,6 +148,10 @@ public class AuthController {
         }
 
         static void bodyInformationCheck(@RequestBody RegisterRequest req) {
+            if(req.getName() == null) {
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Chưa nhập tên");
+            }
+
             if(req.getEmail() == null) {
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Chưa nhập địa chỉ Email");
             }
