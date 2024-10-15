@@ -33,11 +33,14 @@ public class AuthController {
     @GetMapping("/refreshToken")
     public ResponseEntity<?> refreshToken(HttpServletRequest request, HttpServletResponse response) {
         String token = getCookieValue(request, "token");
+
         if(token == null) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Không tìm thấy token!");
         }
 
         LoginRequest loginRequest = CreateToken.decodeToken(token);
+        System.out.println(loginRequest);
+
         String username = loginRequest.getUsername();
         String password = loginRequest.getPassword();
 
@@ -45,7 +48,7 @@ public class AuthController {
         List<String> ip_list = userData.getIp_list();
 
         if(ip_list.contains( LoginFunc.getClientIp(request)) ) {
-            LoginFunc.setCookie(username, password, response);
+            LoginFunc.setCookie(username, userData.getPassword(), response);
         }
         else {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Yêu cầu refresh token không hợp lệ vì tài khoản chưa được đăng nhập trên thiết bị này!");
