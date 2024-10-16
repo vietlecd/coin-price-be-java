@@ -1,39 +1,66 @@
 package com.javaweb.controller.vip2;
 
-
-import com.javaweb.dto.snooze.SnoozeCondition;
-import com.javaweb.service.IPriceDataService;
-import com.javaweb.service.impl.SpotPriceDataService;
-import com.javaweb.service.snooze.SnoozeConditionService;
+import com.javaweb.dto.snooze.FundingRateSnoozeCondition;
+import com.javaweb.dto.snooze.FutureSnoozeCondition;
+import com.javaweb.dto.snooze.PriceDifferenceSnoozeCondition;
+import com.javaweb.dto.snooze.SpotSnoozeCondition;
+import com.javaweb.helpers.trigger.SnoozeMapHelper;
+import com.javaweb.service.snooze.FundingRateSnoozeConditionService;
+import com.javaweb.service.snooze.FutureSnoozeConditionService;
+import com.javaweb.service.snooze.PriceDifferenceSnoozeConditionService;
+import com.javaweb.service.snooze.SpotSnoozeConditionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
-@RequestMapping("/api/snooze")
+@RequestMapping("/vip2")
 public class SnoozeConditionController {
 
     @Autowired
-    private SnoozeConditionService snoozeConditionService;
+    private SpotSnoozeConditionService spotSnoozeConditionService;
 
+    @Autowired
+    private FutureSnoozeConditionService futureSnoozeConditionService;
 
+    @Autowired
+    private PriceDifferenceSnoozeConditionService priceDifferenceSnoozeConditionService;
 
-    @PostMapping("/create")
-    public SnoozeCondition createSnoozeCondition(@RequestBody SnoozeCondition snoozeCondition) {
-        return snoozeConditionService.createSnoozeCondition(snoozeCondition);
-    }
+    @Autowired
+    private FundingRateSnoozeConditionService fundingRateSnoozeConditionService;
 
+    @Autowired
+    private SnoozeMapHelper snoozeMapHelper;
 
-    @GetMapping("/check/{triggerId}")
-    public boolean checkSnooze(@PathVariable String triggerId) {
-
-        return snoozeConditionService.isSnoozeActive(triggerId);
-    }
-
-    // Endpoint to deactivate a snooze condition
-    @DeleteMapping("/delete/{triggerId}")
-    public ResponseEntity<Void> deleteSnoozeConditionByTriggerId(@PathVariable String triggerId) {
-        snoozeConditionService.deleteSnoozeConditionByTriggerId(triggerId);
-        return ResponseEntity.noContent().build();
+    @PostMapping("/create/snooze")
+    public ResponseEntity<?> createTriggerCondition(@RequestParam("triggerType") String triggerType,
+                                                    @RequestBody Map<String, Object> snoozeConditionRequest) {
+        try {
+            switch (triggerType) {
+                case "spot":
+                    SpotSnoozeCondition spotSnoozeCondition = snoozeMapHelper.mapToSpotSnoozeCondition(snoozeConditionRequest);
+                    spotSnoozeConditionService.createSnoozeCondition(spotSnoozeCondition);
+                    break;
+                case "future":
+                    FutureSnoozeCondition futureSnoozeCondition = snoozeMapHelper.mapToFutureSnoozeCondition(snoozeConditionRequest);
+                    futureSnoozeConditionService.createSnoozeCondition(futureSnoozeCondition);
+                    break;
+                case "price-difference":
+                    PriceDifferenceSnoozeCondition priceDifferenceSnoozeCondition = snoozeMapHelper.mapToPriceDifferenceSnoozeCondition(snoozeConditionRequest);
+                    priceDifferenceSnoozeConditionService.createSnoozeCondition(priceDifferenceSnoozeCondition);
+                    break;
+                case "funding-rate":
+                    FundingRateSnoozeCondition fundingRateSnoozeCondition = snoozeMapHelper.mapToFundingRateSnoozeCondition(snoozeConditionRequest);
+                    fundingRateSnoozeConditionService.createSnoozeCondition(fundingRateSnoozeCondition);
+                    break;
+                default:
+                    return ResponseEntity.badRequest().body("Invalid trigger type");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error processing trigger: " + e.getMessage());
+        }
+        return ResponseEntity.ok("Snooze condition created successfully.");
     }
 }

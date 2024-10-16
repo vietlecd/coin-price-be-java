@@ -1,10 +1,10 @@
 package com.javaweb.repository;
 
-import com.javaweb.dto.snooze.SnoozeCondition;
+import com.javaweb.dto.snooze.SpotSnoozeCondition;
 import org.springframework.data.mongodb.repository.MongoRepository;
-import java.util.List;
+
 import java.util.Optional;
 
-public interface SnoozeConditionRepository extends MongoRepository<SnoozeCondition, String> {
-    Optional<SnoozeCondition> findBySymbol(String symbol);
+public interface SpotSnoozeConditionRepository extends MongoRepository<SpotSnoozeCondition, String> {
+    Optional<SpotSnoozeCondition> findBySymbol(String symbol);
 }

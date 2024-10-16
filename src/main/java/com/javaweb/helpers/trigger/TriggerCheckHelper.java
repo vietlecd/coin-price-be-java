@@ -8,6 +8,7 @@ import com.javaweb.model.trigger.SpotPriceTrigger;
 import com.javaweb.repository.FundingRateTriggerRepository;
 import com.javaweb.repository.FuturePriceTriggerRepository;
 import com.javaweb.repository.SpotPriceTriggerRepository;
+import com.javaweb.service.snooze.SpotSnoozeConditionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -24,11 +25,13 @@ public class TriggerCheckHelper {
     private FundingRateTriggerRepository fundingRateTriggerRepository;
     @Autowired
     private ComparisonHelper comparisonHelper;
-
+    @Autowired
+    private SpotSnoozeConditionService spotSnoozeConditionService;
     public boolean checkSymbolAndTriggerAlert(List<String> symbols, Map<String, ?> priceDataMap, String type) {
         boolean anyConditionMet = false;
 
         for (String symbol : symbols) {
+
             boolean conditionMet = false;
 
             // Lấy giá hiện tại dựa trên loại trigger

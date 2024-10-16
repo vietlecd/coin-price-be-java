@@ -5,9 +5,10 @@ import com.javaweb.dto.PriceDTO;
 import com.javaweb.helpers.service.DateTimeHelper;
 import com.javaweb.helpers.service.PriceDTOHelper;
 import com.javaweb.helpers.sse.SseHelper;
+import com.javaweb.helpers.trigger.SnoozeCheckHelper;
 import com.javaweb.helpers.trigger.TriggerCheckHelper;
 import com.javaweb.service.IPriceDataService;
-import com.javaweb.service.snooze.SnoozeConditionService;
+import com.javaweb.service.snooze.SpotSnoozeConditionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -24,9 +25,10 @@ public class SpotPriceDataService implements IPriceDataService {
     @Autowired
     private SseHelper sseHelper;
     @Autowired
-    private SnoozeConditionService snoozeConditionService;
+    private SpotSnoozeConditionService spotSnoozeConditionService;
     private Map<String, PriceDTO> spotPriceDataMap = new ConcurrentHashMap<>();
-
+    @Autowired
+    SnoozeCheckHelper snoozeCheckHelper;
     @Override
     public void handleWebSocketMessage(JsonNode data) {
         long eventTimeLong = data.get("E").asLong();
@@ -41,8 +43,8 @@ public class SpotPriceDataService implements IPriceDataService {
 
         /************************** Trigger ***********************************/
         // Kiểm tra xem snooze có đang hoạt động cho trigger này không
-        boolean snoozeActive = snoozeConditionService.isSnoozeActive(symbol);
-
+        boolean snoozeActive = snoozeCheckHelper.checkSymbolAndSnooze(Arrays.asList(symbol), "spot");
+        System.out.println("Snooze active value after isSnoozeActive: " + snoozeActive);
         // Nếu không có snooze hoạt động và điều kiện được đáp ứng, gửi thông báo qua SSE
         boolean conditionMet = triggerCheckHelper.checkSymbolAndTriggerAlert(Arrays.asList(symbol), spotPriceDataMap, "spot");
         if (conditionMet) {
@@ -54,6 +56,7 @@ public class SpotPriceDataService implements IPriceDataService {
                         System.out.println("Snooze is active, not sending alert for symbol: " + symbol);
                     } else {
                         // Nếu snooze không hoạt động, gửi thông báo qua emitter
+                        System.out.println(snoozeActive);
                         emitter.send(SseEmitter.event().name("price-alert").data("spot price condition met for " + symbol));
                     }
                 } catch (IOException e) {

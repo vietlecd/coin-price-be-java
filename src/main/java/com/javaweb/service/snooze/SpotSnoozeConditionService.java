@@ -1,7 +1,7 @@
 package com.javaweb.service.snooze;
 
-import com.javaweb.dto.snooze.SnoozeCondition;
-import com.javaweb.repository.SnoozeConditionRepository;
+import com.javaweb.dto.snooze.SpotSnoozeCondition;
+import com.javaweb.repository.SpotSnoozeConditionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -10,10 +10,10 @@ import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 @Service
-public class SnoozeConditionService {
+public class SpotSnoozeConditionService {
 
     @Autowired
-    private SnoozeConditionRepository snoozeConditionRepository;
+    private SpotSnoozeConditionRepository spotSnoozeConditionRepository;
 
     // Method to check if snooze is active for a given trigger
 
@@ -21,11 +21,11 @@ public class SnoozeConditionService {
 
 
     public boolean isSnoozeActive(String symbol) {
-        Optional<SnoozeCondition> optionalCondition = snoozeConditionRepository.findByTriggerId(symbol);
+        Optional<SpotSnoozeCondition> optionalCondition = spotSnoozeConditionRepository.findBySymbol(symbol);
 
         // Kiểm tra nếu điều kiện snooze tồn tại
         if (optionalCondition.isPresent()) {
-            SnoozeCondition condition = optionalCondition.get();
+            SpotSnoozeCondition condition = optionalCondition.get();
             LocalDateTime now = LocalDateTime.now();
 
             switch (condition.getSnoozeType()) {
@@ -71,21 +71,21 @@ public class SnoozeConditionService {
     }
 
     // Method to create a new snooze condition
-    public SnoozeCondition createSnoozeCondition(SnoozeCondition snoozeCondition) {
-        Optional<SnoozeCondition> existingSnoozeCondition = snoozeConditionRepository.findBySymbol(snoozeCondition.getSymbol());
+    public SpotSnoozeCondition createSnoozeCondition(SpotSnoozeCondition spotSnoozeCondition) {
+        Optional<SpotSnoozeCondition> existingSnoozeCondition = spotSnoozeConditionRepository.findBySymbol(spotSnoozeCondition.getSymbol());
 
         if (existingSnoozeCondition.isPresent()) {
             // If symbol exists, throw an exception or return a custom response
-            throw new IllegalArgumentException("Symbol '" + snoozeCondition.getSymbol() + "' already exists in the database");
+            throw new IllegalArgumentException("Symbol '" + spotSnoozeCondition.getSymbol() + "' already exists in the database");
         }
 
         // If the symbol doesn't exist, save the new snooze condition
-        return snoozeConditionRepository.save(snoozeCondition);
+        return spotSnoozeConditionRepository.save(spotSnoozeCondition);
     }
 
     // Method to deactivate (delete) a snooze condition by triggerId
     public void deleteSnoozeConditionByTriggerId(String triggerId) {
-        Optional<SnoozeCondition> snoozeCondition = snoozeConditionRepository.findByTriggerId(triggerId);
-        snoozeCondition.ifPresent(condition -> snoozeConditionRepository.delete(condition));
+        Optional<SpotSnoozeCondition> snoozeCondition = spotSnoozeConditionRepository.findBySymbol(triggerId);
+        snoozeCondition.ifPresent(condition -> spotSnoozeConditionRepository.delete(condition));
     }
 }

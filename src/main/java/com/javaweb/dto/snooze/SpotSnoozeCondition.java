@@ -6,7 +6,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.time.LocalDateTime;
 
 @Document(collection = "spot_snooze_conditions")
-public class SnoozeCondition {
+public class SpotSnoozeCondition {
 
     @Id
     private String symbol;
@@ -36,10 +36,10 @@ public class SnoozeCondition {
     }
 
     // Constructors
-    public SnoozeCondition() {}
+    public SpotSnoozeCondition() {}
 
-    public SnoozeCondition(String triggerId, String conditionType, LocalDateTime startTime, LocalDateTime endTime, String specificTime) {
-        this.triggerId = triggerId;
+    public SpotSnoozeCondition(String symbol, String conditionType, LocalDateTime startTime, LocalDateTime endTime, String specificTime) {
+        this.symbol = symbol;
         this.conditionType = conditionType;
         this.startTime = startTime;
         this.endTime = endTime;
