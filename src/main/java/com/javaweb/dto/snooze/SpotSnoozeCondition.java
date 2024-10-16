@@ -5,12 +5,21 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
 
-@Document(collection = "snooze_conditions")
+@Document(collection = "spot_snooze_conditions")
 public class SnoozeCondition {
 
     @Id
-    private String id;
+    private String symbol;
     private String triggerId;
+
+    public String getSymbol() {
+        return symbol;
+    }
+
+    public void setSymbol(String symbol) {
+        this.symbol = symbol;
+    }
+
     private String conditionType; // "One-time", "Once-in-duration", "Repeat"
     private LocalDateTime startTime;
     private LocalDateTime endTime;
@@ -39,13 +48,7 @@ public class SnoozeCondition {
 
     // Getters and Setters
 
-    public String getId() {
-        return id;
-    }
 
-    public void setId(String id) {
-        this.id = id;
-    }
 
     public String getTriggerId() {
         return triggerId;
