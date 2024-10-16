@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Component
 public class TriggerCheckHelper {
@@ -102,8 +103,9 @@ public class TriggerCheckHelper {
 
     // Phương thức kiểm tra trigger cho Spot
     private boolean checkSpotTrigger(String symbol, String currentPrice) {
-        SpotPriceTrigger spotTrigger = spotPriceTriggerRepository.findBySymbol(symbol);
-        if (spotTrigger != null) {
+        Optional<SpotPriceTrigger> spotTriggerOpt = spotPriceTriggerRepository.findFirstBySymbol(symbol);
+        if (spotTriggerOpt.isPresent()) {
+            SpotPriceTrigger spotTrigger = spotTriggerOpt.get();
             return comparisonHelper.checkSpotPriceCondition(spotTrigger, currentPrice);
         }
         return false;

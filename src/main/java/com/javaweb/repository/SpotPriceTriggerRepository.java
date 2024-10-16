@@ -3,8 +3,13 @@ package com.javaweb.repository;
 import com.javaweb.model.trigger.SpotPriceTrigger;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
-public interface SpotPriceTriggerRepository extends MongoRepository<SpotPriceTrigger, String> {
-    SpotPriceTrigger findBySymbol(String symbol);
+import java.util.Optional;
 
-    boolean existsBySymbol(String symbol);
+public interface SpotPriceTriggerRepository extends MongoRepository<SpotPriceTrigger, String> {
+//    SpotPriceTrigger findFirstBySymbol(String symbol);
+
+    Optional<SpotPriceTrigger> findFirstBySymbol(String symbol);
+
+
+    boolean existsBySymbolAndUsername(String symbol, String username);
 }

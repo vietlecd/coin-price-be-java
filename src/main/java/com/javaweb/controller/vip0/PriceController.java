@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.concurrent.*;
 
 @RestController
-@RequestMapping("/vip0")
+@RequestMapping("/api")
 public class PriceController {
     private final ConcurrentHashMap<String, SseEmitter> sseEmitters = new ConcurrentHashMap<>();
 

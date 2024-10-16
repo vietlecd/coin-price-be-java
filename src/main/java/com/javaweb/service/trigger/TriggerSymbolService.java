@@ -25,18 +25,21 @@ public class TriggerSymbolService {
     public List<String> getSpotSymbolsWithTriggers() {
         return spotPriceTriggerRepository.findAll().stream()
                 .map(SpotPriceTrigger :: getSymbol)
+                .distinct()
                 .collect(Collectors.toList());
     }
 
     public List<String> getFutureSymbolsWithTriggers() {
         return futurePriceTriggerRepository.findAll().stream()
                 .map(FuturePriceTrigger::getSymbol)
+                .distinct()
                 .collect(Collectors.toList());
     }
 
     public List<String> getFundingRateSymbolsWithTriggers() {
         return fundingRateTriggerRepository.findAll().stream()
                 .map(FundingRateTrigger::getSymbol)
+                .distinct()
                 .collect(Collectors.toList());
     }
 }

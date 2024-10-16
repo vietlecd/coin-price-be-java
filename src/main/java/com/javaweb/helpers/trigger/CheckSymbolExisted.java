@@ -20,8 +20,8 @@ public class CheckSymbolExisted {
     @Autowired
     private TriggerMapHelper triggerMapHelper;
 
-    public boolean symbolExistsInSpot(String symbol) {
-        return spotPriceTriggerRepository.existsBySymbol(symbol);
+    public boolean symbolExistsInSpot(String symbol, String username) {
+        return spotPriceTriggerRepository.existsBySymbolAndUsername(symbol, username);
     }
 
     public boolean symbolExistsInFuture(String symbol) {

@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class SpotPriceTriggerService implements ITriggerService<SpotPriceTriggerDTO> {
+public class SpotPriceTriggerService {
 
     @Autowired
     private SpotPriceTriggerRepository spotPriceTriggerRepository;
@@ -21,11 +21,13 @@ public class SpotPriceTriggerService implements ITriggerService<SpotPriceTrigger
     @Autowired
     private CheckSymbolExisted checkSymbolExisted;
 
-    public String createTrigger(SpotPriceTriggerDTO dto) {
-        if (checkSymbolExisted.symbolExistsInSpot(dto.getSymbol())) {
+    public String createTrigger(SpotPriceTriggerDTO dto, String username) {
+        if (checkSymbolExisted.symbolExistsInSpot(dto.getSymbol(), username)) {
             throw new IllegalArgumentException("Symbol already exists in database.");
         }
         SpotPriceTrigger trigger = triggerMapHelper.mapSpotPriceTrigger(dto);
+        trigger.setUsername(username);
+
         SpotPriceTrigger savedTrigger = spotPriceTriggerRepository.save(trigger);
         return savedTrigger.getAlert_id();
     }

@@ -13,12 +13,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/vip2")
+@RequestMapping("/api/vip2")
 public class TriggerConditionController {
     @Autowired
     private ObjectMapper objectMapper;
@@ -33,13 +34,15 @@ public class TriggerConditionController {
     @Autowired
     private FundingRateTriggerService fundingRateTriggerService;
     @PostMapping("/create")
-    public ResponseEntity<?> createTriggerCondition(@RequestParam("triggerType") String triggerType, @RequestBody Map<String, Object> dtoMap) {
+    public ResponseEntity<?> createTriggerCondition(@RequestParam("triggerType") String triggerType, @RequestBody Map<String, Object> dtoMap, HttpServletRequest request) {
         try {
+            String username = (String) request.getAttribute("username");
+
             String alertId = "";
             switch (triggerType) {
                 case "spot":
                     SpotPriceTriggerDTO spotDTO = objectMapper.convertValue(dtoMap, SpotPriceTriggerDTO.class);
-                    alertId = spotPriceTriggerService.createTrigger(spotDTO);
+                    alertId = spotPriceTriggerService.createTrigger(spotDTO, username);
                     break;
                 case "future":
                     FuturePriceTriggerDTO futureDTO = objectMapper.convertValue(dtoMap, FuturePriceTriggerDTO.class);
