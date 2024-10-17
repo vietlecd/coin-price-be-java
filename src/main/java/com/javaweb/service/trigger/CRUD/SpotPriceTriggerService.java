@@ -5,7 +5,6 @@ import com.javaweb.helpers.trigger.CheckSymbolExisted;
 import com.javaweb.helpers.trigger.TriggerMapHelper;
 import com.javaweb.model.trigger.SpotPriceTrigger;
 import com.javaweb.repository.SpotPriceTriggerRepository;
-import com.javaweb.service.ITriggerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

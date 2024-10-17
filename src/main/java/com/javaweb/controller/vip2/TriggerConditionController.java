@@ -45,15 +45,15 @@ public class TriggerConditionController {
                     break;
                 case "future":
                     FuturePriceTriggerDTO futureDTO = objectMapper.convertValue(dtoMap, FuturePriceTriggerDTO.class);
-                    alertId = futurePriceTriggerService.createTrigger(futureDTO);
+                    alertId = futurePriceTriggerService.createTrigger(futureDTO, username);
                     break;
                 case "price-difference":
                     PriceDifferenceTriggerDTO priceDTO = objectMapper.convertValue(dtoMap, PriceDifferenceTriggerDTO.class);
-                    alertId = priceDifferenceTriggerService.createTrigger(priceDTO);
+                    alertId = priceDifferenceTriggerService.createTrigger(priceDTO, username);
                     break;
                 case "funding-rate":
                     FundingRateTriggerDTO fundingDTO = objectMapper.convertValue(dtoMap, FundingRateTriggerDTO.class);
-                    alertId = fundingRateTriggerService.createTrigger(fundingDTO);
+                    alertId = fundingRateTriggerService.createTrigger(fundingDTO, username);
                     break;
                 default:
                     return ResponseEntity.badRequest().body("Invalid trigger type");

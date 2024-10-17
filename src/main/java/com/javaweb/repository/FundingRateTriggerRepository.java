@@ -6,7 +6,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import java.util.List;
 
 public interface FundingRateTriggerRepository extends MongoRepository<FundingRateTrigger, String> {
-    FundingRateTrigger findBySymbol(String symbol);
+    FundingRateTrigger findBySymbolAndUsername(String symbol, String username);
 
-    boolean existsBySymbol(String symbol);
+    boolean existsBySymbolAndUsername(String symbol, String username);
 }

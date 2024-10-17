@@ -1,7 +1,6 @@
 package com.javaweb.connect.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.javaweb.dto.FundingIntervalDTO;
 import com.javaweb.connect.IFundingIntervalWebService;
 import com.javaweb.service.impl.FundingIntervalDataService;
@@ -11,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -23,6 +23,21 @@ public class FundingIntervalWebService implements IFundingIntervalWebService {
     private final RestTemplate restTemplate = new RestTemplate();
 
     private static final String FUNDINGINTERVAL_API_URL = "https://fapi.binance.com/fapi/v1/fundingInfo?symbol=";
+
+    private List<Map<String, FundingIntervalDTO>> latestFundingIntervalData = new ArrayList<>();
+
+    @Override
+    public List<Map<String, FundingIntervalDTO>> getLatestFundingIntervalData(List<String> symbols) {
+        // Trả về dữ liệu đã được cập nhật
+        return latestFundingIntervalData;
+    }
+
+    @Scheduled(fixedRate = 900000)  // 15 phút = 900000 ms
+    public void updateFundingIntervalData() {
+        List<String> symbols =  getLatestFundingIntervalData(symbols);
+                latestFundingIntervalData = handleFundingIntervalWeb(symbols);
+        System.out.println("FundingInterval data updated at " + new Date());
+    }
 
     @Override
     public List<Map<String, FundingIntervalDTO>> handleFundingIntervalWeb(List<String> symbols) {

@@ -16,6 +16,8 @@ public abstract class TriggerCondition {
     @Id
     private String alert_id;
 
+    private String username;
+
     private String symbol;
 
     private String condition;

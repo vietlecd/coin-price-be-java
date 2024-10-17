@@ -4,7 +4,7 @@ import com.javaweb.model.trigger.FuturePriceTrigger;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 public interface FuturePriceTriggerRepository extends MongoRepository<FuturePriceTrigger, String> {
-    FuturePriceTrigger findBySymbol(String symbol);
+    FuturePriceTrigger findBySymbolAndUsername(String symbol, String username);
 
-    boolean existsBySymbol(String symbol);
+    boolean existsBySymbolAndUsername(String symbol, String username);
 }

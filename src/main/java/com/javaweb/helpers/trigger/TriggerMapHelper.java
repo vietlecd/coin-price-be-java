@@ -41,7 +41,7 @@ public class TriggerMapHelper {
         trigger.setSymbol(dto.getSymbol());
         trigger.setNotification_method(dto.getNotification_method());
         trigger.setCondition(dto.getCondition());
-        trigger.setFundingRateThreshold(dto.getFundingRateThreshold());
+        trigger.setFundingRateThreshold(dto.getFundingRate());
         //trigger.setFundingRateInterval(dto.getFundingRateInterval());
         return trigger;
     }
