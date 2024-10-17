@@ -1,7 +1,6 @@
 package com.javaweb.service.trigger.CRUD;
 
 import com.javaweb.dto.trigger.FundingRateTriggerDTO;
-import com.javaweb.helpers.trigger.CheckSymbolExisted;
 import com.javaweb.helpers.trigger.TriggerMapHelper;
 import com.javaweb.model.trigger.FundingRateTrigger;
 import com.javaweb.repository.FundingRateTriggerRepository;
@@ -16,17 +15,26 @@ public class FundingRateTriggerService {
     @Autowired
     private TriggerMapHelper triggerMapHelper;
 
-    @Autowired
-    private CheckSymbolExisted checkSymbolExisted;
-
     public String createTrigger(FundingRateTriggerDTO dto, String username) {
-        if (checkSymbolExisted.symbolExistsInFundingRate(dto.getSymbol(), username)) {
-            throw new IllegalArgumentException("Symbol already exists in database.");
-        }
-        FundingRateTrigger trigger= triggerMapHelper.mapFundingRateTrigger(dto);
-        trigger.setUsername(username);
+        FundingRateTrigger existingTrigger = fundingRateTriggerRepository.findBySymbolAndUsername(dto.getSymbol(), username);
 
-        FundingRateTrigger savedTrigger = fundingRateTriggerRepository.save(trigger);
-        return savedTrigger.getAlert_id();
+        if (existingTrigger != null) {
+            fundingRateTriggerRepository.delete(existingTrigger);
+        }
+
+        FundingRateTrigger newTrigger = triggerMapHelper.mapFundingRateTrigger(dto);
+        newTrigger.setUsername(username);
+
+        fundingRateTriggerRepository.save(newTrigger);
+        return newTrigger.getAlert_id();
+    }
+
+    public void deleteTrigger(String symbol, String username) {
+        FundingRateTrigger trigger = fundingRateTriggerRepository.findBySymbolAndUsername(symbol, username);
+        if (trigger != null) {
+            fundingRateTriggerRepository.delete(trigger);
+        } else {
+            throw new RuntimeException("Trigger not found for symbol: " + symbol);
+        }
     }
 }

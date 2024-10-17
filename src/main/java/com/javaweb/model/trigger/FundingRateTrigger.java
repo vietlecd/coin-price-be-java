@@ -11,4 +11,5 @@ import javax.persistence.Entity;
 @Document(collection = "funding_rate_trigger")
 public class FundingRateTrigger extends TriggerCondition {
     private double fundingRateThreshold;
+    private boolean fundingRateInterval;
 }

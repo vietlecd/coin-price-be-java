@@ -1,7 +1,6 @@
 package com.javaweb.service.trigger.CRUD;
 
 import com.javaweb.dto.trigger.SpotPriceTriggerDTO;
-import com.javaweb.helpers.trigger.CheckSymbolExisted;
 import com.javaweb.helpers.trigger.TriggerMapHelper;
 import com.javaweb.model.trigger.SpotPriceTrigger;
 import com.javaweb.repository.SpotPriceTriggerRepository;
@@ -17,17 +16,27 @@ public class SpotPriceTriggerService {
     @Autowired
     private TriggerMapHelper triggerMapHelper;
 
-    @Autowired
-    private CheckSymbolExisted checkSymbolExisted;
 
     public String createTrigger(SpotPriceTriggerDTO dto, String username) {
-        if (checkSymbolExisted.symbolExistsInSpot(dto.getSymbol(), username)) {
-            throw new IllegalArgumentException("Symbol already exists in database.");
-        }
-        SpotPriceTrigger trigger = triggerMapHelper.mapSpotPriceTrigger(dto);
-        trigger.setUsername(username);
+        SpotPriceTrigger existingTrigger = spotPriceTriggerRepository.findBySymbolAndUsername(dto.getSymbol(), username);
 
-        SpotPriceTrigger savedTrigger = spotPriceTriggerRepository.save(trigger);
-        return savedTrigger.getAlert_id();
+        if (existingTrigger != null) {
+            spotPriceTriggerRepository.delete(existingTrigger);
+        }
+
+        SpotPriceTrigger newTrigger = triggerMapHelper.mapSpotPriceTrigger(dto);
+        newTrigger.setUsername(username);
+
+        spotPriceTriggerRepository.save(newTrigger);
+        return newTrigger.getAlert_id();
+    }
+
+    public void deleteTrigger(String symbol, String username) {
+        SpotPriceTrigger trigger = spotPriceTriggerRepository.findBySymbolAndUsername(symbol, username);
+        if (trigger != null) {
+            spotPriceTriggerRepository.delete(trigger);
+        } else {
+            throw new RuntimeException("Trigger not found for symbol: " + symbol);
+        }
     }
 }

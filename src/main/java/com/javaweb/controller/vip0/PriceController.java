@@ -40,15 +40,11 @@ public class PriceController {
     private TriggerService triggerService;
     @Autowired
     private WebSocketConfig webSocketConfig;
-    @Autowired
-    private FundingRateAndIntervalHelper fundingRateAndIntervalHelper;
 
     @Autowired
     private SpotPriceDataService spotPriceDataService;
     @Autowired
     private FuturePriceDataService futurePriceDataService;
-    @Autowired
-    private FundingRateDataService fundingRateDataService;
     @Autowired
     private MarketCapService marketCapService;
 
@@ -56,10 +52,6 @@ public class PriceController {
     private SpotWebSocketService spotWebSocketService;
     @Autowired
     private FutureWebSocketService futureWebSocketService;
-    @Autowired
-    private FundingRateWebSocketService fundingRateWebSocketService;
-    @Autowired
-    private FundingIntervalWebService fundingIntervalWebService;
 
     @GetMapping("/get-spot-price")
     public SseEmitter streamSpotPrices(@RequestParam List<String> symbols, HttpServletRequest request) {
@@ -103,31 +95,15 @@ public class PriceController {
     @GetMapping("/get-compare-price")
     public SseEmitter compareSpotAndFuturePrices(@RequestParam List<String> symbols, HttpServletRequest request) {
         String username = getUsernameHelper.getUsername(request);
-        SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
 
-        spotWebSocketService.connectToWebSocket(symbols);
-        futureWebSocketService.connectToWebSocket(symbols);
 
-        Map<String, PriceDTO> spotPriceDataMap = spotPriceDataService.getPriceDataMap();
-        Map<String, PriceDTO> futurePriceDataMap = futurePriceDataService.getPriceDataMap();
-
-        return triggerService.handleStreamComparePrice(symbols, spotPriceDataMap, futurePriceDataMap, username);
+        return triggerService.handleStreamComparePrice(symbols, username);
     }
 
     @GetMapping("/get-funding-rate")
     public SseEmitter streamFundingRate(@RequestParam List<String> symbols, HttpServletRequest request) {
         String username = getUsernameHelper.getUsername(request);
-        SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
-
-        fundingRateWebSocketService.connectToWebSocket(symbols);
-
-        Map<String, FundingRateDTO> fundingRateDataMap = fundingRateDataService.getFundingRateDataMap();
-        List<Map<String, FundingIntervalDTO>> fundingIntervalDataList = fundingIntervalWebService.getLatestFundingIntervalData(symbols);
-
-        FundingRateAndIntervalHelper.streamCombinedData(emitter, symbols, fundingRateDataMap, fundingIntervalDataList);
-        fundingRateAndIntervalHelper.scheduleFundingIntervalDataUpdate(symbols);
-
-        return emitter;
+        return triggerService.handleStreamFundingRate(symbols, username, webSocketConfig);
     }
 
 

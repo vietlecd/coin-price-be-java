@@ -1,7 +1,6 @@
 package com.javaweb.service.trigger.CRUD;
 
 import com.javaweb.dto.trigger.PriceDifferenceTriggerDTO;
-import com.javaweb.helpers.trigger.CheckSymbolExisted;
 import com.javaweb.helpers.trigger.TriggerMapHelper;
 import com.javaweb.model.trigger.PriceDifferenceTrigger;
 import com.javaweb.repository.PriceDifferenceTriggerRepository;
@@ -17,18 +16,27 @@ public class PriceDifferenceTriggerService {
     @Autowired
     private TriggerMapHelper triggerMapHelper;
 
-    @Autowired
-    private CheckSymbolExisted checkSymbolExisted;
-
     public String createTrigger(PriceDifferenceTriggerDTO dto, String username) {
-        if (checkSymbolExisted.symbolExistsInPriceDifference(dto.getSymbol(), username)) {
-            throw new IllegalArgumentException("Symbol already exists in database.");
+        PriceDifferenceTrigger existingTrigger = priceDifferenceTriggerRepository.findBySymbolAndUsername(dto.getSymbol(), username);
+
+        if (existingTrigger != null) {
+            priceDifferenceTriggerRepository.delete(existingTrigger);
         }
 
-        PriceDifferenceTrigger trigger = triggerMapHelper.mapPriceDifferenceTrigger(dto);
-        trigger.setUsername(username);
+        PriceDifferenceTrigger newTrigger = triggerMapHelper.mapPriceDifferenceTrigger(dto);
+        newTrigger.setUsername(username);
 
-        PriceDifferenceTrigger savedtrigger = priceDifferenceTriggerRepository.save(trigger);
-        return savedtrigger.getAlert_id();
+        priceDifferenceTriggerRepository.save(newTrigger);
+        return newTrigger.getAlert_id();
+    }
+
+
+    public void deleteTrigger(String symbol, String username) {
+        PriceDifferenceTrigger trigger = priceDifferenceTriggerRepository.findBySymbolAndUsername(symbol, username);
+        if (trigger != null) {
+            priceDifferenceTriggerRepository.delete(trigger);
+        } else {
+            throw new RuntimeException("Trigger not found for symbol: " + symbol);
+        }
     }
 }

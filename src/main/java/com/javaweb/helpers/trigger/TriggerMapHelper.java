@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class TriggerMapHelper {
+
     public SpotPriceTrigger mapSpotPriceTrigger(SpotPriceTriggerDTO dto) {
         SpotPriceTrigger trigger = new SpotPriceTrigger();
         trigger.setSymbol(dto.getSymbol());

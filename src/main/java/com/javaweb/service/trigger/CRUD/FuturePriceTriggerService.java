@@ -1,7 +1,6 @@
     package com.javaweb.service.trigger.CRUD;
 
     import com.javaweb.dto.trigger.FuturePriceTriggerDTO;
-    import com.javaweb.helpers.trigger.CheckSymbolExisted;
     import com.javaweb.helpers.trigger.TriggerMapHelper;
     import com.javaweb.model.trigger.FuturePriceTrigger;
     import com.javaweb.repository.FuturePriceTriggerRepository;
@@ -16,17 +15,26 @@
         @Autowired
         private TriggerMapHelper triggerMapHelper;
 
-        @Autowired
-        private CheckSymbolExisted checkSymbolExisted;
-
         public String createTrigger(FuturePriceTriggerDTO dto, String username) {
-            if (checkSymbolExisted.symbolExistsInFuture(dto.getSymbol(), username)) {
-                throw new IllegalArgumentException("Symbol already exists in database.");
-            }
-            FuturePriceTrigger trigger = triggerMapHelper.mapFuturePriceTrigger(dto);
-            trigger.setUsername(username);
+            FuturePriceTrigger existingTrigger = futurePriceTriggerRepository.findBySymbolAndUsername(dto.getSymbol(), username);
 
-            FuturePriceTrigger savedTrigger = futurePriceTriggerRepository.save(trigger);
-            return savedTrigger.getAlert_id();
+
+            if (existingTrigger != null) {
+                futurePriceTriggerRepository.delete(existingTrigger);
+            }
+
+            FuturePriceTrigger newTrigger = triggerMapHelper.mapFuturePriceTrigger(dto);
+            newTrigger.setUsername(username);
+
+            futurePriceTriggerRepository.save(newTrigger);
+            return newTrigger.getAlert_id();
+        }
+        public void deleteTrigger(String symbol, String username) {
+            FuturePriceTrigger trigger = futurePriceTriggerRepository.findBySymbolAndUsername(symbol, username);
+            if (trigger != null) {
+                futurePriceTriggerRepository.delete(trigger);
+            } else {
+                throw new RuntimeException("Trigger not found for symbol: " + symbol);
+            }
         }
     }
