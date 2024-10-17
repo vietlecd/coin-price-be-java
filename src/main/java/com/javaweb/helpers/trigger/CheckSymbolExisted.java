@@ -37,6 +37,6 @@ public class CheckSymbolExisted {
     }
 
     public boolean symbolExistsInPriceDifference(String symbol, String username) {
-        return fundingRateTriggerRepository.existsBySymbolAndUsername(symbol, username);
+        return priceDifferenceTriggerRepository.existsBySymbolAndUsername(symbol, username);
     }
 }

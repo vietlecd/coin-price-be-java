@@ -28,7 +28,7 @@ public class PriceDifferenceTriggerService {
         PriceDifferenceTrigger trigger = triggerMapHelper.mapPriceDifferenceTrigger(dto);
         trigger.setUsername(username);
 
-        PriceDifferenceTrigger savedtrigger =priceDifferenceTriggerRepository.save(trigger);
+        PriceDifferenceTrigger savedtrigger = priceDifferenceTriggerRepository.save(trigger);
         return savedtrigger.getAlert_id();
     }
 }

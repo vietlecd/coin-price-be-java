@@ -100,51 +100,19 @@ public class PriceController {
         return emitter;
     }
 
-//    @GetMapping("compare-prices")
-//    public SseEmitter compareSpotAndFuturePrices(@RequestParam List<String> symbols, HttpServletRequest request) {
-//        String username = getUsernameHelper.getUsername(request);
-//        SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
-//
-//        spotWebSocketService.connectToWebSocket(symbols);
-//        futureWebSocketService.connectToWebSocket(symbols);
-//
-//        Map<String, PriceDTO> spotPriceDataMap = spotPriceDataService.getPriceDataMap();
-//        Map<String, PriceDTO> futurePriceDataMap = futurePriceDataService.getPriceDataMap();
-//
-//        return triggerService.handleStreamComparePrice(symbols, username, spotPriceDataMap, futurePriceDataMap, webSocketConfig);
-//    }
+    @GetMapping("/get-compare-price")
+    public SseEmitter compareSpotAndFuturePrices(@RequestParam List<String> symbols, HttpServletRequest request) {
+        String username = getUsernameHelper.getUsername(request);
+        SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
 
-//    @GetMapping("/get-funding-rate")
-//    public SseEmitter streamFundingRate(@RequestParam List<String> symbols, HttpServletRequest request) {
-//        String username = getUsernameHelper.getUsername(request);
-//
-//        SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
-//        fundingRateWebSocketService.connectToWebSocket(symbols);
-//
-//        Map<String, FundingRateDTO> fundingRateDataMap = fundingRateDataService.getFundingRateDataMap();
-//        List<Map<String, FundingIntervalDTO>> fundingIntervalDataList = fundingIntervalWebService.getLatestFundingIntervalData(symbols);
-//        if (username == null || username.isEmpty()) {
-//            for (String symbol : symbols) {
-//                sseHelper.createFundingRateSseEmitter(emitter, "FundingRate", symbol, fundingRateDataMap, webSocketConfig);
-//
-//                // SSE cho FundingInterval
-//                for (Map<String, FundingIntervalDTO> fundingIntervalData : fundingIntervalDataList) {
-//                    if (fundingIntervalData.containsKey(symbol)) {
-//                        FundingIntervalDTO intervalDTO = fundingIntervalData.get(symbol);
-//                        try {
-//                            emitter.send(SseEmitter.event().name("FundingInterval").data(intervalDTO));
-//                        } catch (Exception e) {
-//                            e.printStackTrace();
-//                        }
-//                    }
-//                }
-//            }
-//        } else {
-//            return triggerService.handleStreamFundingRate("FundingRate", symbols, username, fundingRateDataMap, webSocketConfig);
-//        }
-//
-//        return emitter;
-//    }
+        spotWebSocketService.connectToWebSocket(symbols);
+        futureWebSocketService.connectToWebSocket(symbols);
+
+        Map<String, PriceDTO> spotPriceDataMap = spotPriceDataService.getPriceDataMap();
+        Map<String, PriceDTO> futurePriceDataMap = futurePriceDataService.getPriceDataMap();
+
+        return triggerService.handleStreamComparePrice(symbols, spotPriceDataMap, futurePriceDataMap, username);
+    }
 
     @GetMapping("/get-funding-rate")
     public SseEmitter streamFundingRate(@RequestParam List<String> symbols, HttpServletRequest request) {
@@ -157,7 +125,6 @@ public class PriceController {
         List<Map<String, FundingIntervalDTO>> fundingIntervalDataList = fundingIntervalWebService.getLatestFundingIntervalData(symbols);
 
         FundingRateAndIntervalHelper.streamCombinedData(emitter, symbols, fundingRateDataMap, fundingIntervalDataList);
-
         fundingRateAndIntervalHelper.scheduleFundingIntervalDataUpdate(symbols);
 
         return emitter;

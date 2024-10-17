@@ -1,5 +1,6 @@
 package com.javaweb.helpers.trigger;
 
+import com.javaweb.config.WebSocketConfig;
 import com.javaweb.dto.FundingRateDTO;
 import com.javaweb.dto.PriceDTO;
 import com.javaweb.model.trigger.FundingRateTrigger;
@@ -21,6 +22,8 @@ import java.util.Optional;
 @Component
 public class TriggerCheckHelper {
     @Autowired
+    private PriceDifferenceTriggerRepository priceDifferenceTriggerRepository;
+    @Autowired
     private FuturePriceTriggerRepository futurePriceTriggerRepository;
     @Autowired
     private SpotPriceTriggerRepository spotPriceTriggerRepository;
@@ -28,8 +31,37 @@ public class TriggerCheckHelper {
     private FundingRateTriggerRepository fundingRateTriggerRepository;
     @Autowired
     private ComparisonHelper comparisonHelper;
-//
-//    public List<String >
+
+    public List<String> checkCompareSymbolndTriggerAlert(List<String> symbols, Map<String, PriceDTO> spotPriceDataMap, Map<String, PriceDTO> futurePriceDataMap, String username) {
+        List<String> firedSymbols = new ArrayList<>();
+
+        for (String symbol : symbols) {
+            PriceDifferenceTrigger trigger = priceDifferenceTriggerRepository.findBySymbolAndUsername(symbol, username);
+
+            if (trigger == null) {
+                System.out.println("no trigger found for symbol: " + symbol + " with username " + username);
+                continue;
+            }
+
+            String spotPrice = getCurrentPrice(symbol, spotPriceDataMap, "Spot");
+            String futurePrice = getCurrentPrice(symbol, futurePriceDataMap, "Future");
+
+
+            if (spotPrice != null && futurePrice != null) {
+                boolean conditionMet = comparisonHelper.checkPriceDifference(trigger, spotPrice, futurePrice);
+
+                if (conditionMet) {
+                    System.out.println("Price difference exceeds threshold for symbol: " + symbol);
+                    firedSymbols.add(symbol);
+                } else {
+                    System.out.println("No significant price difference for symbol: " + symbol);
+                }
+            } else {
+                System.out.println("Missing price data for symbol: " + symbol);
+            }
+        }
+        return firedSymbols;
+    }
 
     public List<String> checkSymbolAndTriggerAlert(List<String> symbols, Map<String, ?> priceDataMap, String type, String username) {
         List<String> firedSymbols = new ArrayList<>();

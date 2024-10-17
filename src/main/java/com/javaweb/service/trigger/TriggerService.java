@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
@@ -16,6 +18,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import static java.lang.Long.MAX_VALUE;
+import static java.lang.Math.abs;
 
 @Service
 public class TriggerService {
@@ -25,25 +28,28 @@ public class TriggerService {
     @Autowired
     private TriggerCheckHelper triggerCheckHelper;
 
-//    public SseEmitter handleStreamComparePrice(List<String> symbols, String username, Map<String, PriceDTO> spotPriceDataMap, Map<String, PriceDTO> futurePriceDataMap, WebSocketConfig webSocketConfig) {
-//        SseEmitter sseEmitter = new SseEmitter(Long.MAX_VALUE);
-//
-//        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-//        scheduler.scheduleAtFixedRate(() -> {
-//            List<String> firedSymbols = triggerCheckHelper.checkCompareSymbolAndTriggerAlert(symbols, priceDataMap, priceType, username);
-//
-//            for (String symbol : symbols) {
-//                double spotPrice = getSpotPrice(symbol, spotPriceDataMap);
-//                double futurePrice = getFuturePrice(symbol, futurePriceDataMap);
-//
-//
-//
-//
-//            }
-//
-//
-//        }
-//    }
+    public SseEmitter handleStreamComparePrice(List<String> symbols, Map<String, PriceDTO> spotPriceDataMap, Map<String, PriceDTO> futurePriceDataMap, String username) {
+        SseEmitter sseEmitter = new SseEmitter(Long.MAX_VALUE);
+
+        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+        scheduler.scheduleAtFixedRate(() -> {
+            List<String> firedSymbols = triggerCheckHelper.checkCompareSymbolndTriggerAlert(symbols, spotPriceDataMap, futurePriceDataMap, username);
+
+            if (!firedSymbols.isEmpty()) {
+                for (String symbol : firedSymbols) {
+                    System.out.println("Trigger fired for symbol: " + symbol);
+                    try {
+                        sseEmitter.send(SseEmitter.event().name("CompareSpotAndFuture").data("Trigger fired for username: " + username + " with symbol: " + symbol));
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            } else {
+                System.out.println("No trigger fired for symbol: " + symbols);
+            }
+        }, 0, 1, TimeUnit.SECONDS);
+        return sseEmitter;
+    }
 
     public SseEmitter handleStreamPrice(String priceType, List<String> symbols, String username, Map<String, PriceDTO> priceDataMap, WebSocketConfig webSocketConfig) {
         SseEmitter sseEmitter = new SseEmitter(Long.MAX_VALUE);

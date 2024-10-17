@@ -31,8 +31,7 @@ public class TriggerMapHelper {
         trigger.setSymbol(dto.getSymbol());
         trigger.setNotification_method(dto.getNotification_method());
         trigger.setCondition(dto.getCondition());
-
-        double priceDifference = Math.abs(dto.getSpotPrice() - dto.getFuturePrice());
+        trigger.setPriceDifferenceThreshold(dto.getPriceDifference());
         return trigger;
     }
 
