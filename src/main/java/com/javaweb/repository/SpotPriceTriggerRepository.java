@@ -6,9 +6,9 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import java.util.Optional;
 
 public interface SpotPriceTriggerRepository extends MongoRepository<SpotPriceTrigger, String> {
-//    SpotPriceTrigger findFirstBySymbol(String symbol);
+      SpotPriceTrigger findBySymbolAndUsername(String symbol, String username);
 
-    Optional<SpotPriceTrigger> findFirstBySymbol(String symbol);
+//    Optional<SpotPriceTrigger> findBySymbol(String symbol);
 
 
     boolean existsBySymbolAndUsername(String symbol, String username);

@@ -52,21 +52,21 @@ public class FundingRateDataService implements IFundingRateDataService {
 
         fundingRateDataMap.put("FundingRate Price: " + symbol, fundingRateDTO);
 
-        boolean conditionMet = triggerCheckHelper.checkSymbolAndTriggerAlert(Arrays.asList(symbol), fundingRateDataMap, "FundingRate");
-
-        if (conditionMet) {
-            // Nếu có SseEmitter thì gửi thông báo qua SSE
-            SseEmitter emitter = sseHelper.getSseEmitterBySymbol(symbol, "FundingRate");
-            if (emitter != null) {
-                try {
-                    emitter.send(SseEmitter.event().name("price-alert").data("FundingRate price condition met for " + symbol));
-                } catch (IOException e) {
-                    emitter.completeWithError(e);
-                }
-            } else {
-                //ystem.out.println("No emitter found for symbol: " + symbol);
-            }
-        }
+//        boolean conditionMet = triggerCheckHelper.checkSymbolAndTriggerAlert(Arrays.asList(symbol), fundingRateDataMap, "FundingRate");
+//
+//        if (conditionMet) {
+//            // Nếu có SseEmitter thì gửi thông báo qua SSE
+//            SseEmitter emitter = sseHelper.getSseEmitterBySymbol(symbol, "FundingRate");
+//            if (emitter != null) {
+//                try {
+//                    emitter.send(SseEmitter.event().name("price-alert").data("FundingRate price condition met for " + symbol));
+//                } catch (IOException e) {
+//                    emitter.completeWithError(e);
+//                }
+//            } else {
+//                //ystem.out.println("No emitter found for symbol: " + symbol);
+//            }
+//        }
 
     }
 

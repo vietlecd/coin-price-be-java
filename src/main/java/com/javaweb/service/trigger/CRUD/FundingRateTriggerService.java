@@ -1,4 +1,4 @@
-package com.javaweb.service.trigger;
+package com.javaweb.service.trigger.CRUD;
 
 import com.javaweb.dto.trigger.FundingRateTriggerDTO;
 import com.javaweb.helpers.trigger.CheckSymbolExisted;

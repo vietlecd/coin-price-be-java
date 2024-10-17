@@ -16,10 +16,13 @@ import com.javaweb.service.impl.FuturePriceDataService;
 import com.javaweb.service.impl.MarketCapService;
 import com.javaweb.service.impl.SpotPriceDataService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
@@ -55,15 +58,51 @@ public class PriceController {
     private FundingIntervalWebService fundingIntervalWebService;
 
     @GetMapping("/get-spot-price")
-    public SseEmitter streamSpotPrices(@RequestParam List<String> symbols) {
+    public SseEmitter streamSpotPrices(@RequestParam List<String> symbols, HttpServletRequest request) {
+        String username = (String) request.getAttribute("username");
+        if (username == null || username.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username is required");
+        }
+
         SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
         spotWebSocketService.connectToWebSocket(symbols);
 
         Map<String, PriceDTO> priceDataMap = spotPriceDataService.getPriceDataMap();
 
+        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+        scheduler.scheduleAtFixedRate(() -> {
+            // Kiểm tra các symbols nào đã được kích hoạt trigger
+            List<String> firedSymbols = triggerCheckHelper.checkSymbolAndTriggerAlert(symbols, priceDataMap, "spot", username);
+
+            // Nếu có symbols thỏa mãn điều kiện trigger, in ra username và symbol tương ứng
+            if (!firedSymbols.isEmpty()) {
+                for (String symbol : firedSymbols) {
+                    System.out.println("Trigger fired for user: " + username + " and symbol: " + symbol);
+                    // Gửi thông báo qua SSE khi trigger được kích hoạt
+                    try {
+                        emitter.send(SseEmitter.event().name("trigger").data("Trigger fired for " + username + " and symbol: " + symbol));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            } else {
+                System.out.println("No triggers fired for user: " + username + symbols);
+            }
+        }, 0, 5, TimeUnit.SECONDS); // Kiểm tra mỗi 5 giây
+
+        // Tạo SSE emitter cho từng symbol
         for (String symbol : symbols) {
             sseHelper.createPriceSseEmitter(emitter, "Spot", symbol, priceDataMap, webSocketConfig);
         }
+
+
+        emitter.onCompletion(() -> scheduler.shutdown());
+
+
+
+//        for (String symbol : symbols) {
+//            sseHelper.createPriceSseEmitter(emitter, "Spot", symbol, priceDataMap, webSocketConfig);
+//        }
         return emitter;
     }
 

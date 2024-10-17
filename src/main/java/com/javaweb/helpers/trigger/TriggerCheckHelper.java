@@ -11,6 +11,7 @@ import com.javaweb.repository.SpotPriceTriggerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -26,8 +27,9 @@ public class TriggerCheckHelper {
     @Autowired
     private ComparisonHelper comparisonHelper;
 
-    public boolean checkSymbolAndTriggerAlert(List<String> symbols, Map<String, ?> priceDataMap, String type) {
-        boolean anyConditionMet = false;
+    public List<String> checkSymbolAndTriggerAlert(List<String> symbols, Map<String, ?> priceDataMap, String type, String username) {
+        List<String> firedSymbols = new ArrayList<>();
+
 
         for (String symbol : symbols) {
             boolean conditionMet = false;
@@ -51,7 +53,7 @@ public class TriggerCheckHelper {
             // Kiểm tra điều kiện trigger cho từng loại
             switch (type) {
                 case "spot":
-                    conditionMet = checkSpotTrigger(symbol, currentPrice);
+                    conditionMet = checkSpotTrigger(symbol, currentPrice, username);
                     break;
                 case "future":
                     conditionMet = checkFutureTrigger(symbol, currentPrice);
@@ -65,12 +67,11 @@ public class TriggerCheckHelper {
 
             // Nếu điều kiện được thỏa mãn thì in ra log và đánh dấu kết quả
             if (conditionMet) {
-                System.out.println("Condition met for symbol: " + symbol + " " + type);
-                anyConditionMet = true;
+                firedSymbols.add(symbol);
             }
         }
 
-        return anyConditionMet;
+        return firedSymbols;
     }
 
     // Phương thức lấy giá hiện tại dựa trên loại trigger
@@ -79,7 +80,13 @@ public class TriggerCheckHelper {
 
         switch (type) {
             case "spot":
-                priceDTO = (PriceDTO) priceDataMap.get("Spot Price: " + symbol);
+                String key = "Spot Price: " + symbol.toUpperCase();
+                if (priceDataMap.containsKey(key)) {
+                    priceDTO = (PriceDTO) priceDataMap.get(key);
+                } else {
+                    System.out.println("Key not found: " + key);
+                }
+
                 break;
             case "future":
                 priceDTO = (PriceDTO) priceDataMap.get("Future Price: " + symbol);
@@ -102,10 +109,9 @@ public class TriggerCheckHelper {
     }
 
     // Phương thức kiểm tra trigger cho Spot
-    private boolean checkSpotTrigger(String symbol, String currentPrice) {
-        Optional<SpotPriceTrigger> spotTriggerOpt = spotPriceTriggerRepository.findFirstBySymbol(symbol);
-        if (spotTriggerOpt.isPresent()) {
-            SpotPriceTrigger spotTrigger = spotTriggerOpt.get();
+    private boolean checkSpotTrigger(String symbol, String currentPrice, String username) {
+        SpotPriceTrigger spotTrigger = spotPriceTriggerRepository.findBySymbolAndUsername(symbol, username);
+        if (spotTrigger != null) {
             return comparisonHelper.checkSpotPriceCondition(spotTrigger, currentPrice);
         }
         return false;

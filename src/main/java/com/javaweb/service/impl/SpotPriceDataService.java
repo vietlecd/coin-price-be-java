@@ -41,21 +41,21 @@ public class SpotPriceDataService implements IPriceDataService {
         spotPriceDataMap.put("Spot Price: " + symbol, priceDTO);
 
         /************************** Trigger ***********************************/
-        boolean conditionMet = triggerCheckHelper.checkSymbolAndTriggerAlert(Arrays.asList(symbol), spotPriceDataMap, "spot");
+        //boolean conditionMet = triggerCheckHelper.checkSymbolAndTriggerAlert(Arrays.asList(symbol), spotPriceDataMap, "spot");
 
-        if (conditionMet) {
-            // Nếu có SseEmitter thì gửi thông báo qua SSE
-            SseEmitter emitter = sseHelper.getSseEmitterBySymbol(symbol, "Spot");
-            if (emitter != null) {
-                try {
-                    emitter.send(SseEmitter.event().name("price-alert").data("spot price condition met for " + symbol));
-                } catch (IOException e) {
-                    emitter.completeWithError(e);
-                }
-            } else {
-                System.out.println("No emitter found for symbol: " + symbol);
-            }
-        }
+//        if (conditionMet) {
+//            // Nếu có SseEmitter thì gửi thông báo qua SSE
+//            SseEmitter emitter = sseHelper.getSseEmitterBySymbol(symbol, "Spot");
+//            if (emitter != null) {
+//                try {
+//                    emitter.send(SseEmitter.event().name("price-alert").data("spot price condition met for " + symbol));
+//                } catch (IOException e) {
+//                    emitter.completeWithError(e);
+//                }
+//            } else {
+//                System.out.println("No emitter found for symbol: " + symbol);
+//            }
+//        }
     }
 
     public Map<String, PriceDTO> getPriceDataMap(){
