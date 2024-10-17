@@ -8,6 +8,7 @@ import com.javaweb.dto.FundingIntervalDTO;
 import com.javaweb.dto.FundingRateDTO;
 import com.javaweb.dto.PriceDTO;
 import com.javaweb.config.WebSocketConfig;
+import com.javaweb.helpers.controller.FundingRateAndIntervalHelper;
 import com.javaweb.helpers.controller.GetUsernameHelper;
 import com.javaweb.helpers.sse.SseHelper;
 import com.javaweb.helpers.controller.UpperCaseHelper;
@@ -39,6 +40,8 @@ public class PriceController {
     private TriggerService triggerService;
     @Autowired
     private WebSocketConfig webSocketConfig;
+    @Autowired
+    private FundingRateAndIntervalHelper fundingRateAndIntervalHelper;
 
     @Autowired
     private SpotPriceDataService spotPriceDataService;
@@ -146,43 +149,20 @@ public class PriceController {
     @GetMapping("/get-funding-rate")
     public SseEmitter streamFundingRate(@RequestParam List<String> symbols, HttpServletRequest request) {
         String username = getUsernameHelper.getUsername(request);
-
         SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
 
         fundingRateWebSocketService.connectToWebSocket(symbols);
+
         Map<String, FundingRateDTO> fundingRateDataMap = fundingRateDataService.getFundingRateDataMap();
+        List<Map<String, FundingIntervalDTO>> fundingIntervalDataList = fundingIntervalWebService.getLatestFundingIntervalData(symbols);
 
-        for (String symbol : symbols) {
-            sseHelper.createFundingRateSseEmitter(emitter, "FundingRate", symbol, fundingRateDataMap, webSocketConfig);
-        }
+        FundingRateAndIntervalHelper.streamCombinedData(emitter, symbols, fundingRateDataMap, fundingIntervalDataList);
 
-        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-        scheduler.scheduleAtFixedRate(() -> {
-            List<Map<String, FundingIntervalDTO>> fundingIntervalDataList = fundingIntervalWebService.getLatestFundingIntervalData(symbols);
-
-            for (String symbol : symbols) {
-                for (Map<String, FundingIntervalDTO> fundingIntervalData : fundingIntervalDataList) {
-                    if (fundingIntervalData.containsKey(symbol)) {
-                        FundingIntervalDTO intervalDTO = fundingIntervalData.get(symbol);
-                        try {
-                            emitter.send(SseEmitter.event().name("FundingInterval").data(intervalDTO));
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            emitter.completeWithError(e);
-                        }
-                    }
-                }
-            }
-        }, 0, 1, TimeUnit.SECONDS);
-
-        ScheduledExecutorService dataUpdater = Executors.newScheduledThreadPool(1);
-        dataUpdater.scheduleAtFixedRate(() -> {
-            fundingIntervalWebService.getLatestFundingIntervalData(symbols);
-            System.out.println("FundingInterval data updated for symbols: " + symbols);
-        }, 0, 15, TimeUnit.MINUTES);
+        fundingRateAndIntervalHelper.scheduleFundingIntervalDataUpdate(symbols);
 
         return emitter;
     }
+
 
     @GetMapping("/get-market")
     public ResponseEntity<List<Map<String, Object>>> getMarketData(@RequestParam List<String> symbols) {
