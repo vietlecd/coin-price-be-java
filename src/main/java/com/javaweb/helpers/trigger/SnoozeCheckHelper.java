@@ -28,7 +28,7 @@ public class SnoozeCheckHelper {
     private FundingRateSnoozeConditionRepository fundingRateSnoozeConditionRepository;
 
     public boolean checkSymbolAndSnooze(List<String> symbols, String type) {
-        boolean anyConditionMet = false;
+        boolean anyConditionMet = false; // Khởi tạo trạng thái ban đầu là không có điều kiện nào thỏa mãn
 
         for (String symbol : symbols) {
             boolean conditionMet = false;
@@ -48,54 +48,60 @@ public class SnoozeCheckHelper {
                     System.out.println("Unknown trigger type: " + type);
             }
 
+            // Nếu có bất kỳ điều kiện snooze nào thỏa mãn, đánh dấu là true và không cần dừng vòng lặp
             if (conditionMet) {
-                System.out.println("Snooze condition met for symbol: " + symbol + " in type: " + type);
-                anyConditionMet = true;
+                anyConditionMet = conditionMet; // Cập nhật trạng thái đã có điều kiện thỏa mãn
             }
         }
+
+        // Trả về true nếu bất kỳ điều kiện snooze nào thỏa mãn
         return anyConditionMet;
     }
-
     public boolean checkSpotSnooze(String symbol) {
-        // Find the SpotSnoozeCondition by symbol
+        // Tìm SpotSnoozeCondition theo symbol
         Optional<SpotSnoozeCondition> spotSnoozeConditionOptional = spotSnoozeConditionRepository.findBySymbol(symbol);
+        boolean snoozeActive = false; // Biến cờ để theo dõi trạng thái snooze
 
         if (spotSnoozeConditionOptional.isPresent()) {
             SpotSnoozeCondition condition = spotSnoozeConditionOptional.get();
             LocalDateTime now = LocalDateTime.now();
 
-            // Check the type of snooze and evaluate its condition
+            // Kiểm tra loại snooze và đánh giá điều kiện
             switch (condition.getSnoozeType()) {
                 case "ONE_TIME":
-                    // Check if the current time is before the end time
+                    // Kiểm tra nếu thời gian hiện tại là trước thời gian kết thúc
                     if (now.isBefore(condition.getEndTime())) {
-                        System.out.println("Unknown snooze type for symbol: " + symbol);
-                        return true;
+                        System.out.println("One-time snooze for symbol: " + symbol + " is active.");
+                        snoozeActive = true; // Snooze hoạt động
                     }
-
+                    break;
 
                 case "ONCE_IN_DURATION":
-                    // Check if the current time is within the snooze duration (between start and end time)
-                    if (now.isAfter(condition.getStartTime()) && now.isBefore(condition.getEndTime())) {
-                        System.out.println("Duration snooze type for symbol: " + symbol);
-                        return true;
+                    // Kiểm tra nếu thời gian hiện tại nằm trong khoảng start và end
+                    if ( now.isBefore(condition.getEndTime())) {
+                        System.out.println("Duration snooze for symbol: " + symbol + " is active.");
+                        snoozeActive = true; // Snooze hoạt động
                     }
-
+                    break;
 
                 case "SPECIFIC_TIME":
-                    // Check if the current time is close to the specific time (within 30 minutes range)
+                    // Kiểm tra nếu thời gian hiện tại nằm trong phạm vi 30 phút của thời gian cụ thể
                     LocalDateTime specificTime = LocalDateTime.parse(condition.getSpecificTime());
                     if (now.isBefore(specificTime.plusMinutes(30)) && now.isAfter(specificTime.minusMinutes(30))) {
-                        System.out.println("Unknown snooze type for symbol: " + symbol);
+                        System.out.println("Specific time snooze for symbol: " + symbol + " is active.");
+                        snoozeActive = true; // Snooze hoạt động
                     }
-                    return true;
+                    break;
 
-
+                default:
+                    System.out.println("Unknown snooze type for symbol: " + symbol);
+                    break;
             }
         }
 
-        // If no condition is met, return false
-        return false;
+        // Trả về trạng thái snooze (true nếu có snooze hoạt động, false nếu không)
+        return snoozeActive;
     }
+
 
 }

@@ -43,20 +43,21 @@ public class SpotPriceDataService implements IPriceDataService {
 
         /************************** Trigger ***********************************/
         // Kiểm tra xem snooze có đang hoạt động cho trigger này không
+
         boolean snoozeActive = snoozeCheckHelper.checkSymbolAndSnooze(Arrays.asList(symbol), "spot");
-        System.out.println("Snooze active value after isSnoozeActive: " + snoozeActive);
         // Nếu không có snooze hoạt động và điều kiện được đáp ứng, gửi thông báo qua SSE
         boolean conditionMet = triggerCheckHelper.checkSymbolAndTriggerAlert(Arrays.asList(symbol), spotPriceDataMap, "spot");
         if (conditionMet) {
             SseEmitter emitter = sseHelper.getSseEmitterBySymbol(symbol, "Spot");
             if (emitter != null) {
                 try {
-                    // Nếu snooze đang hoạt động, không gửi thông báo
-                    if (snoozeActive) {
+
+
+                    if (snoozeActive ) {
                         System.out.println("Snooze is active, not sending alert for symbol: " + symbol);
                     } else {
                         // Nếu snooze không hoạt động, gửi thông báo qua emitter
-                        System.out.println(snoozeActive);
+                        System.out.println("hello"+ snoozeActive);
                         emitter.send(SseEmitter.event().name("price-alert").data("spot price condition met for " + symbol));
                     }
                 } catch (IOException e) {
