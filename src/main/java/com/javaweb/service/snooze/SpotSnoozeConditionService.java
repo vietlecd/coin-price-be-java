@@ -21,56 +21,7 @@ public class SpotSnoozeConditionService {
 
 
 
-    public boolean isSnoozeActive(String symbol) {
-        Optional<SpotSnoozeCondition> optionalCondition = spotSnoozeConditionRepository.findBySymbolAndUsernameId(spotSnoozeCondition.getSymbol(), spotSnoozeCondition.getUsernameId());
 
-
-        // Kiểm tra nếu điều kiện snooze tồn tại
-        if (optionalCondition.isPresent()) {
-            SpotSnoozeCondition condition = optionalCondition.get();
-            LocalDateTime now = LocalDateTime.now();
-
-            switch (condition.getSnoozeType()) {
-                case "ONE_TIME":
-                    // Nếu là one-time và thời gian snooze vẫn còn hoạt động
-                    if (now.isBefore(condition.getEndTime())) {
-                        System.out.println("Snooze active for symbol: " + symbol + " type: " );
-                        return true;
-                    }
-                    break;
-
-                case "ONCE_IN_DURATION":
-                    // Nếu điều kiện snooze đang hoạt động theo khoảng thời gian
-                    if (now.isBefore(condition.getEndTime()) ) {
-                        System.out.println("Snooze active for symbol: " + symbol + " type: " );
-                        return true;
-                    }
-                    break;
-
-
-
-                case "SPECIFIC_TIME":
-                    // Kiểm tra thời gian cụ thể (specific time) theo giờ định trước
-                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
-                    LocalDateTime specificTime = LocalDateTime.parse(condition.getSpecificTime(), formatter)
-                            .withYear(now.getYear()).withMonth(now.getMonthValue()).withDayOfMonth(now.getDayOfMonth());
-
-                    // Nếu thời gian hiện tại nằm trong khoảng 30 phút trước và sau thời gian cụ thể
-                    if (now.isBefore(specificTime.plusMinutes(30)) && now.isAfter(specificTime.minusMinutes(30)) ) {
-                        System.out.println("Snooze active for symbol: " + symbol + " type: " );
-                        return true;
-                    }
-                    break;
-
-                default:
-                    System.out.println("Unknown snooze type for symbol: " + symbol);
-                    break;
-            }
-        }
-
-        // Không có snooze nào hoạt động cho symbol và type này
-        return false;
-    }
 
     // Method to create a new snooze condition
     public SpotSnoozeCondition createSnoozeCondition(SpotSnoozeCondition spotSnoozeCondition, String usernameId) {

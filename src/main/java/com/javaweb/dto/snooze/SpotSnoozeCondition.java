@@ -12,7 +12,7 @@ public class SpotSnoozeCondition {
 
     @Id
     private String symbol;
-    private String triggerId;
+
     private String usernameId;
     public String getSymbol() {
         return symbol;
@@ -48,8 +48,8 @@ public class SpotSnoozeCondition {
     // Constructors
     public SpotSnoozeCondition() {}
 
-    public SpotSnoozeCondition(String symbol, String conditionType, LocalDateTime startTime, LocalDateTime endTime, String specificTime) {
-
+    public SpotSnoozeCondition(String usernameId,String symbol, String conditionType, LocalDateTime startTime, LocalDateTime endTime, String specificTime) {
+        this.usernameId =usernameId;
         this.symbol = symbol;
         this.conditionType = conditionType;
         this.startTime = startTime;
@@ -61,13 +61,9 @@ public class SpotSnoozeCondition {
 
 
 
-    public String getTriggerId() {
-        return triggerId;
-    }
 
-    public void setTriggerId(String triggerId) {
-        this.triggerId = triggerId;
-    }
+
+
 
     public String getSnoozeType() {
         return conditionType;
