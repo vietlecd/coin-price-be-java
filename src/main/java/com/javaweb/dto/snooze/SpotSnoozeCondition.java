@@ -2,18 +2,28 @@ package com.javaweb.dto.snooze;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 
 @Document(collection = "spot_snooze_conditions")
+@Component
 public class SpotSnoozeCondition {
 
     @Id
     private String symbol;
     private String triggerId;
-
+    private String usernameId;
     public String getSymbol() {
         return symbol;
+    }
+
+    public String getUsernameId() {
+        return usernameId;
+    }
+
+    public void setUsernameId(String usernameId) {
+        this.usernameId = usernameId;
     }
 
     public void setSymbol(String symbol) {
@@ -39,6 +49,7 @@ public class SpotSnoozeCondition {
     public SpotSnoozeCondition() {}
 
     public SpotSnoozeCondition(String symbol, String conditionType, LocalDateTime startTime, LocalDateTime endTime, String specificTime) {
+
         this.symbol = symbol;
         this.conditionType = conditionType;
         this.startTime = startTime;

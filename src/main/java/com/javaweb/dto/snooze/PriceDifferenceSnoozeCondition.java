@@ -11,9 +11,17 @@ public class PriceDifferenceSnoozeCondition {
     @Id
     private String symbol;
     private String triggerId;
-
+    private String usernameId;
     public String getSymbol() {
         return symbol;
+    }
+
+    public String getUsernameId() {
+        return usernameId;
+    }
+
+    public void setUsernameId(String usernameId) {
+        this.usernameId = usernameId;
     }
 
     public void setSymbol(String symbol) {
@@ -37,7 +45,8 @@ public class PriceDifferenceSnoozeCondition {
     // Constructors
     public PriceDifferenceSnoozeCondition() {}
 
-    public PriceDifferenceSnoozeCondition(String symbol, String conditionType, LocalDateTime startTime, LocalDateTime endTime, String specificTime) {
+    public PriceDifferenceSnoozeCondition(String usernameId,String symbol, String conditionType, LocalDateTime startTime, LocalDateTime endTime, String specificTime) {
+        this.usernameId = usernameId;
         this.symbol = symbol;
         this.conditionType = conditionType;
         this.startTime = startTime;

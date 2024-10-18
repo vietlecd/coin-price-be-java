@@ -15,6 +15,8 @@ public class SnoozeMapHelper {
         // Perform the mapping of the request body to SpotSnoozeCondition
         // For example, using Jackson's ObjectMapper
         return new SpotSnoozeCondition(
+
+
                 (String) snoozeConditionRequest.get("symbol"),
                 (String) snoozeConditionRequest.get("conditionType"),
                 LocalDateTime.parse((String) snoozeConditionRequest.get("startTime")),
@@ -26,6 +28,7 @@ public class SnoozeMapHelper {
     // Method to map the request body to a FutureSnoozeCondition DTO
     public FutureSnoozeCondition mapToFutureSnoozeCondition(Map<String, Object> snoozeConditionRequest) {
         return new FutureSnoozeCondition(
+                (String) snoozeConditionRequest.get("usernameId"),
                 (String) snoozeConditionRequest.get("symbol"),
                 (String) snoozeConditionRequest.get("conditionType"),
                 LocalDateTime.parse((String) snoozeConditionRequest.get("startTime")),
@@ -37,6 +40,7 @@ public class SnoozeMapHelper {
     // Method to map the request body to a PriceDifferenceSnoozeCondition DTO
     public PriceDifferenceSnoozeCondition mapToPriceDifferenceSnoozeCondition(Map<String, Object> snoozeConditionRequest) {
         return new PriceDifferenceSnoozeCondition(
+                (String) snoozeConditionRequest.get("usernameId"),
                 (String) snoozeConditionRequest.get("symbol"),
                 (String) snoozeConditionRequest.get("conditionType"),
                 LocalDateTime.parse((String) snoozeConditionRequest.get("startTime")),
@@ -47,6 +51,7 @@ public class SnoozeMapHelper {
 
     public FundingRateSnoozeCondition mapToFundingRateSnoozeCondition(Map<String, Object> snoozeConditionRequest) {
         return new FundingRateSnoozeCondition(
+                (String) snoozeConditionRequest.get("usernameId"),
                 (String) snoozeConditionRequest.get("symbol"),
                 (String) snoozeConditionRequest.get("conditionType"),
                 LocalDateTime.parse((String) snoozeConditionRequest.get("startTime")),

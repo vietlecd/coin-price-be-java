@@ -8,6 +8,7 @@ import com.javaweb.dto.FundingIntervalDTO;
 import com.javaweb.dto.FundingRateDTO;
 import com.javaweb.dto.PriceDTO;
 import com.javaweb.config.WebSocketConfig;
+import com.javaweb.helpers.controller.GetUsernameHelper;
 import com.javaweb.helpers.sse.SseHelper;
 import com.javaweb.helpers.controller.UpperCaseHelper;
 import com.javaweb.helpers.trigger.TriggerCheckHelper;
@@ -20,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
@@ -53,9 +55,11 @@ public class PriceController {
     private FundingRateWebSocketService fundingRateWebSocketService;
     @Autowired
     private FundingIntervalWebService fundingIntervalWebService;
-
+    @Autowired
+    private GetUsernameHelper getUsernameHelper;
     @GetMapping("/get-spot-price")
     public SseEmitter streamSpotPrices(@RequestParam List<String> symbols) {
+
         SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
         spotWebSocketService.connectToWebSocket(symbols);
 

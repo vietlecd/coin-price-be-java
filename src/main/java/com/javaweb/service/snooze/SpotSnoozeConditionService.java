@@ -16,12 +16,14 @@ public class SpotSnoozeConditionService {
     private SpotSnoozeConditionRepository spotSnoozeConditionRepository;
 
     // Method to check if snooze is active for a given trigger
-
+    @Autowired
+    SpotSnoozeCondition spotSnoozeCondition;
 
 
 
     public boolean isSnoozeActive(String symbol) {
-        Optional<SpotSnoozeCondition> optionalCondition = spotSnoozeConditionRepository.findBySymbol(symbol);
+        Optional<SpotSnoozeCondition> optionalCondition = spotSnoozeConditionRepository.findBySymbolAndUsernameId(spotSnoozeCondition.getSymbol(), spotSnoozeCondition.getUsernameId());
+
 
         // Kiểm tra nếu điều kiện snooze tồn tại
         if (optionalCondition.isPresent()) {
@@ -71,21 +73,30 @@ public class SpotSnoozeConditionService {
     }
 
     // Method to create a new snooze condition
-    public SpotSnoozeCondition createSnoozeCondition(SpotSnoozeCondition spotSnoozeCondition) {
-        Optional<SpotSnoozeCondition> existingSnoozeCondition = spotSnoozeConditionRepository.findBySymbol(spotSnoozeCondition.getSymbol());
+    public SpotSnoozeCondition createSnoozeCondition(SpotSnoozeCondition spotSnoozeCondition, String usernameId) {
+        // Set the usernameId in the spotSnoozeCondition object
+        spotSnoozeCondition.setUsernameId(usernameId);
+
+        // Check if a snooze condition already exists for the given symbol and usernameId
+        Optional<SpotSnoozeCondition> existingSnoozeCondition = spotSnoozeConditionRepository
+                .findBySymbolAndUsernameId(spotSnoozeCondition.getSymbol(), spotSnoozeCondition.getUsernameId());
 
         if (existingSnoozeCondition.isPresent()) {
-            // If symbol exists, throw an exception or return a custom response
-            throw new IllegalArgumentException("Symbol '" + spotSnoozeCondition.getSymbol() + "' already exists in the database");
+            // If symbol and usernameId exist together, throw an exception
+            throw new IllegalArgumentException("Snooze condition with symbol '"
+                    + spotSnoozeCondition.getSymbol() + "' and usernameId '"
+                    + spotSnoozeCondition.getUsernameId() + "' already exists in the database");
         }
 
-        // If the symbol doesn't exist, save the new snooze condition
+        // If no such snooze condition exists, save the new one
         return spotSnoozeConditionRepository.save(spotSnoozeCondition);
     }
 
+
+
     // Method to deactivate (delete) a snooze condition by triggerId
     public void deleteSnoozeConditionByTriggerId(String triggerId) {
-        Optional<SpotSnoozeCondition> snoozeCondition = spotSnoozeConditionRepository.findBySymbol(triggerId);
+        Optional<SpotSnoozeCondition> snoozeCondition = spotSnoozeConditionRepository.findBySymbolAndUsernameId(spotSnoozeCondition.getSymbol(), spotSnoozeCondition.getUsernameId());
         snoozeCondition.ifPresent(condition -> spotSnoozeConditionRepository.delete(condition));
     }
 }

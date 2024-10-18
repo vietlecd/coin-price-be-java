@@ -4,6 +4,7 @@ import com.javaweb.dto.snooze.FundingRateSnoozeCondition;
 import com.javaweb.dto.snooze.FutureSnoozeCondition;
 import com.javaweb.dto.snooze.PriceDifferenceSnoozeCondition;
 import com.javaweb.dto.snooze.SpotSnoozeCondition;
+import com.javaweb.helpers.controller.GetUsernameHelper;
 import com.javaweb.helpers.trigger.SnoozeMapHelper;
 import com.javaweb.service.snooze.FundingRateSnoozeConditionService;
 import com.javaweb.service.snooze.FutureSnoozeConditionService;
@@ -13,10 +14,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/vip2")
+@RequestMapping("api/vip2")
 public class SnoozeConditionController {
 
     @Autowired
@@ -33,15 +35,18 @@ public class SnoozeConditionController {
 
     @Autowired
     private SnoozeMapHelper snoozeMapHelper;
-
+    @Autowired
+    private GetUsernameHelper getUsernameHelper;
     @PostMapping("/create/snooze")
     public ResponseEntity<?> createTriggerCondition(@RequestParam("triggerType") String triggerType,
-                                                    @RequestBody Map<String, Object> snoozeConditionRequest) {
+                                                    @RequestBody Map<String, Object> snoozeConditionRequest, HttpServletRequest request) {
+
         try {
+            String username = (String) request.getAttribute("username");
             switch (triggerType) {
                 case "spot":
                     SpotSnoozeCondition spotSnoozeCondition = snoozeMapHelper.mapToSpotSnoozeCondition(snoozeConditionRequest);
-                    spotSnoozeConditionService.createSnoozeCondition(spotSnoozeCondition);
+                    spotSnoozeConditionService.createSnoozeCondition(spotSnoozeCondition,username);
                     break;
                 case "future":
                     FutureSnoozeCondition futureSnoozeCondition = snoozeMapHelper.mapToFutureSnoozeCondition(snoozeConditionRequest);

@@ -26,7 +26,8 @@ public class SnoozeCheckHelper {
 
     @Autowired
     private FundingRateSnoozeConditionRepository fundingRateSnoozeConditionRepository;
-
+    @Autowired
+    private SpotSnoozeCondition spotSnoozeCondition;
     public boolean checkSymbolAndSnooze(List<String> symbols, String type) {
         boolean anyConditionMet = false; // Khởi tạo trạng thái ban đầu là không có điều kiện nào thỏa mãn
 
@@ -59,7 +60,7 @@ public class SnoozeCheckHelper {
     }
     public boolean checkSpotSnooze(String symbol) {
         // Tìm SpotSnoozeCondition theo symbol
-        Optional<SpotSnoozeCondition> spotSnoozeConditionOptional = spotSnoozeConditionRepository.findBySymbol(symbol);
+        Optional<SpotSnoozeCondition> spotSnoozeConditionOptional = spotSnoozeConditionRepository.findBySymbolAndUsernameId(spotSnoozeCondition.getSymbol(), spotSnoozeCondition.getUsernameId());
         boolean snoozeActive = false; // Biến cờ để theo dõi trạng thái snooze
 
         if (spotSnoozeConditionOptional.isPresent()) {

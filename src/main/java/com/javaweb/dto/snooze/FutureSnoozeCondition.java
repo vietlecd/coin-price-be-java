@@ -12,6 +12,7 @@ public class FutureSnoozeCondition {
     private String symbol;
     private String triggerId;
 
+    private String usernameId;
     public String getSymbol() {
         return symbol;
     }
@@ -21,6 +22,15 @@ public class FutureSnoozeCondition {
     }
 
     private String conditionType; // "One-time", "Once-in-duration", "Repeat"
+
+    public String getUsernameId() {
+        return usernameId;
+    }
+
+    public void setUsernameId(String usernameId) {
+        this.usernameId = usernameId;
+    }
+
     private LocalDateTime startTime;
     private LocalDateTime endTime;
 
@@ -38,7 +48,8 @@ public class FutureSnoozeCondition {
     // Constructors
     public FutureSnoozeCondition() {}
 
-    public FutureSnoozeCondition(String symbol, String conditionType, LocalDateTime startTime, LocalDateTime endTime, String specificTime) {
+    public FutureSnoozeCondition(String usernameId,String symbol, String conditionType, LocalDateTime startTime, LocalDateTime endTime, String specificTime) {
+        this.usernameId = usernameId;
         this.symbol = symbol;
         this.conditionType = conditionType;
         this.startTime = startTime;

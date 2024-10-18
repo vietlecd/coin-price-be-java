@@ -12,8 +12,17 @@ public class FundingRateSnoozeCondition {
     private String symbol;
     private String triggerId;
 
+    private String usernameId;
     public String getSymbol() {
         return symbol;
+    }
+
+    public String getUsernameId() {
+        return usernameId;
+    }
+
+    public void setUsernameId(String usernameId) {
+        this.usernameId = usernameId;
     }
 
     public void setSymbol(String symbol) {
@@ -39,8 +48,9 @@ public class FundingRateSnoozeCondition {
     // Constructors
     public FundingRateSnoozeCondition() {}
 
-    public FundingRateSnoozeCondition(String symbol, String conditionType, LocalDateTime startTime, LocalDateTime endTime, String specificTime) {
+    public FundingRateSnoozeCondition(String usernameId,String symbol, String conditionType, LocalDateTime startTime, LocalDateTime endTime, String specificTime) {
         this.symbol = symbol;
+        this.usernameId = usernameId;
         this.conditionType = conditionType;
         this.startTime = startTime;
         this.endTime = endTime;
