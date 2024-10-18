@@ -10,20 +10,24 @@ import java.time.LocalDateTime;
 @Component
 public class SpotSnoozeCondition {
 
-    @Id
+
+
+    private String username; // Thay thế symbol bằng usernameId làm khóa chính
+
+
     private String symbol;
 
-    private String usernameId;
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
     public String getSymbol() {
         return symbol;
-    }
-
-    public String getUsernameId() {
-        return usernameId;
-    }
-
-    public void setUsernameId(String usernameId) {
-        this.usernameId = usernameId;
     }
 
     public void setSymbol(String symbol) {
@@ -36,7 +40,6 @@ public class SpotSnoozeCondition {
 
     private String specificTime; // sửa lại từ SpecificTime thành specificTime
 
-
     public String getSpecificTime() {
         return specificTime;
     }
@@ -48,23 +51,16 @@ public class SpotSnoozeCondition {
     // Constructors
     public SpotSnoozeCondition() {}
 
-    public SpotSnoozeCondition(String usernameId,String symbol, String conditionType, LocalDateTime startTime, LocalDateTime endTime, String specificTime) {
-        this.usernameId =usernameId;
+    public SpotSnoozeCondition(String username, String symbol, String conditionType, LocalDateTime startTime, LocalDateTime endTime, String specificTime) {
+        this.username=username;
         this.symbol = symbol;
         this.conditionType = conditionType;
         this.startTime = startTime;
         this.endTime = endTime;
-        this.specificTime =specificTime;
+        this.specificTime = specificTime;
     }
 
     // Getters and Setters
-
-
-
-
-
-
-
     public String getSnoozeType() {
         return conditionType;
     }
@@ -88,6 +84,4 @@ public class SpotSnoozeCondition {
     public void setEndTime(LocalDateTime endTime) {
         this.endTime = endTime;
     }
-
-
 }

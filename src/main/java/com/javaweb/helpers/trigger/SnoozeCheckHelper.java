@@ -60,7 +60,7 @@ public class SnoozeCheckHelper {
     }
     public boolean checkSpotSnooze(String symbol) {
         // Tìm SpotSnoozeCondition theo symbol
-        Optional<SpotSnoozeCondition> spotSnoozeConditionOptional = spotSnoozeConditionRepository.findBySymbolAndUsernameId(spotSnoozeCondition.getSymbol(), spotSnoozeCondition.getUsernameId());
+        Optional<SpotSnoozeCondition> spotSnoozeConditionOptional = spotSnoozeConditionRepository.findBySymbolAndUsername(spotSnoozeCondition.getSymbol(), spotSnoozeCondition.getUsername());
         boolean snoozeActive = false; // Biến cờ để theo dõi trạng thái snooze
 
         if (spotSnoozeConditionOptional.isPresent()) {

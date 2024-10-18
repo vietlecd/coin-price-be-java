@@ -26,17 +26,17 @@ public class SpotSnoozeConditionService {
     // Method to create a new snooze condition
     public SpotSnoozeCondition createSnoozeCondition(SpotSnoozeCondition spotSnoozeCondition, String usernameId) {
         // Set the usernameId in the spotSnoozeCondition object
-        spotSnoozeCondition.setUsernameId(usernameId);
+        spotSnoozeCondition.setUsername(usernameId);
 
         // Check if a snooze condition already exists for the given symbol and usernameId
         Optional<SpotSnoozeCondition> existingSnoozeCondition = spotSnoozeConditionRepository
-                .findBySymbolAndUsernameId(spotSnoozeCondition.getSymbol(), spotSnoozeCondition.getUsernameId());
+                .findBySymbolAndUsername(spotSnoozeCondition.getSymbol(), spotSnoozeCondition.getUsername());
 
         if (existingSnoozeCondition.isPresent()) {
             // If symbol and usernameId exist together, throw an exception
             throw new IllegalArgumentException("Snooze condition with symbol '"
                     + spotSnoozeCondition.getSymbol() + "' and usernameId '"
-                    + spotSnoozeCondition.getUsernameId() + "' already exists in the database");
+                    + spotSnoozeCondition.getUsername() + "' already exists in the database");
         }
 
         // If no such snooze condition exists, save the new one
@@ -47,7 +47,7 @@ public class SpotSnoozeConditionService {
 
     // Method to deactivate (delete) a snooze condition by triggerId
     public void deleteSnoozeConditionByTriggerId(String triggerId) {
-        Optional<SpotSnoozeCondition> snoozeCondition = spotSnoozeConditionRepository.findBySymbolAndUsernameId(spotSnoozeCondition.getSymbol(), spotSnoozeCondition.getUsernameId());
+        Optional<SpotSnoozeCondition> snoozeCondition = spotSnoozeConditionRepository.findBySymbolAndUsername(spotSnoozeCondition.getSymbol(), spotSnoozeCondition.getUsername());
         snoozeCondition.ifPresent(condition -> spotSnoozeConditionRepository.delete(condition));
     }
 }

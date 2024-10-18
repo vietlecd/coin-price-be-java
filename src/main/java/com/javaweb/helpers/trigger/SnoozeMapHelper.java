@@ -11,12 +11,12 @@ import java.util.Map;
 
 @Component
 public class SnoozeMapHelper {
-    public SpotSnoozeCondition mapToSpotSnoozeCondition(Map<String, Object> snoozeConditionRequest,String usernameId) {
+    public SpotSnoozeCondition mapToSpotSnoozeCondition(Map<String, Object> snoozeConditionRequest,String username) {
         // Perform the mapping of the request body to SpotSnoozeCondition
         // For example, using Jackson's ObjectMapper
         return new SpotSnoozeCondition(
-                usernameId,
 
+                username,
                 (String) snoozeConditionRequest.get("symbol"),
                 (String) snoozeConditionRequest.get("conditionType"),
                 LocalDateTime.parse((String) snoozeConditionRequest.get("startTime")),

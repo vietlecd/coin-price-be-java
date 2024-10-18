@@ -42,11 +42,11 @@ public class SnoozeConditionController {
                                                     @RequestBody Map<String, Object> snoozeConditionRequest, HttpServletRequest request) {
 
         try {
-            String usernameId = (String) request.getAttribute("username");
+            String username = (String) request.getAttribute("username");
             switch (triggerType) {
                 case "spot":
-                    SpotSnoozeCondition spotSnoozeCondition = snoozeMapHelper.mapToSpotSnoozeCondition(snoozeConditionRequest,usernameId);
-                    spotSnoozeConditionService.createSnoozeCondition(spotSnoozeCondition,usernameId);
+                    SpotSnoozeCondition spotSnoozeCondition = snoozeMapHelper.mapToSpotSnoozeCondition(snoozeConditionRequest,username);
+                    spotSnoozeConditionService.createSnoozeCondition(spotSnoozeCondition,username);
                     break;
                 case "future":
                     FutureSnoozeCondition futureSnoozeCondition = snoozeMapHelper.mapToFutureSnoozeCondition(snoozeConditionRequest);
