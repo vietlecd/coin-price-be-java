@@ -1,10 +1,7 @@
 package com.javaweb.helpers.trigger;
 
 import com.javaweb.dto.trigger.*;
-import com.javaweb.model.trigger.FundingRateTrigger;
-import com.javaweb.model.trigger.FuturePriceTrigger;
-import com.javaweb.model.trigger.PriceDifferenceTrigger;
-import com.javaweb.model.trigger.SpotPriceTrigger;
+import com.javaweb.model.trigger.*;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -43,6 +40,16 @@ public class TriggerMapHelper {
         trigger.setCondition(dto.getCondition());
         trigger.setFundingRateThreshold(dto.getFundingRateThreshold());
         //trigger.setFundingRateInterval(dto.getFundingRateInterval());
+        return trigger;
+    }
+
+    public IndicatorTrigger mapIndicatorTrigger(IndicatorTriggerDTO dto) {
+        IndicatorTrigger trigger = new IndicatorTrigger();
+        trigger.setSymbol(dto.getSymbol());
+        trigger.setIndicatorType(dto.getIndicatorType());
+        trigger.setTriggerType(dto.getTriggerType());
+        trigger.setShortTermPeriod(dto.getShortTermPeriod());
+        trigger.setLongTermPeriod(dto.getLongTermPeriod());
         return trigger;
     }
 }
