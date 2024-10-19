@@ -59,6 +59,7 @@ jobs:
         cd server/
         docker compose down
         docker rmi lmao1415/dath_cnpm
-        docker compose up
+        # Tạo mới hoặc kết nối tới một phiên tmux
+        tmux new-session -d -s mysession 'docker compose up'
         "
 
