@@ -1,29 +1,28 @@
-package com.javaweb.service.impl;
+package com.javaweb.connect.impl;
+
+import com.javaweb.service.trigger.BinanceTokenListingService;
 
 import javax.websocket.*;
 import java.net.URI;
 import java.util.Timer;
 import java.util.TimerTask;
 
-
 @ClientEndpoint
-public class BinanceTokenListingService {
+public class ListingWebSocketService {
 
     private Session userSession = null;
+    private BinanceTokenListingService tokenService;
     private Timer timer;
 
-    public BinanceTokenListingService() {
-        // Không khởi tạo ở đây, sẽ khởi tạo từ controller
-    }
-
-    public void connect(URI endpointURI) {
+    public ListingWebSocketService(URI endpointURI, BinanceTokenListingService tokenService) {
+        this.tokenService = tokenService;
         try {
             WebSocketContainer container = ContainerProvider.getWebSocketContainer();
             container.connectToServer(this, endpointURI);
-            startTokenCheck();
         } catch (Exception e) {
             e.printStackTrace();
         }
+        startTokenCheck();
     }
 
     @OnOpen
@@ -38,8 +37,7 @@ public class BinanceTokenListingService {
 
         // Kiểm tra thông điệp để xác định có niêm yết token mới không
         if (message.contains("NEW LISTING")) {
-            // Xử lý thông điệp và hiển thị thông tin về token mới
-            System.out.println("New token listed: " + message);
+            tokenService.handleNewToken(message); // Gọi service để xử lý token mới
         }
     }
 
