@@ -6,7 +6,7 @@ on:
 
 jobs:
   notify:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
 
     steps:
     - name: Gửi thông báo đến Discord
@@ -17,7 +17,7 @@ jobs:
 
   build:
     environment: dev
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
     - uses: actions/checkout@v2
   
@@ -67,7 +67,7 @@ jobs:
     environment:
       name: dev
       url: 103.205.60.174:8080
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: build
     steps:
       - name: Deploy to VPS
