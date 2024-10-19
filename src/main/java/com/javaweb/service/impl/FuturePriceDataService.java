@@ -48,21 +48,21 @@ public class FuturePriceDataService implements IPriceDataService {
 
         futurePriceDataMap.put("Future Price: " + symbol, priceDTO);
 
-        boolean conditionMet = triggerCheckHelper.checkSymbolAndTriggerAlert(Arrays.asList(symbol), futurePriceDataMap, "future");
+        //boolean conditionMet = triggerCheckHelper.checkSymbolAndTriggerAlert(Arrays.asList(symbol), futurePriceDataMap, "future");
 
-        if (conditionMet) {
-            // Nếu có SseEmitter thì gửi thông báo qua SSE
-            SseEmitter emitter = sseHelper.getSseEmitterBySymbol(symbol, "Future");
-            if (emitter != null) {
-                try {
-                    emitter.send(SseEmitter.event().name("price-alert").data("future price condition met for " + symbol));
-                } catch (IOException e) {
-                    emitter.completeWithError(e);
-                }
-            } else {
-                System.out.println("No emitter found for symbol: " + symbol);
-            }
-        }
+//        if (conditionMet) {
+//            // Nếu có SseEmitter thì gửi thông báo qua SSE
+//            SseEmitter emitter = sseHelper.getSseEmitterBySymbol(symbol, "Future");
+//            if (emitter != null) {
+//                try {
+//                    emitter.send(SseEmitter.event().name("price-alert").data("future price condition met for " + symbol));
+//                } catch (IOException e) {
+//                    emitter.completeWithError(e);
+//                }
+//            } else {
+//                System.out.println("No emitter found for symbol: " + symbol);
+//            }
+//        }
     }
 
     public Map<String, PriceDTO> getPriceDataMap() {

@@ -29,7 +29,7 @@ public class KlineController {
     @Autowired
     private KlineDataService klineDataService;
 
-    @GetMapping("/get-kline")
+    @GetMapping("/api/get-kline")
     public SseEmitter KlinePrices(@RequestParam List<String> symbols) {
         SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
         klineWebSocketService.connectToWebSocket(symbols);

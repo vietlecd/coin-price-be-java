@@ -10,15 +10,15 @@ public class FundingRateTriggerDTO {
     private final String symbol;
     private final String condition;
     private final String notification_method;
-    private final double fundingRateThreshold;
-    private final double fundingRateInterval;
+    private final double fundingRate;
+    //private final double fundingRateInterval;
 
     private FundingRateTriggerDTO(Builder builder) {
         this.symbol = builder.symbol;
         this.condition = builder.condition;
         this.notification_method = builder.notification_method;
-        this.fundingRateThreshold = builder.fundingRateThreshold;
-        this.fundingRateInterval = builder.fundingRateInterval;
+        this.fundingRate = builder.fundingRate;
+        //this.fundingRateInterval = builder.fundingRateInterval;
     }
 
     @JsonPOJOBuilder(withPrefix = "set")
@@ -26,8 +26,8 @@ public class FundingRateTriggerDTO {
         private String symbol;
         private String condition;
         private String notification_method;
-        private double fundingRateThreshold;
-        private double fundingRateInterval;
+        private double fundingRate;
+        //private double fundingRateInterval;
 
         public Builder setSymbol(String symbol) {
             this.symbol = symbol;
@@ -44,15 +44,15 @@ public class FundingRateTriggerDTO {
             return this;
         }
 
-        public Builder setFundingRateThreshold(double fundingRateThreshold) {
-            this.fundingRateThreshold = fundingRateThreshold;
+        public Builder setFundingRate(double fundingRate) {
+            this.fundingRate = fundingRate;
             return this;
         }
 
-        public Builder setFundingRateInterval(double fundingRateInterval) {
-            this.fundingRateInterval = fundingRateInterval;
-            return this;
-        }
+//        public Builder setFundingRateInterval(double fundingRateInterval) {
+//            this.fundingRateInterval = fundingRateInterval;
+//            return this;
+//        }
 
         public FundingRateTriggerDTO build() {
             return new FundingRateTriggerDTO(this);

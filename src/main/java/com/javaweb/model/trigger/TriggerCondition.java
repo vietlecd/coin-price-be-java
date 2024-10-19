@@ -14,7 +14,11 @@ import java.util.UUID;
 @Setter
 public abstract class TriggerCondition {
     @Id
+    private String id;  // Let MongoDB manage this field
+
     private String alert_id;
+
+    private String username;
 
     private String symbol;
 
