@@ -17,3 +17,13 @@ jobs:
         cache: maven
     - name: Build with Maven
       run: mvn clean install
+
+    - name: BUild and push DockerImages
+    - uses: mr-smithers-excellent/docker-build-push@v6
+      with:
+        image: ${{ secrets.DOCKER_HUB_ACCESS_USER }}/dath_cnpm
+        tags: v1, latest
+        registry: registry-url.io
+        dockerfile: Dockerfile.yaml
+        username: ${{ secrets.DOCKER_HUB_ACCESS_USER }}
+        password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
