@@ -6,5 +6,5 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import java.util.Optional;
 
 public interface PriceDifferenceSnoozeConditionRepository extends MongoRepository<PriceDifferenceSnoozeCondition, String> {
-    Optional<PriceDifferenceSnoozeCondition> findBySymbol(String symbol);
+    Optional<PriceDifferenceSnoozeCondition> findBySymbolAndUsername(String symbol, String username);
 }

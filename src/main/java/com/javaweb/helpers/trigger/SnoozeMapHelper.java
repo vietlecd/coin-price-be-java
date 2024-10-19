@@ -30,38 +30,57 @@ public class SnoozeMapHelper {
 
 
     // Method to map the request body to a FutureSnoozeCondition DTO
-    public FutureSnoozeCondition mapToFutureSnoozeCondition(Map<String, Object> snoozeConditionRequest) {
-        return new FutureSnoozeCondition(
-                (String) snoozeConditionRequest.get("usernameId"),
+    public FutureSnoozeCondition mapToFutureSnoozeCondition(Map<String, Object> snoozeConditionRequest,String username) {
+        FutureSnoozeCondition futureSnoozeCondition = new FutureSnoozeCondition(
+
                 (String) snoozeConditionRequest.get("symbol"),
                 (String) snoozeConditionRequest.get("conditionType"),
                 LocalDateTime.parse((String) snoozeConditionRequest.get("startTime")),
                 LocalDateTime.parse((String) snoozeConditionRequest.get("endTime")),
                 (String) snoozeConditionRequest.get("specificTime")
         );
+
+        // Set the username (usernameId) for the SpotSnoozeCondition object
+        futureSnoozeCondition.setUsername(username);
+        System.out.println("SpotSnoozeCondition after mapping: " + futureSnoozeCondition);
+        return futureSnoozeCondition;
     }
 
     // Method to map the request body to a PriceDifferenceSnoozeCondition DTO
-    public PriceDifferenceSnoozeCondition mapToPriceDifferenceSnoozeCondition(Map<String, Object> snoozeConditionRequest) {
-        return new PriceDifferenceSnoozeCondition(
-                (String) snoozeConditionRequest.get("usernameId"),
+    public PriceDifferenceSnoozeCondition mapToPriceDifferenceSnoozeCondition(Map<String, Object> snoozeConditionRequest, String username) {
+        // Perform the mapping of the request body to PriceDifferenceSnoozeCondition
+        PriceDifferenceSnoozeCondition priceDifferenceSnoozeCondition = new PriceDifferenceSnoozeCondition(
+
                 (String) snoozeConditionRequest.get("symbol"),
                 (String) snoozeConditionRequest.get("conditionType"),
                 LocalDateTime.parse((String) snoozeConditionRequest.get("startTime")),
                 LocalDateTime.parse((String) snoozeConditionRequest.get("endTime")),
                 (String) snoozeConditionRequest.get("specificTime")
         );
+
+        // Set the username (usernameId) for the PriceDifferenceSnoozeCondition object
+        priceDifferenceSnoozeCondition.setUsername(username);
+        System.out.println("PriceDifferenceSnoozeCondition after mapping: " + priceDifferenceSnoozeCondition);
+        return priceDifferenceSnoozeCondition;
     }
 
-    public FundingRateSnoozeCondition mapToFundingRateSnoozeCondition(Map<String, Object> snoozeConditionRequest) {
-        return new FundingRateSnoozeCondition(
-                (String) snoozeConditionRequest.get("usernameId"),
+
+    public FundingRateSnoozeCondition mapToFundingRateSnoozeCondition(Map<String, Object> snoozeConditionRequest, String username) {
+        // Perform the mapping of the request body to FundingRateSnoozeCondition
+        FundingRateSnoozeCondition fundingRateSnoozeCondition = new FundingRateSnoozeCondition(
+
                 (String) snoozeConditionRequest.get("symbol"),
                 (String) snoozeConditionRequest.get("conditionType"),
                 LocalDateTime.parse((String) snoozeConditionRequest.get("startTime")),
                 LocalDateTime.parse((String) snoozeConditionRequest.get("endTime")),
                 (String) snoozeConditionRequest.get("specificTime")
         );
+
+        // Set the username (usernameId) for the FundingRateSnoozeCondition object
+        fundingRateSnoozeCondition.setUsername(username);
+        System.out.println("FundingRateSnoozeCondition after mapping: " + fundingRateSnoozeCondition);
+        return fundingRateSnoozeCondition;
     }
+
 
 }

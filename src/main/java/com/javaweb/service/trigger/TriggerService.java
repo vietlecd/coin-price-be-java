@@ -106,10 +106,15 @@ public class TriggerService {
     public void handleAndSendAlertForFuture(List<String> symbols, String username) {
         Map<String, PriceDTO> priceDataMap = futurePriceDataService.getPriceDataMap();
         List<String> firedSymbols = triggerCheckHelper.checkSymbolAndTriggerAlert(symbols, priceDataMap, "Future", username);
-
+        boolean snoozeActive = snoozeCheckHelper.checkSymbolAndSnooze(symbols,"Spot",username);
         if (!firedSymbols.isEmpty()) {
             for (String symbol : firedSymbols) {
-                System.out.println("Future Trigger fired for symbol: " + symbol);
+
+
+                if (snoozeActive ) {
+                    System.out.println("Future is active, not sending alert for symbol: " + symbol);
+                } else {
+                    System.out.println("Future Trigger fired for symbol: " + symbol);
                 // Gửi thông báo qua Telegram
                 telegramNotificationService.sendTriggerNotification("Future Trigger fired for symbol: " + symbol + " with username: " + username);
             }
