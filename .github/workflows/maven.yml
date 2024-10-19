@@ -65,16 +65,20 @@ jobs:
   
   deploy:
     environment:
-      name: Java-Api
+      name: dev
       url: 103.205.60.174:8080
     runs-on: ubuntu-latest
     needs: build
     steps:
       - name: Deploy to VPS
+        env:
+          VPS_USER: root
+          VPS_IP: ${{ secrets.VPS_IP }}
+          VPS_PASSWORD: ${{ secrets.VPS_PASSWORD }} 
         run: |
           sudo apt-get install -y sshpass
           
-          sshpass -p ${{ secrets.VPS_PASSWORD }} ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_IP }} "
+          sshpass -p $VPS_PASSWORD ssh -o StrictHostKeyChecking=no $VPS_USER@$VPS_IP "
           cd server/
           docker compose down
           docker rmi lmao1415/dath_cnpm
