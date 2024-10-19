@@ -16,3 +16,15 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_HUB_ACCESS_USER }}
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+      - name: create Env
+        run: |
+            touch .env
+            echo DOCKER_HUB_ACCESS_TOKEN=${{ secrets.DOCKER_HUB_ACCESS_TOKEN }} >> .env
+            echo DOCKER_HUB_ACCESS_USER=${{ secrets.DOCKER_HUB_ACCESS_USER }} >> .env
+            echo MONGO_DB_URI=${{ secrets.MONGO_DB_URI }} >> .env
+            echo MONGO_DB_NAME=${{ secrets.MONGO_DB_NAME }} >> .env
+            mvn clean install
+
+      - name: docker compose
+        run: |
+          docker compose up
