@@ -59,14 +59,5 @@ public class FundingRateAndIntervalHelper {
                 }
             }
         }, 0, 1, TimeUnit.SECONDS);  // Stream every 1 second
-
-    }
-
-    public void scheduleFundingIntervalDataUpdate(List<String> symbols) {
-        ScheduledExecutorService dataUpdater = Executors.newScheduledThreadPool(1);
-        dataUpdater.scheduleAtFixedRate(() -> {
-            fundingIntervalWebService.getLatestFundingIntervalData(symbols);
-            System.out.println("FundingInterval data updated for symbols: " + symbols);
-        }, 0, 15, TimeUnit.MINUTES); // Update every 15 minutes
     }
 }

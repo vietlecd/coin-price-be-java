@@ -14,6 +14,7 @@ import com.javaweb.helpers.trigger.TriggerCheckHelper;
 import com.javaweb.service.impl.FundingRateDataService;
 import com.javaweb.service.impl.FuturePriceDataService;
 import com.javaweb.service.impl.SpotPriceDataService;
+import com.javaweb.service.webhook.TelegramNotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -47,78 +48,71 @@ public class TriggerService {
     private FundingIntervalWebService fundingIntervalWebService;
 
     @Autowired
-    private SpotWebSocketService spotWebSocketService;
-
-    @Autowired
-    private FutureWebSocketService futureWebSocketService;
-
-    @Autowired
     private SpotPriceDataService spotPriceDataService;
 
     @Autowired
     private FuturePriceDataService futurePriceDataService;
 
-    public SseEmitter handleStreamComparePrice(List<String> symbols,String username) {
-        SseEmitter sseEmitter = new SseEmitter(Long.MAX_VALUE);
+    @Autowired
+    private TelegramNotificationService telegramNotificationService;
 
-        spotWebSocketService.connectToWebSocket(symbols);
-        futureWebSocketService.connectToWebSocket(symbols);
+    public void handleAndSendAlertForFundingRate(List<String> symbols, String username) {
+        Map<String, FundingRateDTO> fundingRateDataMap = fundingRateDataService.getFundingRateDataMap();
 
+        List<String> firedSymbols = triggerCheckHelper.checkSymbolAndTriggerAlert(symbols, fundingRateDataMap, "FundingRate" , username);
+
+        if (!firedSymbols.isEmpty()) {
+            for (String symbol : firedSymbols) {
+                System.out.println("Spot Trigger fired for symbol: " + symbol);
+                // Gửi thông báo qua Telegram
+                telegramNotificationService.sendTriggerNotification("FundingRate Trigger fired for symbol: " + symbol + " with username: " + username);
+            }
+        }
+    }
+    public void handleAndSendAlertForSpotAndFuture(List<String> symbols, String username) {
         Map<String, PriceDTO> spotPriceDataMap = spotPriceDataService.getPriceDataMap();
         Map<String, PriceDTO> futurePriceDataMap = futurePriceDataService.getPriceDataMap();
 
-        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-        scheduler.scheduleAtFixedRate(() -> {
-            List<String> firedSymbols = triggerCheckHelper.checkCompareSymbolndTriggerAlert(symbols, spotPriceDataMap, futurePriceDataMap, username);
+        List<String> firedSymbols = triggerCheckHelper.checkCompareSymbolndTriggerAlert(symbols, spotPriceDataMap, futurePriceDataMap, username);
 
-            if (!firedSymbols.isEmpty()) {
-                for (String symbol : firedSymbols) {
-                    System.out.println("Trigger fired for symbol: " + symbol);
-                    try {
-                        sseEmitter.send(SseEmitter.event().name("CompareSpotAndFuture").data("Trigger fired for username: " + username + " with symbol: " + symbol));
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-            } else {
-                System.out.println("No trigger fired for symbol: " + symbols);
+        if (!firedSymbols.isEmpty()) {
+            for (String symbol : firedSymbols) {
+                System.out.println("Spot Trigger fired for symbol: " + symbol);
+                // Gửi thông báo qua Telegram
+                telegramNotificationService.sendTriggerNotification("Price Difference Trigger fired for symbol: " + symbol + " with username: " + username);
             }
-        }, 0, 1, TimeUnit.SECONDS);
-        return sseEmitter;
+        }
+    }
+    public void handleAndSendAlertForSpot(List<String> symbols, String username) {
+        Map<String, PriceDTO> priceDataMap = spotPriceDataService.getPriceDataMap();
+        List<String> firedSymbols = triggerCheckHelper.checkSymbolAndTriggerAlert(symbols, priceDataMap, "Spot", username);
+
+        if (!firedSymbols.isEmpty()) {
+            for (String symbol : firedSymbols) {
+                System.out.println("Spot Trigger fired for symbol: " + symbol);
+                // Gửi thông báo qua Telegram
+                telegramNotificationService.sendTriggerNotification("Spot Trigger fired for symbol: " + symbol + " with username: " + username);
+            }
+        }
     }
 
-    public SseEmitter handleStreamPrice(String priceType, List<String> symbols, String username, Map<String, PriceDTO> priceDataMap, WebSocketConfig webSocketConfig) {
-        SseEmitter sseEmitter = new SseEmitter(Long.MAX_VALUE);
+    public void handleAndSendAlertForFuture(List<String> symbols, String username) {
+        Map<String, PriceDTO> priceDataMap = futurePriceDataService.getPriceDataMap();
+        List<String> firedSymbols = triggerCheckHelper.checkSymbolAndTriggerAlert(symbols, priceDataMap, "Future", username);
 
-        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-        scheduler.scheduleAtFixedRate(() -> {
-            List<String> firedSymbols = triggerCheckHelper.checkSymbolAndTriggerAlert(symbols, priceDataMap, priceType, username);
-
-            if(!firedSymbols.isEmpty()) {
-                for(String symbol : firedSymbols) {
-                    System.out.println("Triggers fired for user: " + username + " for symbols: " + symbol);
-                    try {
-                        sseEmitter.send(SseEmitter.event().name("trigger").data("Trigger fired for username: " + username + " with symbol: " + symbol));
-                    }
-                    catch (Exception e ) {
-                        sseEmitter.completeWithError(e);
-                    }
-                }
-            } else {
-                System.out.println("No triggers fired for user: " + username + " for symbols: " + symbols);
+        if (!firedSymbols.isEmpty()) {
+            for (String symbol : firedSymbols) {
+                System.out.println("Future Trigger fired for symbol: " + symbol);
+                // Gửi thông báo qua Telegram
+                telegramNotificationService.sendTriggerNotification("Future Trigger fired for symbol: " + symbol + " with username: " + username);
             }
-        }, 0, 5, TimeUnit.SECONDS); //trigger mỗi 5s
-
-        for (String symbol : symbols) {
-            sseHelper.createPriceSseEmitter(sseEmitter, priceType, symbol, priceDataMap, webSocketConfig);
         }
-
-        return sseEmitter;
     }
 
     public SseEmitter handleStreamFundingRate(List<String> symbols, String username, WebSocketConfig webSocketConfig) {
         SseEmitter sseEmitter = new SseEmitter(Long.MAX_VALUE);
 
+        //ham update data interval sau 15 min
         scheduleFundingIntervalDataUpdate(symbols);
 
         fundingRateWebSocketService.connectToWebSocket(symbols);
@@ -130,54 +124,9 @@ public class TriggerService {
 
             FundingRateAndIntervalHelper.streamCombinedData(sseEmitter, symbols, fundingRateDataMap, fundingIntervalDataList);
 
-            List<String> firedSymbols = triggerCheckHelper.checkSymbolAndTriggerAlert(symbols, fundingRateDataMap, "FundingRate", username);
-
-            if(!firedSymbols.isEmpty()) {
-                for(String symbol : firedSymbols) {
-                    System.out.println("Triggers fired for user: " + username + " for symbols: " + symbol);
-                    try {
-                        sseEmitter.send(SseEmitter.event().name("trigger").data("Trigger fired for username: " + username + " with symbol: " + symbol));
-                    }
-                    catch (Exception e ) {
-                        sseEmitter.completeWithError(e);
-                    }
-                }
-            } else {
-                System.out.println("No triggers fired for user: " + username + " for symbols: " + symbols);
-            }
         }, 0, 5, TimeUnit.SECONDS); //trigger mỗi 5s
 
-//        for (String symbol : symbols) {
-//            sseHelper.createFundingRateSseEmitter(sseEmitter, priceType, symbol, fundingRateDataMap, webSocketConfig);
-//        }
-
         return sseEmitter;
-    }
-
-    private double getSpotPrice(String symbol, Map<String, PriceDTO> priceDataMap) {
-        PriceDTO priceDTO = priceDataMap.get(symbol);
-        if (priceDTO != null && priceDTO.getPrice() != null) {
-            try {
-                return Double.parseDouble(priceDTO.getPrice());
-            } catch (NumberFormatException e) {
-                System.out.println("Invalid price format for symbol: " + symbol + ", returning 0.0");
-                return 0.0;
-            }
-        }
-        return 0.0;
-    }
-
-    private double getFuturePrice(String symbol, Map<String, PriceDTO> priceDataMap) {
-        PriceDTO priceDTO = priceDataMap.get(symbol);
-        if (priceDTO != null && priceDTO.getPrice() != null) {
-            try {
-                return Double.parseDouble(priceDTO.getPrice());
-            } catch (NumberFormatException e) {
-                System.out.println("Invalid price format for symbol: " + symbol + ", returning 0.0");
-                return 0.0;
-            }
-        }
-        return 0.0;
     }
 
     public void scheduleFundingIntervalDataUpdate(List<String> symbols) {

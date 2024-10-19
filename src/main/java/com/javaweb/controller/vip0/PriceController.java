@@ -55,20 +55,13 @@ public class PriceController {
 
     @GetMapping("/get-spot-price")
     public SseEmitter streamSpotPrices(@RequestParam List<String> symbols, HttpServletRequest request) {
-        String username = getUsernameHelper.getUsername(request);
-
         SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
         spotWebSocketService.connectToWebSocket(symbols);
 
         Map<String, PriceDTO> priceDataMap = spotPriceDataService.getPriceDataMap();
 
-        if (username == null || username.isEmpty()){
-            for (String symbol : symbols) {
-                sseHelper.createPriceSseEmitter(emitter, "Spot", symbol, priceDataMap, webSocketConfig);
-            }
-        }
-        else {
-            return triggerService.handleStreamPrice("Spot", symbols, username, priceDataMap, webSocketConfig);
+        for (String symbol : symbols) {
+            sseHelper.createPriceSseEmitter(emitter, "Spot", symbol, priceDataMap, webSocketConfig);
         }
 
         return emitter;
@@ -76,28 +69,15 @@ public class PriceController {
 
     @GetMapping("/get-future-price")
     public SseEmitter streamFuturePrices(@RequestParam List<String> symbols,  HttpServletRequest request) {
-        String username = getUsernameHelper.getUsername(request);
         SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
         futureWebSocketService.connectToWebSocket(symbols);
 
         Map<String, PriceDTO> priceDataMap = futurePriceDataService.getPriceDataMap();
-        if (username == null || username.isEmpty()) {
-            for (String symbol : symbols) {
-                sseHelper.createPriceSseEmitter(emitter, "Future", symbol, priceDataMap, webSocketConfig);
-            }
-        } else {
-            return triggerService.handleStreamPrice("Future", symbols, username, priceDataMap, webSocketConfig);
+        for (String symbol : symbols) {
+            sseHelper.createPriceSseEmitter(emitter, "Future", symbol, priceDataMap, webSocketConfig);
         }
 
         return emitter;
-    }
-
-    @GetMapping("/get-compare-price")
-    public SseEmitter compareSpotAndFuturePrices(@RequestParam List<String> symbols, HttpServletRequest request) {
-        String username = getUsernameHelper.getUsername(request);
-
-
-        return triggerService.handleStreamComparePrice(symbols, username);
     }
 
     @GetMapping("/get-funding-rate")
@@ -105,7 +85,6 @@ public class PriceController {
         String username = getUsernameHelper.getUsername(request);
         return triggerService.handleStreamFundingRate(symbols, username, webSocketConfig);
     }
-
 
     @GetMapping("/get-market")
     public ResponseEntity<List<Map<String, Object>>> getMarketData(@RequestParam List<String> symbols) {
