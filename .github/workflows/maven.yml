@@ -1,5 +1,3 @@
-# This workflow will build a Java project with Maven, and cache/restore any dependencies to improve the workflow execution time
-
 name: Java CI with Maven
 
 on:
@@ -7,6 +5,10 @@ on:
     branches: [ master ]
   pull_request:
     branches: [ master ]
+
+permissions:
+  contents: write
+  security-events: write
 
 jobs:
   build:
@@ -21,4 +23,3 @@ jobs:
         cache: maven
     - name: Build with Maven
       run: mvn clean install
-
