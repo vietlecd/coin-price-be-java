@@ -11,19 +11,23 @@ import java.util.Map;
 
 @Component
 public class SnoozeMapHelper {
-    public SpotSnoozeCondition mapToSpotSnoozeCondition(Map<String, Object> snoozeConditionRequest,String username) {
+    public SpotSnoozeCondition mapToSpotSnoozeCondition(Map<String, Object> snoozeConditionRequest, String username) {
         // Perform the mapping of the request body to SpotSnoozeCondition
-        // For example, using Jackson's ObjectMapper
-        return new SpotSnoozeCondition(
+        SpotSnoozeCondition spotSnoozeCondition = new SpotSnoozeCondition(
 
-                username,
                 (String) snoozeConditionRequest.get("symbol"),
                 (String) snoozeConditionRequest.get("conditionType"),
                 LocalDateTime.parse((String) snoozeConditionRequest.get("startTime")),
                 LocalDateTime.parse((String) snoozeConditionRequest.get("endTime")),
                 (String) snoozeConditionRequest.get("specificTime")
         );
+
+        // Set the username (usernameId) for the SpotSnoozeCondition object
+        spotSnoozeCondition.setUsername(username);
+        System.out.println("SpotSnoozeCondition after mapping: " + spotSnoozeCondition);
+        return spotSnoozeCondition;
     }
+
 
     // Method to map the request body to a FutureSnoozeCondition DTO
     public FutureSnoozeCondition mapToFutureSnoozeCondition(Map<String, Object> snoozeConditionRequest) {

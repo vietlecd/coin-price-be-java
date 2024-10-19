@@ -37,7 +37,7 @@ public class SnoozeCheckHelper {
             // Kiểm tra loại snooze dựa trên type
             switch (type) {
                 case "spot":
-                    conditionMet = checkSpotSnooze(symbol); // Kiểm tra snooze cho spot
+                    conditionMet = checkSpotSnooze(symbol, spotSnoozeCondition.getUsername()); // Kiểm tra snooze cho spot
                     break;
                 /*case "future":
                     conditionMet = checkFutureSnooze(symbol); // Kiểm tra snooze cho future
@@ -58,9 +58,11 @@ public class SnoozeCheckHelper {
         // Trả về true nếu bất kỳ điều kiện snooze nào thỏa mãn
         return anyConditionMet;
     }
-    public boolean checkSpotSnooze(String symbol) {
+    public boolean checkSpotSnooze(String symbol,String username) {
         // Tìm SpotSnoozeCondition theo symbol
-        Optional<SpotSnoozeCondition> spotSnoozeConditionOptional = spotSnoozeConditionRepository.findBySymbolAndUsername(spotSnoozeCondition.getSymbol(), spotSnoozeCondition.getUsername());
+        spotSnoozeCondition.setUsername(username);
+        Optional<SpotSnoozeCondition> spotSnoozeConditionOptional = spotSnoozeConditionRepository
+                .findBySymbolAndUsername(spotSnoozeCondition.getSymbol(), spotSnoozeCondition.getUsername());
         boolean snoozeActive = false; // Biến cờ để theo dõi trạng thái snooze
 
         if (spotSnoozeConditionOptional.isPresent()) {

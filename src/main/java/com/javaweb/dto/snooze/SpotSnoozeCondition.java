@@ -51,8 +51,8 @@ public class SpotSnoozeCondition {
     // Constructors
     public SpotSnoozeCondition() {}
 
-    public SpotSnoozeCondition(String username, String symbol, String conditionType, LocalDateTime startTime, LocalDateTime endTime, String specificTime) {
-        this.username=username;
+    public SpotSnoozeCondition(String symbol, String conditionType, LocalDateTime startTime, LocalDateTime endTime, String specificTime) {
+
         this.symbol = symbol;
         this.conditionType = conditionType;
         this.startTime = startTime;
