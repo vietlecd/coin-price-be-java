@@ -106,7 +106,7 @@ public class TriggerService {
     public void handleAndSendAlertForFuture(List<String> symbols, String username) {
         Map<String, PriceDTO> priceDataMap = futurePriceDataService.getPriceDataMap();
         List<String> firedSymbols = triggerCheckHelper.checkSymbolAndTriggerAlert(symbols, priceDataMap, "Future", username);
-        boolean snoozeActive = snoozeCheckHelper.checkSymbolAndSnooze(symbols,"Spot",username);
+        boolean snoozeActive = snoozeCheckHelper.checkSymbolAndSnooze(symbols,"Future",username);
         if (!firedSymbols.isEmpty()) {
             for (String symbol : firedSymbols) {
 
