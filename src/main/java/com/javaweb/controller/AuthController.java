@@ -47,11 +47,11 @@ public class AuthController {
         userData userData = userRepository.findByUsername(username);
         List<String> ip_list = userData.getIp_list();
 
-        if(ip_list.contains( LoginFunc.getClientIp(request)) ) {
+        if(ip_list.contains(LoginFunc.getClientIp(request)) ) {
             LoginFunc.setCookie(username, userData.getPassword(), response);
         }
         else {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Yêu cầu refresh token không hợp lệ vì tài khoản chưa được đăng nhập trên thiết bị này!");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Yêu cầu refresh token không hợp lệ vì tài khoản chưa được đăng nhập trên thiết bị này!, ip thiết bị:" + LoginFunc.getClientIp(request));
         }
 
         return new ResponseEntity<>(
@@ -68,26 +68,22 @@ public class AuthController {
         String username = loginRequest.getUsername();
         String password = loginRequest.getPassword();
 
-//        if (userRepository.existsByUsername(username)) {
-//            throw new ResponseStatusException(HttpStatus.CONFLICT, "Tên người dùng đã tồn tại");
-//        }
-
         userData user = userRepository.findByUsername(username);
         LoginFunc.checkUser(user);
         if (user.getPassword().equals(password)) {
             LoginFunc.setCookie(username, password, res);
 
-//            if(!user.getIp_list().contains(LoginFunc.getClientIp(request))) {
-//                List<String> ip_list = user.getIp_list();
-//                ip_list.add(LoginFunc.getClientIp(request));
-//                user.setIp_list(ip_list);
-//
-//                try {
-//                    userRepository.save(user);
-//                } catch (Exception e) {
-//                    throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Lỗi khi lưu thông tin người dùng");
-//                }
-//            }
+            if(!user.getIp_list().contains(LoginFunc.getClientIp(request))) {
+                List<String> ip_list = user.getIp_list();
+                ip_list.add(LoginFunc.getClientIp(request));
+                user.setIp_list(ip_list);
+
+                try {
+                    userRepository.save(user);
+                } catch (Exception e) {
+                    throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+                }
+            }
 
             return new ResponseEntity<>(
                     new Responses(
