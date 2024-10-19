@@ -34,7 +34,7 @@ public class AuthenInterceptor implements HandlerInterceptor {
 
         LoginRequest temp_data = CreateToken.decodeToken(token);
 
-        if(temp_data.getUsername().equals("expired")) {
+        if(temp_data.getPassword().equals("expired")) {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Phiên đăng nhập đã hết hạn");
             return false;
         }

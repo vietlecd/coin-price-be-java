@@ -21,7 +21,7 @@ public class CreateToken {
                     .subject(username)
                     .claim("password", password)
                     .issuer("MK")
-                    .expirationTime(new Date(System.currentTimeMillis() + 1000 * 60 * 60))
+                    .expirationTime(new Date(System.currentTimeMillis() + 1000 * 60))
                     .build();
 
             JWSSigner signer = new MACSigner(SECRET.getBytes(StandardCharsets.UTF_8));
@@ -52,7 +52,7 @@ public class CreateToken {
                 System.out.println("expirationTime: " + expirationTime);
 
                 if (expirationTime != null && new Date().after(expirationTime)) {
-                    return new LoginRequest("expired", "expired");
+                    return new LoginRequest(claims.getSubject(), "expired");
                 }
 
                 return new LoginRequest(claims.getSubject(), claims.getStringClaim("password"));
