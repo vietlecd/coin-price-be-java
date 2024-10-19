@@ -1,4 +1,8 @@
-
+openapi: "3.0.3"
+info:
+  title: Coin price
+  version: 1.0
+  description: |-
     _This project is suitable for users who wish to monitor the cryptocurrency market, perform technical analysis, and automatically receive alerts based on price movements and technical indicators._  
     ## Libraries used in the Project:
 
@@ -90,7 +94,7 @@ paths:
           description: Đăng nhập không thành công!
           content:
             application/json:
-              schema:   
+              schema:
                 $ref: "#/components/schemas/LoginFail"
 components:
   schemas:
@@ -160,4 +164,3 @@ components:
             status:
               type: string
               example: 200
-
