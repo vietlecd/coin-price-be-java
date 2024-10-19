@@ -64,7 +64,8 @@ jobs:
         docker compose down
         docker rmi lmao1415/dath_cnpm
         # Tạo mới hoặc kết nối tới một phiên tmux
-        tmux -d 'docker compose up'
+        tmux kill-session -t mysession 2>/dev/null || true &&
+        tmux new-session -d -s mysession 'docker compose up'
         "
     - name: Chờ 1 phút trước khi gửi thông báo
       run: |
