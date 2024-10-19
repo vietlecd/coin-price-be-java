@@ -19,12 +19,16 @@ jobs:
     - name: Build with Maven
       run: mvn clean install
 
+    - name: Set up Docker
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y docker-compose
+
     - name: Build and push Docker Images
-      uses: mr-smithers-excellent/docker-build-push@v6
-      with:
-        image: lmao1415/dath_cnpm
-        tags: v1, latest
-        registry: docker.io
-        dockerfile: Dockerfile.yaml
-        username: ${{ secrets.DOCKER_HUB_ACCESS_USER }}
-        password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+      run: |
+        echo "${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}" | docker login -u "${{ secrets.DOCKER_HUB_ACCESS_USER }}" --password-stdin
+        docker-compose -f docker-compose.yaml build
+        docker-compose -f docker-compose.yaml push
+
+    - name: Stop and remove containers
+      run: docker-compose -f docker-compose.yaml down
