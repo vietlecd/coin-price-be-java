@@ -16,6 +16,10 @@ jobs:
         java-version: '1.8'
         distribution: 'adopt'
         cache: maven
+
+    - name: Thông Báo khởi động sv
+      run: |
+        curl -X POST -H "Content-Type: application/json" -d '{"content": "```Lưu ý server đang khởi động, không được call api cho tới khi có thông báo mới!```"}' https://discord.com/api/webhooks/1297132713119191121/B72OrNxwgv1-l5svlDvzUzIWLhtnlmnb4xoPH9BqoX6vG655uPK-vKirbAvmGIjHgt3R
     - name: Build with Maven
       run: mvn clean install
 
@@ -60,6 +64,14 @@ jobs:
         docker compose down
         docker rmi lmao1415/dath_cnpm
         # Tạo mới hoặc kết nối tới một phiên tmux
-        tmux new-session -d -s mysession 'docker compose up'
+        tmux -d 'docker compose up'
         "
+    - name: Chờ 1 phút trước khi gửi thông báo
+      run: |
+        sleep 60
+        
+    - name: Thông Báo khởi động sv
+      run: |
+        curl -X POST -H "Content-Type: application/json" -d '{"content": "```Server đã khởi động thành công!```"}' https://discord.com/api/webhooks/1297132713119191121/B72OrNxwgv1-l5svlDvzUzIWLhtnlmnb4xoPH9BqoX6vG655uPK-vKirbAvmGIjHgt3R
+
 
