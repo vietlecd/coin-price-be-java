@@ -46,3 +46,19 @@ jobs:
 
     - name: Stop and remove containers
       run: docker-compose -f docker-compose.yaml down
+
+    - name: Deploy to VPS
+      env:
+        VPS_USER: root
+        VPS_IP: ${{ secrets.VPS_IP }}
+        VPS_PASSWORD: ${{ secrets.VPS_PASSWORD }} 
+      run: |
+        sudo apt-get install -y sshpass
+        
+        sshpass -p $VPS_PASSWORD ssh -o StrictHostKeyChecking=no $VPS_USER@$VPS_IP " << 'EOF'
+        tmux attach-session -t mysession"  
+        cd server/ 
+        docker compose down
+        docker compose up -d --pull
+        EOF
+
