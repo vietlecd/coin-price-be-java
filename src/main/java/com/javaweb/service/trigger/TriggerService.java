@@ -10,6 +10,7 @@ import com.javaweb.dto.FundingRateDTO;
 import com.javaweb.dto.PriceDTO;
 import com.javaweb.helpers.controller.FundingRateAndIntervalHelper;
 import com.javaweb.helpers.sse.SseHelper;
+import com.javaweb.helpers.trigger.SnoozeCheckHelper;
 import com.javaweb.helpers.trigger.TriggerCheckHelper;
 import com.javaweb.service.impl.FundingRateDataService;
 import com.javaweb.service.impl.FuturePriceDataService;
@@ -34,7 +35,8 @@ import static java.lang.Math.abs;
 public class TriggerService {
     @Autowired
     private SseHelper sseHelper;
-
+    @Autowired
+    private SnoozeCheckHelper snoozeCheckHelper;
     @Autowired
     private TriggerCheckHelper triggerCheckHelper;
 
@@ -86,12 +88,17 @@ public class TriggerService {
     public void handleAndSendAlertForSpot(List<String> symbols, String username) {
         Map<String, PriceDTO> priceDataMap = spotPriceDataService.getPriceDataMap();
         List<String> firedSymbols = triggerCheckHelper.checkSymbolAndTriggerAlert(symbols, priceDataMap, "Spot", username);
-
+        boolean snoozeActive = snoozeCheckHelper.checkSymbolAndSnooze(symbols,"Spot",username);
         if (!firedSymbols.isEmpty()) {
             for (String symbol : firedSymbols) {
-                System.out.println("Spot Trigger fired for symbol: " + symbol);
-                // Gửi thông báo qua Telegram
-                telegramNotificationService.sendTriggerNotification("Spot Trigger fired for symbol: " + symbol + " with username: " + username);
+
+                if (snoozeActive ) {
+                    System.out.println("Snooze is active, not sending alert for symbol: " + symbol);
+                } else {
+                    System.out.println("Spot Trigger fired for symbol: " + symbol);
+                    // Gửi thông báo qua Telegram
+                    telegramNotificationService.sendTriggerNotification("Spot Trigger fired for symbol: " + symbol + " with username: " + username);
+                }
             }
         }
     }
@@ -99,10 +106,15 @@ public class TriggerService {
     public void handleAndSendAlertForFuture(List<String> symbols, String username) {
         Map<String, PriceDTO> priceDataMap = futurePriceDataService.getPriceDataMap();
         List<String> firedSymbols = triggerCheckHelper.checkSymbolAndTriggerAlert(symbols, priceDataMap, "Future", username);
-
+        boolean snoozeActive = snoozeCheckHelper.checkSymbolAndSnooze(symbols,"Future",username);
         if (!firedSymbols.isEmpty()) {
             for (String symbol : firedSymbols) {
-                System.out.println("Future Trigger fired for symbol: " + symbol);
+
+
+                if (snoozeActive ) {
+                    System.out.println("Future is active, not sending alert for symbol: " + symbol);
+                } else {
+                    System.out.println("Future Trigger fired for symbol: " + symbol);
                 // Gửi thông báo qua Telegram
                 telegramNotificationService.sendTriggerNotification("Future Trigger fired for symbol: " + symbol + " with username: " + username);
             }

@@ -49,16 +49,16 @@ public class SnoozeConditionController {
                     spotSnoozeConditionService.createSnoozeCondition(spotSnoozeCondition,username);
                     break;
                 case "future":
-                    FutureSnoozeCondition futureSnoozeCondition = snoozeMapHelper.mapToFutureSnoozeCondition(snoozeConditionRequest);
-                    futureSnoozeConditionService.createSnoozeCondition(futureSnoozeCondition);
+                    FutureSnoozeCondition futureSnoozeCondition = snoozeMapHelper.mapToFutureSnoozeCondition(snoozeConditionRequest,username);
+                    futureSnoozeConditionService.createFutureSnoozeCondition(futureSnoozeCondition,username);
                     break;
                 case "price-difference":
-                    PriceDifferenceSnoozeCondition priceDifferenceSnoozeCondition = snoozeMapHelper.mapToPriceDifferenceSnoozeCondition(snoozeConditionRequest);
-                    priceDifferenceSnoozeConditionService.createSnoozeCondition(priceDifferenceSnoozeCondition);
+                    PriceDifferenceSnoozeCondition priceDifferenceSnoozeCondition = snoozeMapHelper.mapToPriceDifferenceSnoozeCondition(snoozeConditionRequest,username);
+                    priceDifferenceSnoozeConditionService.createSnoozeCondition(priceDifferenceSnoozeCondition,username);
                     break;
                 case "funding-rate":
-                    FundingRateSnoozeCondition fundingRateSnoozeCondition = snoozeMapHelper.mapToFundingRateSnoozeCondition(snoozeConditionRequest);
-                    fundingRateSnoozeConditionService.createSnoozeCondition(fundingRateSnoozeCondition);
+                    FundingRateSnoozeCondition fundingRateSnoozeCondition = snoozeMapHelper.mapToFundingRateSnoozeCondition(snoozeConditionRequest,username);
+                    fundingRateSnoozeConditionService.createSnoozeCondition(fundingRateSnoozeCondition,username);
                     break;
                 default:
                     return ResponseEntity.badRequest().body("Invalid trigger type");
