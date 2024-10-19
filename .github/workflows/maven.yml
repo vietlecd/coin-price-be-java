@@ -23,7 +23,7 @@ jobs:
       with:
         image: lmao1415/dath_cnpm
         tags: v1, latest
-        registry: registry-url.io
+        registry: docker.io
         dockerfile: Dockerfile.yaml
         username: ${{ secrets.DOCKER_HUB_ACCESS_USER }}
         password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
