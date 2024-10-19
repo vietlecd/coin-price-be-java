@@ -58,6 +58,7 @@ jobs:
         sshpass -p $VPS_PASSWORD ssh -o StrictHostKeyChecking=no $VPS_USER@$VPS_IP "
         cd server/
         docker compose down
-        docker compose up -d --pull
+        docker rmi lmao1415/dath_cnpm
+        docker compose up
         "
 
