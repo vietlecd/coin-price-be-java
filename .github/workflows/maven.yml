@@ -56,7 +56,7 @@ jobs:
         sudo apt-get install -y sshpass
         
         sshpass -p $VPS_PASSWORD ssh -o StrictHostKeyChecking=no $VPS_USER@$VPS_IP " << 'EOF'
-        tmux attach-session -t mysession"  
+        tmux attach-session -t 1  
         cd server/ 
         docker compose down
         docker compose up -d --pull
