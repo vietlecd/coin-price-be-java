@@ -63,7 +63,7 @@ public class AuthController {
                 HttpStatus.OK);
     }
 
-    @GetMapping("/login")
+    @PutMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest, HttpServletResponse res, HttpServletRequest request) {
         String username = loginRequest.getUsername();
         String password = loginRequest.getPassword();
@@ -74,14 +74,13 @@ public class AuthController {
             LoginFunc.setCookie(username, password, res);
 
             if(!user.getIp_list().contains(LoginFunc.getClientIp(request))) {
-                List<String> ip_list = user.getIp_list();
-                ip_list.add(LoginFunc.getClientIp(request));
-                user.setIp_list(ip_list);
+                user.addIp(LoginFunc.getClientIp(request));
 
                 try {
+                    userRepository.deleteByUsername(username);
                     userRepository.save(user);
                 } catch (Exception e) {
-                    throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+                    throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage() + LoginFunc.getClientIp(request));
                 }
             }
 

@@ -13,12 +13,14 @@ import java.util.List;
 @NoArgsConstructor
 @Document(collection = "userData")
 public class userData {
-    @Indexed(unique = true)
     private String username;
-
     private String name;
     private String password;
     private String email;
     private Integer vip_role;
     private List<String> ip_list;
+
+    public void addIp(String ip) {
+        ip_list.add(ip);
+    }
 }
