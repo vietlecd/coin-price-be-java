@@ -6,6 +6,7 @@ on:
 
 jobs:
   build:
+    environment: dev
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -17,3 +18,28 @@ jobs:
         cache: maven
     - name: Build with Maven
       run: mvn clean install
+
+    - name: List files in target directory
+      run: ls target
+
+    - name: Set up Docker
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y docker-compose
+
+    - name: Hello world
+      run: |
+        touch .env
+        echo DOCKER_HUB_ACCESS_TOKEN=${{ secrets.DOCKER_HUB_ACCESS_TOKEN }} >> .env
+        echo DOCKER_HUB_ACCESS_USER=${{ secrets.DOCKER_HUB_ACCESS_USER }} >> .env
+        echo MONGO_DB_URI=${{ secrets.MONGO_DB_URI }} >> .env
+        echo MONGO_DB_NAME=${{ secrets.MONGO_DB_NAME }} >> .env
+
+    - name: Build and push Docker Images
+      run: |
+        echo "${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}" | docker login -u "${{ secrets.DOCKER_HUB_ACCESS_USER }}" --password-stdin
+        docker-compose -f docker-compose.yaml build
+        docker-compose -f docker-compose.yaml push
+
+    - name: Stop and remove containers
+      run: docker-compose -f docker-compose.yaml down
