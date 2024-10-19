@@ -1,18 +1,11 @@
-package com.javaweb.controller.vip0;
+package com.javaweb.controller.guest;
 
-import com.javaweb.connect.impl.FundingIntervalWebService;
-import com.javaweb.connect.impl.FundingRateWebSocketService;
 import com.javaweb.connect.impl.FutureWebSocketService;
 import com.javaweb.connect.impl.SpotWebSocketService;
-import com.javaweb.dto.FundingIntervalDTO;
-import com.javaweb.dto.FundingRateDTO;
 import com.javaweb.dto.PriceDTO;
 import com.javaweb.config.WebSocketConfig;
-import com.javaweb.helpers.controller.FundingRateAndIntervalHelper;
 import com.javaweb.helpers.controller.GetUsernameHelper;
 import com.javaweb.helpers.sse.SseHelper;
-import com.javaweb.helpers.controller.UpperCaseHelper;
-import com.javaweb.service.impl.FundingRateDataService;
 import com.javaweb.service.impl.FuturePriceDataService;
 import com.javaweb.service.impl.MarketCapService;
 import com.javaweb.service.impl.SpotPriceDataService;
