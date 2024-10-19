@@ -1,7 +1,9 @@
 package com.javaweb.service.trigger;
 
 import com.javaweb.dto.trigger.IndicatorTriggerDTO;
+import com.javaweb.helpers.trigger.CheckSymbolExisted;
 import com.javaweb.helpers.trigger.TriggerMapHelper;
+import com.javaweb.model.trigger.FundingRateTrigger;
 import com.javaweb.model.trigger.IndicatorTrigger;
 import com.javaweb.repository.IndicatorTriggerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,17 +17,15 @@ public class IndicatorTriggerService {
     @Autowired
     private TriggerMapHelper triggerMapHelper;
 
-    public String createTrigger(IndicatorTriggerDTO dto, String username) {
-        IndicatorTrigger existingTrigger = indicatorTriggerRepository.findBySymbolAndUsername(dto.getSymbol(), username);
+    @Autowired
+    private CheckSymbolExisted checkSymbolExisted;
 
-        if (existingTrigger != null) {
-            indicatorTriggerRepository.delete(existingTrigger);
+    public String createTrigger(IndicatorTriggerDTO dto) {
+        if (checkSymbolExisted.symbolExistsInFundingRate(dto.getSymbol())) {
+            throw new IllegalArgumentException("Symbol already exists in database.");
         }
-
-        IndicatorTrigger newTrigger = triggerMapHelper.mapIndicatorTrigger(dto);
-        newTrigger.setUsername(username);
-
-        indicatorTriggerRepository.save(newTrigger);
-        return newTrigger.getAlert_id();
+        IndicatorTrigger trigger= triggerMapHelper.mapIndicatorTrigger(dto);
+        IndicatorTrigger savedTrigger = indicatorTriggerRepository.save(trigger);
+        return savedTrigger.getAlert_id();
     }
 }
