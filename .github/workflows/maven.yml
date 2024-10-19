@@ -1,0 +1,29 @@
+name: LearnJava
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  docker:
+    runs-on: self-hosted
+    environment: dev
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Login Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_HUB_ACCESS_USER }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+      - name: Create .env file
+        run: |
+          New-Item -Path .env -ItemType File -Force
+          echo "DOCKER_HUB_ACCESS_TOKEN=${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}" | Out-File -FilePath .env -Encoding utf8
+          echo "DOCKER_HUB_ACCESS_USER=${{ secrets.DOCKER_HUB_ACCESS_USER }}" | Out-File -Append -FilePath .env -Encoding utf8
+          echo "MONGO_DB_URI=${{ secrets.MONGO_DB_URI }}" | Out-File -Append -FilePath .env -Encoding utf8
+          echo "MONGO_DB_NAME=${{ secrets.MONGO_DB_NAME }}" | Out-File -Append -FilePath .env -Encoding utf8
+
+      - name: docker compose
+        run: |
+          docker compose up

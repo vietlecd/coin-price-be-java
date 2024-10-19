@@ -1,10 +1,3 @@
-openapi: 3.0.0
-info:
-  title: API Documentation for My Project
-  version: 1.0.0
-  description: |
-    This project aims to develop a system that supports tracking cryptocurrency market information, focusing
-    on aspects such as prices, transaction fees, and formed transaction. User can look up transaction statistics, monitor real-time market data, and receive alerts based on specific price condition.
 
     _This project is suitable for users who wish to monitor the cryptocurrency market, perform technical analysis, and automatically receive alerts based on price movements and technical indicators._  
     ## Libraries used in the Project:
@@ -167,3 +160,4 @@ components:
             status:
               type: string
               example: 200
+
