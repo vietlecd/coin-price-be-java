@@ -10,13 +10,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/snooze")
+@RequestMapping("/api/vip2/snooze")
 public class SnoozeConditionController {
 
     @Autowired
     private SnoozeConditionService snoozeConditionService;
-
-
 
     @PostMapping("/create")
     public SnoozeCondition createSnoozeCondition(@RequestBody SnoozeCondition snoozeCondition) {

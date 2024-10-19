@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.concurrent.*;
 
 @RestController
-@RequestMapping("/vip1")
+@RequestMapping("/api/vip1")
 public class KlineController {
     @Autowired
     private SseHelper sseHelper;

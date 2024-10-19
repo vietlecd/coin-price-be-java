@@ -18,7 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/vip2")
+@RequestMapping("/api/vip2")
 public class TriggerConditionController {
     @Autowired
     private ObjectMapper objectMapper;
