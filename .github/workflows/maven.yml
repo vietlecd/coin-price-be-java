@@ -18,8 +18,8 @@ jobs:
     - name: Build with Maven
       run: mvn clean install
 
-    - name: BUild and push DockerImages
-    - uses: mr-smithers-excellent/docker-build-push@v6
+    - name: Build and push Docker Images
+      uses: mr-smithers-excellent/docker-build-push@v6
       with:
         image: ${{ secrets.DOCKER_HUB_ACCESS_USER }}/dath_cnpm
         tags: v1, latest
