@@ -1,1 +1,163 @@
 
+    _This project is suitable for users who wish to monitor the cryptocurrency market, perform technical analysis, and automatically receive alerts based on price movements and technical indicators._  
+    ## Libraries used in the Project:
+
+    ### Spring Boot Dependencies
+    - **spring-boot-starter-web**: 
+      - GroupId: `org.springframework.boot`
+      - ArtifactId: `spring-boot-starter-web`
+
+    - **spring-boot-starter-data-jpa**: 
+      - GroupId: `org.springframework.boot`
+      - ArtifactId: `spring-boot-starter-data-jpa`
+
+    - **spring-boot-starter-security**:
+      - GroupId: `org.springframework.boot`
+      - ArtifactId: `spring-boot-starter-security`
+
+    ### Other:
+    - **Java-WebSocket**:
+      - GroupId: `org.java-websocket`
+      - ArtifactId: `Java-WebSocket`
+      - Version: `1.5.4`
+      
+    - **spring-boot-starter-tomcat**:
+      - GroupId: `org.springframework.boot`
+      - ArtifactId: `spring-boot-starter-tomcat`
+      - Version: `2.4.4`
+      - Scope: `provided`
+servers:
+  - url: http://localhost:8080
+tags:
+  - name: auth
+    description: Xác thực người dùng. Tạo tài khoản, đăng nhập, đăng ký.
+paths:
+  /auth/register:
+    post:
+      tags:
+        - auth
+      summary: Tạo tài khoản
+      #operationID: register
+      requestBody:
+        description: Thông tin người dùng
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterBody"
+        required: true
+      responses:
+        "200":
+          description: Tạo tài khoản thành công
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessRegister"
+        "401":
+          description: Lỗi tạo tài khoản!
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Username này đã được đăng kí! hoặc Email này đã được đăng kí!
+                  error:
+                    type: string
+                    example: Unauthorized
+
+  /auth/login:
+    post:
+      tags:
+        - auth
+      summary: Đăng nhập
+      #operationID: login
+      requestBody:
+        description: Đăng nhập vào hệ thống
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginBody"
+        required: true
+      responses:
+        "200":
+          description: Đăng nhập thành công!
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoginSuccess"
+        "401":
+          description: Đăng nhập không thành công!
+          content:
+            application/json:
+              schema:   
+                $ref: "#/components/schemas/LoginFail"
+components:
+  schemas:
+    RegisterBody:
+      type: object
+      properties:
+        email:
+          type: string
+          example: test123@gmail.com
+        name:
+          type: string
+          example: test
+        username:
+          type: string
+          example: testapi123
+        password:
+          type: string
+          example: coinprice123
+
+    SuccessRegister:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Đăng kí tài khoản thành công
+        result:
+          type: object
+          properties:
+            timestamp:
+              type: string
+              example: 2024-10-19T09:22:05.061+0000
+            status:
+              type: string
+              example: 200
+
+    LoginBody:
+      type: object
+      properties:
+        username:
+          type: string
+          example: test
+        password:
+          type: string
+          example: 123
+
+    LoginFail:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Sai tên đăng nhập hoặc mật khẩu
+        error:
+          type: string
+          example: Unauthorized
+    LoginSuccess:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Đăng nhập thành công
+        result:
+          type: object
+          properties:
+            timestamp:
+              type: string
+              example: 2024-10-19T10:02:27.104+0000
+            status:
+              type: string
+              example: 200
+
