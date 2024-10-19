@@ -18,11 +18,11 @@ jobs:
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
       - name: Create .env file
         run: |
-          New-Item -Path .env -ItemType File -Force
-          echo "DOCKER_HUB_ACCESS_TOKEN=${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}" | Out-File -FilePath .env -Encoding utf8
-          echo "DOCKER_HUB_ACCESS_USER=${{ secrets.DOCKER_HUB_ACCESS_USER }}" | Out-File -Append -FilePath .env -Encoding utf8
-          echo "MONGO_DB_URI=${{ secrets.MONGO_DB_URI }}" | Out-File -Append -FilePath .env -Encoding utf8
-          echo "MONGO_DB_NAME=${{ secrets.MONGO_DB_NAME }}" | Out-File -Append -FilePath .env -Encoding utf8
+          mkdir .env
+          echo "DOCKER_HUB_ACCESS_TOKEN=${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}" >> .env 
+          echo "DOCKER_HUB_ACCESS_USER=${{ secrets.DOCKER_HUB_ACCESS_USER }}" >> .env 
+          echo "MONGO_DB_URI=${{ secrets.MONGO_DB_URI }}" >> .env 
+          echo "MONGO_DB_NAME=${{ secrets.MONGO_DB_NAME }}" >> .env 
 
       - name: docker compose
         run: |
