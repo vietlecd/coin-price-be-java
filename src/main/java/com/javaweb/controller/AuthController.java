@@ -78,7 +78,11 @@ public class AuthController {
                 ip_list.add(LoginFunc.getClientIp(request));
                 user.setIp_list(ip_list);
 
-                userRepository.save(user);
+                try {
+                    userRepository.save(user);
+                } catch (Exception e) {
+                    throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Lỗi khi lưu thông tin người dùng");
+                }
             }
 
             return new ResponseEntity<>(
