@@ -68,22 +68,26 @@ public class AuthController {
         String username = loginRequest.getUsername();
         String password = loginRequest.getPassword();
 
+//        if (userRepository.existsByUsername(username)) {
+//            throw new ResponseStatusException(HttpStatus.CONFLICT, "Tên người dùng đã tồn tại");
+//        }
+
         userData user = userRepository.findByUsername(username);
         LoginFunc.checkUser(user);
         if (user.getPassword().equals(password)) {
             LoginFunc.setCookie(username, password, res);
 
-            if(!user.getIp_list().contains(LoginFunc.getClientIp(request))) {
-                List<String> ip_list = user.getIp_list();
-                ip_list.add(LoginFunc.getClientIp(request));
-                user.setIp_list(ip_list);
-
-                try {
-                    userRepository.save(user);
-                } catch (Exception e) {
-                    throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Lỗi khi lưu thông tin người dùng");
-                }
-            }
+//            if(!user.getIp_list().contains(LoginFunc.getClientIp(request))) {
+//                List<String> ip_list = user.getIp_list();
+//                ip_list.add(LoginFunc.getClientIp(request));
+//                user.setIp_list(ip_list);
+//
+//                try {
+//                    userRepository.save(user);
+//                } catch (Exception e) {
+//                    throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Lỗi khi lưu thông tin người dùng");
+//                }
+//            }
 
             return new ResponseEntity<>(
                     new Responses(
