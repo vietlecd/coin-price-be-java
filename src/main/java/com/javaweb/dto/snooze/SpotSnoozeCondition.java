@@ -2,21 +2,43 @@ package com.javaweb.dto.snooze;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 
-@Document(collection = "snooze_conditions")
-public class SnoozeCondition {
+@Document(collection = "spot_snooze_conditions")
+@Component
+public class SpotSnoozeCondition {
 
-    @Id
-    private String id;
-    private String triggerId;
+
+
+    private String username; // Thay thế symbol bằng usernameId làm khóa chính
+
+
+    private String symbol;
+
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getSymbol() {
+        return symbol;
+    }
+
+    public void setSymbol(String symbol) {
+        this.symbol = symbol;
+    }
+
     private String conditionType; // "One-time", "Once-in-duration", "Repeat"
     private LocalDateTime startTime;
     private LocalDateTime endTime;
 
     private String specificTime; // sửa lại từ SpecificTime thành specificTime
-
 
     public String getSpecificTime() {
         return specificTime;
@@ -27,34 +49,18 @@ public class SnoozeCondition {
     }
 
     // Constructors
-    public SnoozeCondition() {}
+    public SpotSnoozeCondition() {}
 
-    public SnoozeCondition(String triggerId, String conditionType, LocalDateTime startTime, LocalDateTime endTime, String specificTime) {
-        this.triggerId = triggerId;
+    public SpotSnoozeCondition(String symbol, String conditionType, LocalDateTime startTime, LocalDateTime endTime, String specificTime) {
+
+        this.symbol = symbol;
         this.conditionType = conditionType;
         this.startTime = startTime;
         this.endTime = endTime;
-        this.specificTime =specificTime;
+        this.specificTime = specificTime;
     }
 
     // Getters and Setters
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getTriggerId() {
-        return triggerId;
-    }
-
-    public void setTriggerId(String triggerId) {
-        this.triggerId = triggerId;
-    }
-
     public String getSnoozeType() {
         return conditionType;
     }
@@ -78,6 +84,4 @@ public class SnoozeCondition {
     public void setEndTime(LocalDateTime endTime) {
         this.endTime = endTime;
     }
-
-
 }

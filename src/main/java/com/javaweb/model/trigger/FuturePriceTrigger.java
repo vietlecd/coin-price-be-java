@@ -12,6 +12,4 @@ import javax.persistence.Entity;
 @Document(collection = "future_price_trigger")
 public class FuturePriceTrigger extends TriggerCondition {
     private double futurePriceThreshold;
-
-
 }

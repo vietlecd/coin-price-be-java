@@ -12,4 +12,5 @@ import javax.persistence.Entity;
 @Document(collection = "spot_price_trigger")
 public class SpotPriceTrigger extends TriggerCondition {
     private double spotPriceThreshold;
+
 }
