@@ -73,7 +73,7 @@ paths:
                     example: Unauthorized
 
   /auth/login:
-    get:
+    put:
       tags:
         - auth
       summary: Đăng nhập
@@ -132,6 +132,22 @@ paths:
                   status:
                     type: string
                     example: 401
+        "403":
+          description: Thất bại!
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Forbidden
+                  message:
+                    type: string
+                    example: Không tìm thấy token!
+                  status:
+                    type: string
+                    example: 403
 
   /auth/logout:
     get:
@@ -155,11 +171,91 @@ paths:
                     example: 200
 
   /api/get-spot-price:
+    get:
+      tags:
+        - price-controller
+      summary: Lấy giá Spot thời gian thực
+      parameters:
+        - name: symbols
+          in: query
+          required: true
+          description: List of symbols to fetch the spot price for (e.g., BTC, ETH)
+          schema:
+            type: array
+            items:
+              type: string
+              example: ["BTC", "ETH"]
+      responses:
+        "200":
+          description: Thành công!
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  symbol:
+                    type: string
+                    example: BTCUSDT
+                  price:
+                    type: string
+                    example: 63953.02000000
+                  eventTime:
+                    type: string
+                    example: 2024-10-18 22:21:00
+        "401":
+          description: Thất bại!
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Unauthorized
+                  message:
+                    type: string
+                    example: Missing or invalid Authorization header
+                  status:
+                    type: string
+                    example: 401
+          "403":
+            description: Thất bại!
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    error:
+                      type: string
+                      example: Forbidden
+                    message:
+                      type: string
+                      example: Người dùng không có VIP truy cập
+                    status:
+                      type: string
+                      example: 403
+          "404":
+            description: Thất bại!
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    error:
+                      type: string
+                      example: Not Found
+                    message:
+                      type: string
+                      example: Cặp coin không tồn tại
+                    status:
+                      type: string
+                      example: 404
+              
+  /api/get-market:
     get: 
       tags:
-      - price-controller
-      summary: Lấy giá Spot thời gian thực
-
+        - price-controller
+      summary: hehe
 
 components:
   schemas:
