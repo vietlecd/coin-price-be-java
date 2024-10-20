@@ -4,18 +4,16 @@ import com.javaweb.connect.impl.FutureWebSocketService;
 import com.javaweb.connect.impl.SpotWebSocketService;
 import com.javaweb.dto.PriceDTO;
 import com.javaweb.config.WebSocketConfig;
-import com.javaweb.helpers.controller.GetUsernameHelper;
-import com.javaweb.helpers.sse.SseHelper;
+import com.javaweb.service.stream.FundingRateStreamService;
 import com.javaweb.service.impl.FuturePriceDataService;
 import com.javaweb.service.impl.MarketCapService;
 import com.javaweb.service.impl.SpotPriceDataService;
-import com.javaweb.service.trigger.TriggerService;
+import com.javaweb.service.stream.PriceStreamService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
@@ -24,15 +22,10 @@ import java.util.concurrent.*;
 @RequestMapping("/api")
 public class PriceController {
     private final ConcurrentHashMap<String, SseEmitter> sseEmitters = new ConcurrentHashMap<>();
-
     @Autowired
-    private SseHelper sseHelper;
+    private FundingRateStreamService fundingRateStreamService;
     @Autowired
-    private GetUsernameHelper getUsernameHelper;
-    @Autowired
-    private TriggerService triggerService;
-    @Autowired
-    private WebSocketConfig webSocketConfig;
+    private PriceStreamService priceStreamService;
 
     @Autowired
     private SpotPriceDataService spotPriceDataService;
@@ -47,36 +40,35 @@ public class PriceController {
     private FutureWebSocketService futureWebSocketService;
 
     @GetMapping("/get-spot-price")
-    public SseEmitter streamSpotPrices(@RequestParam List<String> symbols, HttpServletRequest request) {
+    public SseEmitter streamSpotPrices(@RequestParam List<String> symbols) {
         SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
-        spotWebSocketService.connectToWebSocket(symbols);
+        spotWebSocketService.connectToWebSocket(symbols, false);
 
-        Map<String, PriceDTO> priceDataMap = spotPriceDataService.getPriceDataMap();
+        Map<String, PriceDTO> priceDataMap = spotPriceDataService.getPriceDataUsers();
 
         for (String symbol : symbols) {
-            sseHelper.createPriceSseEmitter(emitter, "Spot", symbol, priceDataMap, webSocketConfig);
+            priceStreamService.createPriceSseEmitter(emitter, "Spot", symbol, priceDataMap);
         }
 
         return emitter;
     }
 
     @GetMapping("/get-future-price")
-    public SseEmitter streamFuturePrices(@RequestParam List<String> symbols,  HttpServletRequest request) {
+    public SseEmitter streamFuturePrices(@RequestParam List<String> symbols) {
         SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
-        futureWebSocketService.connectToWebSocket(symbols);
+        futureWebSocketService.connectToWebSocket(symbols, false);
 
-        Map<String, PriceDTO> priceDataMap = futurePriceDataService.getPriceDataMap();
+        Map<String, PriceDTO> priceDataMap = futurePriceDataService.getPriceDataUsers();
         for (String symbol : symbols) {
-            sseHelper.createPriceSseEmitter(emitter, "Future", symbol, priceDataMap, webSocketConfig);
+            priceStreamService.createPriceSseEmitter(emitter, "Future", symbol, priceDataMap);
         }
 
         return emitter;
     }
 
     @GetMapping("/get-funding-rate")
-    public SseEmitter streamFundingRate(@RequestParam List<String> symbols, HttpServletRequest request) {
-        String username = getUsernameHelper.getUsername(request);
-        return triggerService.handleStreamFundingRate(symbols, username, webSocketConfig);
+    public SseEmitter streamFundingRate(@RequestParam List<String> symbols) {
+        return fundingRateStreamService.handleStreamFundingRate(symbols);
     }
 
     @GetMapping("/get-market")
@@ -90,16 +82,9 @@ public class PriceController {
         return ResponseEntity.ok(marketData);
     }
 
-    @DeleteMapping("/close-websocket")
-    public void closeWebSocket(@RequestParam String type) {
-        sseHelper.closeWebSocket(type, webSocketConfig);
-    }
-
-    @DeleteMapping("/close-all-websocket")
+    @DeleteMapping("/close-all-web")
     public void closeAllWebSocket() {
-        sseHelper.closeAllWebSockets(webSocketConfig);
+        priceStreamService.closeAllWebSockets();
     }
-
-
 
 }

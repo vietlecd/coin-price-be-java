@@ -1,17 +1,10 @@
 package com.javaweb.service.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.javaweb.controller.vip1.KlineController;
 import com.javaweb.dto.KlineDTO;
-import com.javaweb.dto.PriceDTO;
 import com.javaweb.helpers.service.DateTimeHelper;
-import com.javaweb.helpers.service.KlineDTOHelper;
-import com.javaweb.helpers.service.PriceDTOHelper;
-import com.javaweb.service.IPriceDataService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.javaweb.converter.KlineDTOHelper;
 import org.springframework.stereotype.Service;
-import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import java.util.Map;

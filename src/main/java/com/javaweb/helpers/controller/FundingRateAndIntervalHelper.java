@@ -14,29 +14,15 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import static com.javaweb.converter.FundingRateAndIntervalDTOHelper.combineData;
+
 @Component
 public class FundingRateAndIntervalHelper {
-
-    @Autowired
-    private FundingIntervalWebService fundingIntervalWebService;
-
-    public static FundingRateAndIntervalDTO combineData(FundingRateDTO fundingRateDTO, FundingIntervalDTO fundingIntervalDTO) {
-        return new FundingRateAndIntervalDTO(
-                fundingRateDTO.getSymbol(),
-                fundingRateDTO.getFundingRate(),
-                fundingRateDTO.getFundingCountdown(),
-                fundingRateDTO.getEventTime(),
-                fundingIntervalDTO.getAdjustedFundingRateCap(),
-                fundingIntervalDTO.getAdjustedFundingRateFloor(),
-                fundingIntervalDTO.getFundingIntervalHours()
-        );
-    }
 
     public static void streamCombinedData(SseEmitter emitter, List<String> symbols,
                                           Map<String, FundingRateDTO> fundingRateDataMap,
                                           List<Map<String, FundingIntervalDTO>> fundingIntervalDataList) {
 
-        // Create a scheduler to stream data every second
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
         scheduler.scheduleAtFixedRate(() -> {

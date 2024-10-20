@@ -23,4 +23,8 @@ public class userData {
     public void addIp(String ip) {
         ip_list.add(ip);
     }
+
+    public void removeIp(String ip) {
+        if(ip_list.contains(ip)) ip_list.remove(ip);
+    }
 }

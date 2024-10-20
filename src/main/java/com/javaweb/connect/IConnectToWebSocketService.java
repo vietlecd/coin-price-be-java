@@ -8,7 +8,7 @@ import java.util.Map;
 
 public interface IConnectToWebSocketService {
     // Connect to WebSocket for Funding Rate
-    void connectToWebSocket(List<String> streams);
+    void connectToWebSocket(List<String> streams, boolean isTriggerRequest);
 
 //    void closeWebSocket();
 }
