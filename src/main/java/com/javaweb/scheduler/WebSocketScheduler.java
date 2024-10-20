@@ -1,11 +1,10 @@
-package com.javaweb.helpers.trigger;
+package com.javaweb.scheduler;
 
 import com.javaweb.connect.impl.FundingRateWebSocketService;
 import com.javaweb.connect.impl.FutureWebSocketService;
 import com.javaweb.connect.impl.SpotWebSocketService;
 import com.javaweb.service.trigger.TriggerService;
 import com.javaweb.service.trigger.TriggerSymbolService;
-import com.javaweb.service.webhook.TelegramNotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -46,7 +45,7 @@ public class WebSocketScheduler {
                 List<String> symbols = entry.getValue();
 
                 System.out.println("Checking Spot WebSocket connections for username: " + username + ", symbols: " + symbols);
-                spotWebSocketService.connectToWebSocket(symbols);
+                spotWebSocketService.connectToWebSocket(symbols, true);
 
                 triggerService.handleAndSendAlertForSpot(symbols, username);
             }
@@ -58,7 +57,7 @@ public class WebSocketScheduler {
                 List<String> symbols = entry.getValue();
 
                 System.out.println("Checking Future WebSocket connections for username: " + username + ", symbols: " + symbols);
-                futureWebSocketService.connectToWebSocket(symbols);
+                futureWebSocketService.connectToWebSocket(symbols, true);
 
                 triggerService.handleAndSendAlertForFuture(symbols, username);
             }
@@ -69,9 +68,8 @@ public class WebSocketScheduler {
                 String username = entry.getKey();
                 List<String> symbols = entry.getValue();
 
-                //System.out.println("Checking Future WebSocket connections for username: " + username + ", symbols: " + symbols);
-                spotWebSocketService.connectToWebSocket(symbols);
-                futureWebSocketService.connectToWebSocket(symbols);
+                spotWebSocketService.connectToWebSocket(symbols, true);
+                futureWebSocketService.connectToWebSocket(symbols, true);
 
                 triggerService.handleAndSendAlertForSpotAndFuture(symbols, username);
             }
@@ -83,7 +81,7 @@ public class WebSocketScheduler {
                 List<String> symbols = entry.getValue();
 
                 //System.out.println("Checking Future WebSocket connections for username: " + username + ", symbols: " + symbols);
-                fundingRateWebSocketService.connectToWebSocket(symbols);
+                fundingRateWebSocketService.connectToWebSocket(symbols, true);
 
                 triggerService.handleAndSendAlertForFundingRate(symbols, username);
             }
