@@ -42,7 +42,6 @@ public class KlineDataService extends TextWebSocketHandler {
                 numberOfTrades, baseAssetVolume, takerBuyVolume, takerBuyBaseVolume, volume, eventTime
         );
 
-        System.out.println("Event Time: " + eventTime + "Symbol: " + symbol + ", Kline Price: " + closePrice);
         klineDataMap.put("Kline Price: " + symbol, klineDTO);
     }
 

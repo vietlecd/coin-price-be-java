@@ -31,13 +31,11 @@ public class FundingIntervalWebService implements IFundingIntervalWebService {
         List<Map<String, FundingIntervalDTO>> fundingIntervalDataList = new ArrayList<>();
 
         for (String symbol : symbols) {
-            // Kiểm tra cache trước khi thực hiện gọi API
             Map<String, FundingIntervalDTO> cachedData = fundingIntervalDataService.processFundingIntervalDataFromCache(symbol);
 
             if (cachedData != null && !cachedData.isEmpty()) {
                 fundingIntervalDataList.add(cachedData);
             } else {
-                // Nếu dữ liệu không có trong cache, thực hiện kết nối đến API
                 String url = FUNDINGINTERVAL_API_URL + symbol;
                 JsonNode response = restTemplate.getForObject(url, JsonNode.class);
 
@@ -45,7 +43,7 @@ public class FundingIntervalWebService implements IFundingIntervalWebService {
                     for (JsonNode fundingInfo : response) {
                         if (fundingInfo.get("symbol").asText().equals(symbol)) {
                             System.out.println("Received data from API for symbol: " + symbol);
-                            // Xử lý dữ liệu và lưu vào cache
+
                             Map<String, FundingIntervalDTO> processedData = fundingIntervalDataService.processFundingIntervalData(fundingInfo);
                             fundingIntervalDataList.add(processedData);
                         }

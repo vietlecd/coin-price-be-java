@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 @Service
@@ -15,71 +14,34 @@ public class FundingRateSnoozeConditionService {
     @Autowired
     private FundingRateSnoozeConditionRepository fundingRateSnoozeConditionRepository;
 
-    // Phương thức để kiểm tra nếu điều kiện snooze đang hoạt động cho một trigger
-    public boolean isSnoozeActive(String symbol) {
-        Optional<FundingRateSnoozeCondition> optionalCondition = fundingRateSnoozeConditionRepository.findBySymbol(symbol);
+    // Method to check if snooze is active for a given trigger
+    @Autowired
+    FundingRateSnoozeCondition fundingRateSnoozeCondition;
 
-        // Kiểm tra nếu điều kiện snooze tồn tại
-        if (optionalCondition.isPresent()) {
-            FundingRateSnoozeCondition condition = optionalCondition.get();
-            LocalDateTime now = LocalDateTime.now();
+    // Method to create a new snooze condition
+    public FundingRateSnoozeCondition createSnoozeCondition(FundingRateSnoozeCondition fundingRateSnoozeCondition, String username) {
+        // Set the username in the fundingRateSnoozeCondition object
+        fundingRateSnoozeCondition.setUsername(username);
 
-            switch (condition.getSnoozeType()) {
-                case "ONE_TIME":
-                    // Nếu là one-time và thời gian snooze vẫn còn hoạt động
-                    if (now.isBefore(condition.getEndTime())) {
-                        System.out.println("Snooze active for symbol: " + symbol + " type: ");
-                        return true;
-                    }
-                    break;
-
-                case "ONCE_IN_DURATION":
-                    // Nếu điều kiện snooze đang hoạt động theo khoảng thời gian
-                    if (now.isBefore(condition.getEndTime())) {
-                        System.out.println("Snooze active for symbol: " + symbol + " type: ");
-                        return true;
-                    }
-                    break;
-
-                case "SPECIFIC_TIME":
-                    // Kiểm tra thời gian cụ thể (specific time) theo giờ định trước
-                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
-                    LocalDateTime specificTime = LocalDateTime.parse(condition.getSpecificTime(), formatter)
-                            .withYear(now.getYear()).withMonth(now.getMonthValue()).withDayOfMonth(now.getDayOfMonth());
-
-                    // Nếu thời gian hiện tại nằm trong khoảng 30 phút trước và sau thời gian cụ thể
-                    if (now.isBefore(specificTime.plusMinutes(30)) && now.isAfter(specificTime.minusMinutes(30))) {
-                        System.out.println("Snooze active for symbol: " + symbol + " type: ");
-                        return true;
-                    }
-                    break;
-
-                default:
-                    System.out.println("Unknown snooze type for symbol: " + symbol);
-                    break;
-            }
-        }
-
-        // Không có snooze nào hoạt động cho symbol và type này
-        return false;
-    }
-
-    // Phương thức để tạo điều kiện snooze mới
-    public FundingRateSnoozeCondition createSnoozeCondition(FundingRateSnoozeCondition fundingRateSnoozeCondition) {
-        Optional<FundingRateSnoozeCondition> existingSnoozeCondition = fundingRateSnoozeConditionRepository.findBySymbol(fundingRateSnoozeCondition.getSymbol());
+        // Check if a snooze condition already exists for the given symbol and username
+        Optional<FundingRateSnoozeCondition> existingSnoozeCondition = fundingRateSnoozeConditionRepository
+                .findBySymbolAndUsername(fundingRateSnoozeCondition.getSymbol(), fundingRateSnoozeCondition.getUsername());
 
         if (existingSnoozeCondition.isPresent()) {
-            // Nếu symbol đã tồn tại, ném ngoại lệ hoặc trả về một phản hồi tuỳ chỉnh
-            throw new IllegalArgumentException("Symbol '" + fundingRateSnoozeCondition.getSymbol() + "' already exists in the database");
+            // If symbol and username exist together, throw an exception
+            throw new IllegalArgumentException("Snooze condition with symbol '"
+                    + fundingRateSnoozeCondition.getSymbol() + "' and username '"
+                    + fundingRateSnoozeCondition.getUsername() + "' already exists in the database");
         }
 
-        // Nếu symbol chưa tồn tại, lưu điều kiện snooze mới
+        // If no such snooze condition exists, save the new one
         return fundingRateSnoozeConditionRepository.save(fundingRateSnoozeCondition);
     }
 
-    // Phương thức để hủy kích hoạt (xóa) điều kiện snooze theo triggerId
+    // Method to deactivate (delete) a snooze condition by triggerId
     public void deleteSnoozeConditionByTriggerId(String triggerId) {
-        Optional<FundingRateSnoozeCondition> snoozeCondition = fundingRateSnoozeConditionRepository.findBySymbol(triggerId);
+        Optional<FundingRateSnoozeCondition> snoozeCondition = fundingRateSnoozeConditionRepository
+                .findBySymbolAndUsername(fundingRateSnoozeCondition.getSymbol(), fundingRateSnoozeCondition.getUsername());
         snoozeCondition.ifPresent(condition -> fundingRateSnoozeConditionRepository.delete(condition));
     }
 }
