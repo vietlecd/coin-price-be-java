@@ -1,7 +1,0 @@
-MONGO_DB_URI=mongodb://admin:wJBou8AFQAxxEjn4@dath-cnpm-hk241-shard-00-00.wyohj.mongodb.net:27017,dath-cnpm-hk241-shard-00-01.wyohj.mongodb.net:27017,dath-cnpm-hk241-shard-00-02.wyohj.mongodb.net:27017/?ssl=true&replicaSet=atlas-rn106f-shard-0&authSource=admin&retryWrites=true&w=majority&appName=DATH-CNPM-HK241
-MONGO_DB_NAME=DATH_CNPM
-
-DISCORD_WEBHOOK_ENTRY=https://discord.com/api/webhooks/1296747857864425536/I7MoH4HkDgsLTc0v7AIj1gZgQQ_zcTaTu2rFg2D9y_jnXbXjdN8RAgsDeBIMbhipJxpx
-
-DOCKER_HUB_ACCESS_USER=lmao1415
-DOCKER_HUB_ACCESS_TOKEN=dckr_pat_uRw0QvoN-cKJV79vAeBjEHjwZb0
