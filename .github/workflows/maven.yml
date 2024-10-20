@@ -43,22 +43,14 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y docker-compose
   
-    - name: Hello world
-      run: |
-        touch .env
-        echo DOCKER_HUB_ACCESS_TOKEN=${{ secrets.DOCKER_HUB_ACCESS_TOKEN }} >> .env
-        echo DOCKER_HUB_ACCESS_USER=${{ secrets.DOCKER_HUB_ACCESS_USER }} >> .env
-        echo MONGO_DB_URI=${{ secrets.MONGO_DB_URI }} >> .env
-        echo MONGO_DB_NAME=${{ secrets.MONGO_DB_NAME }} >> .env
-  
     - name: Login to DockerHub
       run: |
         echo "${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}" | docker login -u "${{ secrets.DOCKER_HUB_ACCESS_USER }}" --password-stdin
         
     - name: Build and Push DockerFile
       run: |
-        docker-compose -f docker-compose.yaml build
-        docker-compose -f docker-compose.yaml push
+        docker build -t lmao1415/dath_cnpm
+        docker push lmao1415/dath_cnpm
   
     - name: Stop and remove containers
       run: docker-compose -f docker-compose.yaml down
