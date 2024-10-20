@@ -28,7 +28,7 @@ public class AuthController {
 
     @GetMapping("/refreshToken")
     public ResponseEntity<?> refreshToken(HttpServletRequest request, HttpServletResponse response) {
-        String token = getCookieValue(request, "token");
+        String token = OtherFunct.getCookieValue(request, "token");
 
         if(token == null) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Không tìm thấy token!");
@@ -121,7 +121,7 @@ public class AuthController {
 
     @GetMapping("/logOut")
     public ResponseEntity<?> logout(HttpServletResponse res, HttpServletRequest req) {
-        String token = getCookieValue(req, "token");
+        String token = OtherFunct.getCookieValue(req, "token");
         if(token == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Không tìm thấy token trong cookie");
         }
@@ -147,18 +147,6 @@ public class AuthController {
         response.put("path", "/auth/logOut");
 
         return new ResponseEntity<>(response, HttpStatus.OK);
-    }
-
-    private String getCookieValue(HttpServletRequest request, String cookieName) {
-        Cookie[] cookies = request.getCookies();
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                if (cookie.getName().equals(cookieName)) {
-                    return cookie.getValue();
-                }
-            }
-        }
-        return null;
     }
 
     @Data
