@@ -1,11 +1,5 @@
 package com.javaweb.service.trigger;
 
-import com.javaweb.config.WebSocketConfig;
-import com.javaweb.connect.impl.FundingIntervalWebService;
-import com.javaweb.connect.impl.FundingRateWebSocketService;
-import com.javaweb.connect.impl.FutureWebSocketService;
-import com.javaweb.connect.impl.SpotWebSocketService;
-import com.javaweb.dto.FundingIntervalDTO;
 import com.javaweb.dto.FundingRateDTO;
 import com.javaweb.dto.PriceDTO;
 import com.javaweb.helpers.trigger.SnoozeCheckHelper;

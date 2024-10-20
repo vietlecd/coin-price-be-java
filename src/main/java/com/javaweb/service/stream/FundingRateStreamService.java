@@ -32,13 +32,17 @@ public class FundingRateStreamService {
     private final ScheduledExecutorService executor = Executors.newScheduledThreadPool(10);
     private final Map<String, ScheduledFuture<?>> scheduledTasks = new ConcurrentHashMap<>();
     private final Map<String, SseEmitter> emitters = new ConcurrentHashMap<>();
-    private final Map<String, FundingRateDTO> fundingRateDataMap = new ConcurrentHashMap<>(); // Thêm data map để lưu
+    private final Map<String, FundingRateDTO> fundingRateDataMap = new ConcurrentHashMap<>();
 
     public SseEmitter handleStreamFundingRate(List<String> symbols) {
         SseEmitter sseEmitter = new SseEmitter(Long.MAX_VALUE);
-        String key = "FundingRateAndInterval: " + String.join(",", symbols);
 
+        String key = "FundingRateAndInterval:" + symbols.hashCode();
+
+        // Kết nối WebSocket
         fundingRateWebSocketService.connectToWebSocket(symbols, false);
+
+        // Cập nhật định kỳ FundingInterval
         scheduleFundingIntervalDataUpdate(symbols);
 
         Runnable sendTask = () -> {
@@ -46,17 +50,22 @@ public class FundingRateStreamService {
                 Map<String, FundingRateDTO> fundingRateDataMap = fundingRateDataService.getFundingRateDataUsers();
                 List<Map<String, FundingIntervalDTO>> fundingIntervalDataList = fundingIntervalWebService.getLatestFundingIntervalData(symbols);
 
-                // Gộp và stream dữ liệu FundingRate và FundingInterval
                 for (String symbol : symbols) {
                     FundingRateDTO fundingRateDTO = fundingRateDataMap.get("FundingRate Price: " + symbol);
 
-                    for (Map<String, FundingIntervalDTO> fundingIntervalData : fundingIntervalDataList) {
-                        FundingIntervalDTO fundingIntervalDTO = fundingIntervalData.get(symbol);
+                    if (fundingRateDTO != null) {
+                        FundingIntervalDTO fundingIntervalDTO = null;
 
-                        if (fundingRateDTO != null && fundingIntervalDTO != null) {
-                            FundingRateAndIntervalDTO combinedDTO = combineData(fundingRateDTO, fundingIntervalDTO);
-                            sseEmitter.send(combinedDTO);
+                        for (Map<String, FundingIntervalDTO> fundingIntervalData : fundingIntervalDataList) {
+                            fundingIntervalDTO = fundingIntervalData.get(symbol);
+                            if (fundingIntervalDTO != null) {
+                                break;
+                            }
                         }
+
+                        FundingRateAndIntervalDTO combinedDTO = combineData(fundingRateDTO, fundingIntervalDTO);
+
+                        sseEmitter.send(combinedDTO);
                     }
                 }
             } catch (Exception e) {
@@ -64,11 +73,15 @@ public class FundingRateStreamService {
             }
         };
 
+
         ScheduledFuture<?> scheduledFuture = executor.scheduleAtFixedRate(sendTask, 0, 1, TimeUnit.SECONDS);
         scheduledTasks.put(key, scheduledFuture);
         emitters.put(key, sseEmitter);
 
+        // Hàm hủy emitter và task
         Runnable cancelTask = () -> {
+            System.out.println("Cancelling task for: " + key);
+
             if (scheduledTasks.containsKey(key)) {
                 ScheduledFuture<?> future = scheduledTasks.get(key);
                 if (future != null && !future.isCancelled()) {
@@ -77,6 +90,7 @@ public class FundingRateStreamService {
                     System.out.println("Cancelled scheduled task for type: " + key);
                 }
             }
+
             if (emitters.containsKey(key)) {
                 emitters.remove(key);
                 System.out.println("Removed SSE emitter for type: " + key);
@@ -89,8 +103,6 @@ public class FundingRateStreamService {
                     System.out.println("Removed funding rate data for symbol: " + symbol);
                 }
             }
-
-            System.out.println("Connection closed and data cleared for type: " + key);
         };
 
         sseEmitter.onCompletion(cancelTask);
@@ -105,7 +117,22 @@ public class FundingRateStreamService {
         dataUpdater.scheduleAtFixedRate(() -> {
             fundingIntervalWebService.getLatestFundingIntervalData(symbols);
             System.out.println("FundingInterval data updated for symbols: " + symbols);
-        }, 0, 1, TimeUnit.HOURS); // Cập nhật mỗi 1 tiếng
+        }, 0, 1, TimeUnit.HOURS);
     }
 
+    public void closeAllWebSockets() {
+        for (Map.Entry<String, ScheduledFuture<?>> entry : scheduledTasks.entrySet()) {
+            ScheduledFuture<?> future = entry.getValue();
+            future.cancel(true);
+        }
+        scheduledTasks.clear();
+
+        for (Map.Entry<String, SseEmitter> entry : emitters.entrySet()) {
+            SseEmitter emitter = entry.getValue();
+            if (emitter != null) {
+                emitter.complete();
+            }
+        }
+        emitters.clear();
+    }
 }
