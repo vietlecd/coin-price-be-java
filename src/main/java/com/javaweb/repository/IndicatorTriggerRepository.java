@@ -1,7 +1,9 @@
 package com.javaweb.repository;
 
+import com.javaweb.model.trigger.FundingRateTrigger;
 import com.javaweb.model.trigger.IndicatorTrigger;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
 
 import java.util.List;
 
@@ -9,4 +11,8 @@ public interface IndicatorTriggerRepository extends MongoRepository<IndicatorTri
     IndicatorTrigger findBySymbolAndUsername(String symbol, String username);
 
     List<IndicatorTrigger> findByUsername(String username);
+
+
+    @Query(value = "{}", fields = "{username: 1, symbol: 1}")
+    List<FundingRateTrigger> findAllUsernamesWithSymbols();
 }

@@ -1,10 +1,9 @@
-package com.javaweb.service.trigger;
+package com.javaweb.service.trigger.CRUD;
 
 import com.javaweb.dto.trigger.FundingRateTriggerDTO;
 import com.javaweb.helpers.trigger.CheckSymbolExisted;
 import com.javaweb.helpers.trigger.TriggerMapHelper;
 import com.javaweb.model.trigger.FundingRateTrigger;
-import com.javaweb.model.trigger.SpotPriceTrigger;
 import com.javaweb.repository.FundingRateTriggerRepository;
 import com.javaweb.service.ITriggerService;
 import org.springframework.beans.factory.annotation.Autowired;

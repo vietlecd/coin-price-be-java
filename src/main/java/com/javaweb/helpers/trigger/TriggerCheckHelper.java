@@ -4,18 +4,23 @@ import com.javaweb.dto.FundingRateDTO;
 import com.javaweb.dto.PriceDTO;
 import com.javaweb.model.trigger.FundingRateTrigger;
 import com.javaweb.model.trigger.FuturePriceTrigger;
+import com.javaweb.model.trigger.PriceDifferenceTrigger;
 import com.javaweb.model.trigger.SpotPriceTrigger;
 import com.javaweb.repository.FundingRateTriggerRepository;
 import com.javaweb.repository.FuturePriceTriggerRepository;
+import com.javaweb.repository.PriceDifferenceTriggerRepository;
 import com.javaweb.repository.SpotPriceTriggerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 @Component
 public class TriggerCheckHelper {
+    @Autowired
+    private PriceDifferenceTriggerRepository priceDifferenceTriggerRepository;
     @Autowired
     private FuturePriceTriggerRepository futurePriceTriggerRepository;
     @Autowired
@@ -25,22 +30,62 @@ public class TriggerCheckHelper {
     @Autowired
     private ComparisonHelper comparisonHelper;
 
-    public boolean checkSymbolAndTriggerAlert(List<String> symbols, Map<String, ?> priceDataMap, String type) {
-        boolean anyConditionMet = false;
+    public List<String> checkCompareSymbolndTriggerAlert(List<String> symbols, Map<String, PriceDTO> spotPriceDataMap, Map<String, PriceDTO> futurePriceDataMap, String username) {
+        List<String> firedSymbols = new ArrayList<>();
+
+        for (String symbol : symbols) {
+            PriceDifferenceTrigger trigger = priceDifferenceTriggerRepository.findBySymbolAndUsername(symbol, username);
+
+            if (trigger == null) {
+                System.out.println("no trigger found for symbol: " + symbol + " with username " + username);
+                continue;
+            }
+
+            String spotPrice = getCurrentPrice(symbol, spotPriceDataMap, "Spot");
+            String futurePrice = getCurrentPrice(symbol, futurePriceDataMap, "Future");
+
+
+            if (spotPrice != null && futurePrice != null) {
+                boolean conditionMet = comparisonHelper.checkPriceDifference(trigger, spotPrice, futurePrice);
+
+                if (conditionMet) {
+                    System.out.println("Price difference exceeds threshold for symbol: " + symbol);
+                    firedSymbols.add(symbol);
+                } else {
+                    System.out.println("No significant price difference for symbol: " + symbol);
+                }
+            } else {
+                System.out.println("Missing price data for symbol: " + symbol);
+            }
+        }
+        return firedSymbols;
+    }
+
+    public List<String> checkSymbolAndTriggerAlert(List<String> symbols, Map<String, ?> priceDataMap, String type, String username) {
+        List<String> firedSymbols = new ArrayList<>();
+
 
         for (String symbol : symbols) {
             boolean conditionMet = false;
 
             // Lấy giá hiện tại dựa trên loại trigger
             String currentPrice = getCurrentPrice(symbol, priceDataMap, type);
-            String currentFundingRate = getCurrentFundingRate(symbol, priceDataMap, type);
+            String currentFundingRate = getCurrentFundingRate(symbol, priceDataMap);
 
-            if ("spot".equals(type) || "future".equals(type)) {
+            if ("Spot".equals(type) || "Future".equals(type)) {
                 if (currentPrice == null || currentPrice.trim().isEmpty()) {
                     System.out.println("Current price is null or empty for symbol: " + symbol);
                     continue;
                 }
             }
+
+            if("ComparePrice".equals(type)) {
+                if (currentPrice == null || currentPrice.trim().isEmpty()) {
+                    System.out.println("Current price is null or empty for symbol: " + symbol);
+                    continue;
+                }
+            }
+
 
             if ("FundingRate".equals(type) && (currentFundingRate == null || currentFundingRate.trim().isEmpty())) {
                 System.out.println("Current funding rate is null or empty for symbol: " + symbol);
@@ -49,14 +94,14 @@ public class TriggerCheckHelper {
 
             // Kiểm tra điều kiện trigger cho từng loại
             switch (type) {
-                case "spot":
-                    conditionMet = checkSpotTrigger(symbol, currentPrice);
+                case "Spot":
+                    conditionMet = checkSpotTrigger(symbol, currentPrice, username);
                     break;
-                case "future":
-                    conditionMet = checkFutureTrigger(symbol, currentPrice);
+                case "Future":
+                    conditionMet = checkFutureTrigger(symbol, currentPrice, username);
                     break;
                 case "FundingRate":
-                    conditionMet = checkFundingRateTrigger(symbol, currentFundingRate);
+                    conditionMet = checkFundingRateTrigger(symbol, currentFundingRate, username);
                     break;
                 default:
                     System.out.println("Unknown trigger type: " + type);
@@ -64,12 +109,11 @@ public class TriggerCheckHelper {
 
             // Nếu điều kiện được thỏa mãn thì in ra log và đánh dấu kết quả
             if (conditionMet) {
-                System.out.println("Condition met for symbol: " + symbol + " " + type);
-                anyConditionMet = true;
+                firedSymbols.add(symbol);
             }
         }
 
-        return anyConditionMet;
+        return firedSymbols;
     }
 
     // Phương thức lấy giá hiện tại dựa trên loại trigger
@@ -90,19 +134,23 @@ public class TriggerCheckHelper {
         return priceDTO != null ? priceDTO.getPrice() : null;
     }
 
-    private String getCurrentFundingRate(String symbol, Map<String, ?> priceDataMap, String type) {
+    private String getCurrentFundingRate(String symbol, Map<String, ?> priceDataMap) {
         FundingRateDTO fundingRateDTO = null;
 
-        if ("FundingRate".equals(type)) {
-            fundingRateDTO = (FundingRateDTO) priceDataMap.get("FundingRate Price: " + symbol);
+        String spotKey = "FundingRate Price: " + symbol.toUpperCase();
+        if (priceDataMap.containsKey(spotKey)) {
+            fundingRateDTO = (FundingRateDTO) priceDataMap.get(spotKey);
+        } else {
+            System.out.println("Key not found: " + spotKey);
         }
 
         return fundingRateDTO != null ? fundingRateDTO.getFundingRate() : null;
     }
 
-    // Phương thức kiểm tra trigger cho Spot
-    private boolean checkSpotTrigger(String symbol, String currentPrice) {
-        SpotPriceTrigger spotTrigger = spotPriceTriggerRepository.findBySymbol(symbol);
+    // Phương thức kiểm tra trigger cho Spot, Future.....
+
+    private boolean checkSpotTrigger(String symbol, String currentPrice, String username) {
+        SpotPriceTrigger spotTrigger = spotPriceTriggerRepository.findBySymbolAndUsername(symbol, username);
         if (spotTrigger != null) {
             return comparisonHelper.checkSpotPriceCondition(spotTrigger, currentPrice);
         }
@@ -110,16 +158,16 @@ public class TriggerCheckHelper {
     }
 
     // Phương thức kiểm tra trigger cho Future
-    private boolean checkFutureTrigger(String symbol, String currentPrice) {
-        FuturePriceTrigger futureTrigger = futurePriceTriggerRepository.findBySymbol(symbol);
+    private boolean checkFutureTrigger(String symbol, String currentPrice, String username) {
+        FuturePriceTrigger futureTrigger = futurePriceTriggerRepository.findBySymbolAndUsername(symbol, username);
         if (futureTrigger != null) {
             return comparisonHelper.checkFuturePriceCondition(futureTrigger, currentPrice);
         }
         return false;
     }
 
-    private boolean checkFundingRateTrigger(String symbol, String currentFundingRate) {
-        FundingRateTrigger fundingRateTrigger = fundingRateTriggerRepository.findBySymbol(symbol);
+    private boolean checkFundingRateTrigger(String symbol, String currentFundingRate, String username) {
+        FundingRateTrigger fundingRateTrigger = fundingRateTriggerRepository.findBySymbolAndUsername(symbol, username);
         if (fundingRateTrigger != null) {
             return comparisonHelper.checkFundingRateCondition(fundingRateTrigger, currentFundingRate);
         }
