@@ -6,6 +6,7 @@ import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
@@ -13,9 +14,10 @@ import java.util.Date;
 
 @Service
 public class CreateToken {
-    private static final String SECRET = "R7h9YcUjMKL3zNHdGQwaXtFZ12pJObAy8fQm4slkWbvPIRzDqXC3v8MrZNfjTSY5HtuwxpabVdLoUeKJFhTAm7zg3jYW8XrNMPkV6QLcBxZoHREWUSCv5aqnwDioJP7XpLZB3tr4hdz9eOsvymcgKiAXNfRJshE2GHTVBYrZ1dQFPbwLVru5odX9WvU1CTQz";
+    private final static String SECRET = System.getenv("JWT_SECRET");
 
     public static String createToken(String username, String password) {
+        System.out.println(SECRET);
         try {
             JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
                     .subject(username)
@@ -34,7 +36,7 @@ public class CreateToken {
 
             return signedJWT.serialize();
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            System.out.println(SECRET);
             return "false, there's some error";
         }
     }
