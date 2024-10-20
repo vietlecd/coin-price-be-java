@@ -30,26 +30,31 @@ public class SpotWebSocketService extends TextWebSocketHandler implements IConne
     @Autowired
     private WebSocketClient webSocketClient;
 
-
-
     private String buildSpotWebSocketUrl(List<String> streams) {
         String streamParam = streams.stream().map(s -> s.toLowerCase() + "@ticker").collect(Collectors.joining("/"));
         return "wss://stream.binance.com:9443/stream?streams=" + streamParam;
     }
 
-    @Override
-    public void connectToWebSocket(List<String> streams) {
+    public void connectToWebSocket(List<String> streams, boolean isTriggerRequest) {
         String wsUrl = buildSpotWebSocketUrl(streams);
-        webSocketConfig.connectToWebSocket(wsUrl, webSocketClient, this);
+        // Truyền cờ isTriggerRequest trực tiếp vào handler
+        webSocketConfig.connectToWebSocket(wsUrl, webSocketClient, new SpotWebSocketHandler(isTriggerRequest));
     }
 
-    @Override
-    protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-        String payload = message.getPayload();
+    private class SpotWebSocketHandler extends TextWebSocketHandler {
 
-        JsonNode data = objectMapper.readTree(payload).get("data");
+        private final boolean isTriggerRequest;
 
-        spotPriceDataService.handleWebSocketMessage(data);
+        public SpotWebSocketHandler(boolean isTriggerRequest) {
+            this.isTriggerRequest = isTriggerRequest;
+        }
+
+        @Override
+        protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
+            String payload = message.getPayload();
+            JsonNode data = objectMapper.readTree(payload).get("data");
+
+            spotPriceDataService.handleWebSocketMessage(data, isTriggerRequest);
+        }
     }
-
 }

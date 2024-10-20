@@ -1,28 +1,23 @@
-package com.javaweb.helpers.sse;
+package com.javaweb.service.stream;
 
-import com.javaweb.dto.FundingRateDTO;
 import com.javaweb.dto.KlineDTO;
 import com.javaweb.dto.PriceDTO;
-import com.javaweb.config.WebSocketConfig;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.*;
 
-@Component
-public class SseHelper {
+@Service
+public class PriceStreamService {
 
     private final ScheduledExecutorService executor = Executors.newScheduledThreadPool(10);
     private final Map<String, ScheduledFuture<?>> scheduledTasks = new ConcurrentHashMap<>();
     private final Map<String, SseEmitter> emitters = new ConcurrentHashMap<>();
 
-    private final Map<String, Map<String, PriceDTO>> priceDataMap = new ConcurrentHashMap<>();
-
     public SseEmitter createSseEmitter(SseEmitter emitter, String type, String symbol,
-                                       Runnable sendTask,
-                                       WebSocketConfig webSocketConfig) {
+                                       Runnable sendTask) {
         String key = type + " Price: " + symbol.toUpperCase();
         System.out.println(key);
 
@@ -56,8 +51,7 @@ public class SseHelper {
     }
 
     public SseEmitter createPriceSseEmitter(SseEmitter emitter, String type, String symbol,
-                                            Map<String, PriceDTO> priceDataMap,
-                                            WebSocketConfig webSocketConfig) {
+                                            Map<String, PriceDTO> priceDataMap) {
         Runnable sendPriceTask = () -> {
             try {
                 emitter.send(priceDataMap.values());
@@ -66,27 +60,11 @@ public class SseHelper {
             }
         };
 
-        return createSseEmitter(emitter, type, symbol, sendPriceTask, webSocketConfig);
-    }
-
-    public SseEmitter createFundingRateSseEmitter(SseEmitter emitter, String type, String symbol,
-                                                  Map<String, FundingRateDTO> fundingRateDataMap,
-                                                  WebSocketConfig webSocketConfig) {
-        Runnable sendFundingRateTask = () -> {
-            try {
-                emitter.send(fundingRateDataMap.values());
-            } catch (IOException e) {
-                emitter.completeWithError(e);
-            }
-        };
-
-        return createSseEmitter(emitter, type, symbol, sendFundingRateTask, webSocketConfig);
-
+        return createSseEmitter(emitter, type, symbol, sendPriceTask);
     }
 
     public SseEmitter createKlineSseEmitter(SseEmitter emitter, String type, String symbol,
-                                            Map<String, KlineDTO> klineDataMap,
-                                            WebSocketConfig webSocketConfig) {
+                                            Map<String, KlineDTO> klineDataMap) {
         Runnable sendKlineTask = () -> {
             try {
                 emitter.send(klineDataMap.values());
@@ -95,47 +73,15 @@ public class SseHelper {
             }
         };
 
-        return createSseEmitter(emitter, type, symbol, sendKlineTask, webSocketConfig);
-
+        return createSseEmitter(emitter, type, symbol, sendKlineTask);
     }
 
-    public SseEmitter getSseEmitterBySymbol(String symbol, String type ) {
-       String key = type + " Price: " + symbol.toUpperCase();
-        return emitters.get(key);
-    }
-
-    public void closeWebSocket(String type, WebSocketConfig webSocketConfig) {
-        if (scheduledTasks.containsKey(type)) {
-            ScheduledFuture<?> future = scheduledTasks.get(type);
-            if (future != null && !future.isCancelled()) {
-                future.cancel(true);
-                scheduledTasks.remove(type);
-                System.out.println("Cancelled scheduled task for type: " + type);
-            }
-        }
-
-        SseEmitter emitter = emitters.get(type);
-        if (emitter != null) {
-            emitter.complete();
-            emitters.remove(type);
-            System.out.println("Closed SSE emitter for type: " + type);
-        }
-
-        if (priceDataMap.containsKey(type)) {
-            priceDataMap.remove(type);
-            System.out.println("Removed price data for type: " + type);
-        }
-    }
-
-
-    public void closeAllWebSockets(WebSocketConfig webSocketConfig) {
-
+    public void closeAllWebSockets() {
         for (Map.Entry<String, ScheduledFuture<?>> entry : scheduledTasks.entrySet()) {
             ScheduledFuture<?> future = entry.getValue();
             future.cancel(true);
         }
         scheduledTasks.clear();
-
 
         for (Map.Entry<String, SseEmitter> entry : emitters.entrySet()) {
             SseEmitter emitter = entry.getValue();
@@ -144,9 +90,5 @@ public class SseHelper {
             }
         }
         emitters.clear();
-
-
-        //webSocketConfig.closeWebSocket();
     }
-
 }

@@ -8,8 +8,6 @@ import com.javaweb.connect.impl.SpotWebSocketService;
 import com.javaweb.dto.FundingIntervalDTO;
 import com.javaweb.dto.FundingRateDTO;
 import com.javaweb.dto.PriceDTO;
-import com.javaweb.helpers.controller.FundingRateAndIntervalHelper;
-import com.javaweb.helpers.sse.SseHelper;
 import com.javaweb.helpers.trigger.TriggerCheckHelper;
 import com.javaweb.service.impl.FundingRateDataService;
 import com.javaweb.service.impl.FuturePriceDataService;
@@ -32,20 +30,12 @@ import static java.lang.Math.abs;
 
 @Service
 public class TriggerService {
-    @Autowired
-    private SseHelper sseHelper;
 
     @Autowired
     private TriggerCheckHelper triggerCheckHelper;
 
     @Autowired
-    private FundingRateWebSocketService fundingRateWebSocketService;
-
-    @Autowired
     private FundingRateDataService fundingRateDataService;
-
-    @Autowired
-    private FundingIntervalWebService fundingIntervalWebService;
 
     @Autowired
     private SpotPriceDataService spotPriceDataService;
@@ -57,7 +47,7 @@ public class TriggerService {
     private TelegramNotificationService telegramNotificationService;
 
     public void handleAndSendAlertForFundingRate(List<String> symbols, String username) {
-        Map<String, FundingRateDTO> fundingRateDataMap = fundingRateDataService.getFundingRateDataMap();
+        Map<String, FundingRateDTO> fundingRateDataMap = fundingRateDataService.getFundingRateDataTriggers();
 
         List<String> firedSymbols = triggerCheckHelper.checkSymbolAndTriggerAlert(symbols, fundingRateDataMap, "FundingRate" , username);
 
@@ -70,8 +60,8 @@ public class TriggerService {
         }
     }
     public void handleAndSendAlertForSpotAndFuture(List<String> symbols, String username) {
-        Map<String, PriceDTO> spotPriceDataMap = spotPriceDataService.getPriceDataMap();
-        Map<String, PriceDTO> futurePriceDataMap = futurePriceDataService.getPriceDataMap();
+        Map<String, PriceDTO> spotPriceDataMap = spotPriceDataService.getPriceDataTriggers();
+        Map<String, PriceDTO> futurePriceDataMap = futurePriceDataService.getPriceDataTriggers();
 
         List<String> firedSymbols = triggerCheckHelper.checkCompareSymbolndTriggerAlert(symbols, spotPriceDataMap, futurePriceDataMap, username);
 
@@ -84,7 +74,7 @@ public class TriggerService {
         }
     }
     public void handleAndSendAlertForSpot(List<String> symbols, String username) {
-        Map<String, PriceDTO> priceDataMap = spotPriceDataService.getPriceDataMap();
+        Map<String, PriceDTO> priceDataMap = spotPriceDataService.getPriceDataTriggers();
         List<String> firedSymbols = triggerCheckHelper.checkSymbolAndTriggerAlert(symbols, priceDataMap, "Spot", username);
 
         if (!firedSymbols.isEmpty()) {
@@ -97,7 +87,7 @@ public class TriggerService {
     }
 
     public void handleAndSendAlertForFuture(List<String> symbols, String username) {
-        Map<String, PriceDTO> priceDataMap = futurePriceDataService.getPriceDataMap();
+        Map<String, PriceDTO> priceDataMap = futurePriceDataService.getPriceDataTriggers();
         List<String> firedSymbols = triggerCheckHelper.checkSymbolAndTriggerAlert(symbols, priceDataMap, "Future", username);
 
         if (!firedSymbols.isEmpty()) {
@@ -109,31 +99,4 @@ public class TriggerService {
         }
     }
 
-    public SseEmitter handleStreamFundingRate(List<String> symbols, String username, WebSocketConfig webSocketConfig) {
-        SseEmitter sseEmitter = new SseEmitter(Long.MAX_VALUE);
-
-        //ham update data interval sau 15 min
-        scheduleFundingIntervalDataUpdate(symbols);
-
-        fundingRateWebSocketService.connectToWebSocket(symbols);
-
-        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-        scheduler.scheduleAtFixedRate(() -> {
-            Map<String, FundingRateDTO> fundingRateDataMap = fundingRateDataService.getFundingRateDataMap();
-            List<Map<String, FundingIntervalDTO>> fundingIntervalDataList = fundingIntervalWebService.getLatestFundingIntervalData(symbols);
-
-            FundingRateAndIntervalHelper.streamCombinedData(sseEmitter, symbols, fundingRateDataMap, fundingIntervalDataList);
-
-        }, 0, 5, TimeUnit.SECONDS); //trigger mỗi 5s
-
-        return sseEmitter;
-    }
-
-    public void scheduleFundingIntervalDataUpdate(List<String> symbols) {
-        ScheduledExecutorService dataUpdater = Executors.newScheduledThreadPool(1);
-        dataUpdater.scheduleAtFixedRate(() -> {
-            fundingIntervalWebService.getLatestFundingIntervalData(symbols);
-            System.out.println("FundingInterval data updated for symbols: " + symbols);
-        }, 0, 15, TimeUnit.MINUTES);
-    }
 }

@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.javaweb.dto.FundingIntervalDTO;
-import com.javaweb.helpers.service.FundingIntervalDTOHelper;
+import com.javaweb.converter.FundingIntervalDTOHelper;
 import com.javaweb.service.IFundingIntervalDataService;
 import org.springframework.stereotype.Service;
 
