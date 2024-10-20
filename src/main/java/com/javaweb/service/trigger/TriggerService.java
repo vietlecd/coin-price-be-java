@@ -8,12 +8,7 @@ import com.javaweb.connect.impl.SpotWebSocketService;
 import com.javaweb.dto.FundingIntervalDTO;
 import com.javaweb.dto.FundingRateDTO;
 import com.javaweb.dto.PriceDTO;
-<<<<<<< HEAD
-import com.javaweb.helpers.controller.FundingRateAndIntervalHelper;
-import com.javaweb.helpers.sse.SseHelper;
 import com.javaweb.helpers.trigger.SnoozeCheckHelper;
-=======
->>>>>>> 68cc403f2f3c302fbbbda8293238cbe75a9edd3f
 import com.javaweb.helpers.trigger.TriggerCheckHelper;
 import com.javaweb.service.impl.FundingRateDataService;
 import com.javaweb.service.impl.FuturePriceDataService;
@@ -36,9 +31,6 @@ import static java.lang.Math.abs;
 
 @Service
 public class TriggerService {
-
-    @Autowired
-    private SseHelper sseHelper;
     @Autowired
     private SnoozeCheckHelper snoozeCheckHelper;
 

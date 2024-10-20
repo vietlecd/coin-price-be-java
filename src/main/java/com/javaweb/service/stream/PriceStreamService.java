@@ -43,6 +43,7 @@ public class PriceStreamService {
             System.out.println("Connection closed and data cleared for type: " + key);
         };
 
+
         emitter.onCompletion(cancelTask);
         emitter.onTimeout(cancelTask);
         emitter.onError((ex) -> cancelTask.run());
@@ -54,7 +55,7 @@ public class PriceStreamService {
                                             Map<String, PriceDTO> priceDataMap) {
         Runnable sendPriceTask = () -> {
             try {
-                emitter.send(priceDataMap.values());
+                emitter.send(priceDataMap.get(symbol));
             } catch (IOException e) {
                 emitter.completeWithError(e);
             }
@@ -90,5 +91,6 @@ public class PriceStreamService {
             }
         }
         emitters.clear();
+
     }
 }
