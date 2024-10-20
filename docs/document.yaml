@@ -34,7 +34,9 @@ servers:
   - url: http://localhost:8080
 tags:
   - name: auth
-    description: Xác thực người dùng. Tạo tài khoản, đăng nhập, đăng ký.
+    description: Xác thực người dùng. Tạo tài khoản, đăng nhập, đăng ký, đăng xuất.
+  - name: price-controller
+    description: Dữ liệu thị trường coin.
 paths:
   /auth/register:
     post:
@@ -71,7 +73,7 @@ paths:
                     example: Unauthorized
 
   /auth/login:
-    post:
+    get:
       tags:
         - auth
       summary: Đăng nhập
@@ -96,6 +98,69 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/LoginFail"
+
+  /auth/refreshToken:
+    get:
+      tags:
+        - auth
+      summary: Refesh Token
+      description: Refesh Token
+      responses:
+        "200":
+          description: Thành công!
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Yêu cầu refresh token thành công!
+                  status:
+                    type: string
+                    example: 200
+        "401":
+          description: Thất bại!
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Yêu cầu refresh token thất bại!
+                  status:
+                    type: string
+                    example: 401
+
+  /auth/logout:
+    get:
+      tags:
+        - auth
+      summary: Đăng xuất
+      description: Đăng xuất khỏi hệ thống
+      responses:
+        "200":
+          description: Thành công!
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Đăng xuất thành công
+                  status:
+                    type: string
+                    example: 200
+
+  /api/get-spot-price:
+    get: 
+      tags:
+      - price-controller
+      summary: Lấy giá Spot thời gian thực
+
+
 components:
   schemas:
     RegisterBody:
