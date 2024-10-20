@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit;
 public class FundingIntervalDataService implements IFundingIntervalDataService {
 
     private final Cache<String, FundingIntervalDTO> fundingIntervalCache = Caffeine.newBuilder()
-            .expireAfterWrite(15, TimeUnit.MINUTES)
+            .expireAfterWrite(1, TimeUnit.HOURS)
             .maximumSize(1000)
             .build();
 

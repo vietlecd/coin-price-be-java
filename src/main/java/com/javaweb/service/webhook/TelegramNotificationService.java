@@ -22,6 +22,7 @@ public class TelegramNotificationService {
 
         String telegramAPI = "https://api.telegram.org/bot" + BOT_TOKEN + "/sendMessage";
         String url = telegramAPI + "?chat_id=" + CHAT_ID + "&text=" + message;
+        System.out.println(url);
         RestTemplate restTemplate = new RestTemplate();
 
         int retries = 0;

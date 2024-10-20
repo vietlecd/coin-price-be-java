@@ -50,13 +50,13 @@ public class TriggerService {
         boolean snoozeActive = snoozeCheckHelper.checkSymbolAndSnooze(symbols,"Funding-rate",username);
         if (!firedSymbols.isEmpty()) {
             for (String symbol : firedSymbols) {
-                if (snoozeActive ) {
+                if (snoozeActive) {
                     System.out.println("Snooze is active, not sending alert for symbol: " + symbol);
                 } else {
+                    telegramNotificationService.sendTriggerNotification("FundingRate Trigger fired for symbol: " + symbol + " with username: " + username);
                     System.out.println("FundingRate Trigger fired for symbol: " + symbol);
                 }
-                // Gửi thông báo qua Telegram
-                telegramNotificationService.sendTriggerNotification("FundingRate Trigger fired for symbol: " + symbol + " with username: " + username);
+
             }
         }
     }
@@ -72,10 +72,11 @@ public class TriggerService {
                 if (snoozeActive ) {
                     System.out.println("Snooze is active, not sending alert for symbol: " + symbol);
                 } else {
+                    // Gửi thông báo qua Telegram
+                    telegramNotificationService.sendTriggerNotification("Price Difference Trigger fired for symbol: " + symbol + " with username: " + username);
                     System.out.println("PriceDifference Trigger fired for symbol: " + symbol);
                 }
-                // Gửi thông báo qua Telegram
-                telegramNotificationService.sendTriggerNotification("Price Difference Trigger fired for symbol: " + symbol + " with username: " + username);
+
             }
         }
     }
@@ -103,15 +104,14 @@ public class TriggerService {
         boolean snoozeActive = snoozeCheckHelper.checkSymbolAndSnooze(symbols,"Future",username);
         if (!firedSymbols.isEmpty()) {
             for (String symbol : firedSymbols) {
-
-
-                if (snoozeActive ) {
+                if (snoozeActive) {
                     System.out.println("Future is active, not sending alert for symbol: " + symbol);
                 } else {
+                    // Gửi thông báo qua Telegram
+                    telegramNotificationService.sendTriggerNotification("Future Trigger fired for symbol: " + symbol + " with username: " + username);
                     System.out.println("Future Trigger fired for symbol: " + symbol);
                 }
-                // Gửi thông báo qua Telegram
-                telegramNotificationService.sendTriggerNotification("Future Trigger fired for symbol: " + symbol + " with username: " + username);
+
             }
         }
     }
