@@ -8,20 +8,16 @@ import com.javaweb.service.CreateToken;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.web.servlet.server.Session;
-import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.servlet.http.Cookie;
-//import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.*;
-//import java.util.List;
+import com.javaweb.service.authServices.*;
 
 
 @RestController
@@ -125,12 +121,16 @@ public class AuthController {
 
     @GetMapping("/logOut")
     public ResponseEntity<?> logout(HttpServletResponse res, HttpServletRequest req) {
+        String token = getCookieValue(req, "token");
+        if(token == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Không tìm thấy token trong cookie");
+        }
+
         Cookie cookie = new Cookie("token", null);
         cookie.setPath("/");
         cookie.setMaxAge(0);
         res.addCookie(cookie);
 
-        String token = getCookieValue(req, "token");
         LoginRequest loginRequest = CreateToken.decodeToken(token);
         String username = loginRequest.getUsername();
         String ip = LoginFunc.getClientIp(req);
@@ -147,74 +147,6 @@ public class AuthController {
         response.put("path", "/auth/logOut");
 
         return new ResponseEntity<>(response, HttpStatus.OK);
-    }
-
-    static class RegisterFunc {
-        static void checkUserAndEmail(userData userData, UserRepository userRepository) {
-            if(checkUser(userData.getUsername(), userRepository)) {
-                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Username này đã được đăng kí!");
-            }
-
-            if(checkEmail(userData.getEmail(), userRepository)) {
-                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Email này đã được đăng kí!");
-            }
-        }
-
-        static void bodyInformationCheck(@RequestBody RegisterRequest req) {
-            if(req.getName() == null) {
-                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Chưa nhập tên");
-            }
-
-            if(req.getEmail() == null) {
-                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Chưa nhập địa chỉ Email");
-            }
-
-            if(req.getUsername() == null) {
-                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Chưa nhập Username");
-            }
-
-            if(req.getPassword() == null) {
-                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Chưa nhập Password");
-            }
-        }
-
-        static boolean checkUser(String user, UserRepository userRepository) {
-            return userRepository.findByUsername(user) != null;
-        }
-
-        static boolean checkEmail(String email, UserRepository userRepository) {
-            return userRepository.findByEmail(email) != null;
-        }
-    }
-    static class LoginFunc {
-        static String getClientIp(HttpServletRequest request) {
-            String ip = request.getHeader("x-forwarded-for");
-            if (ip != null && !ip.isEmpty()) {
-                ip = ip.split(",")[0];
-            }
-            else {
-                ip = request.getRemoteAddr();
-            }
-
-            return ip;
-        }
-
-        static void checkUser(userData user) {
-            if(user == null) {
-                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Sai tên đăng nhập hoặc mật khẩu");
-            }
-        }
-        static void setCookie(String username, String password, HttpServletResponse res) {
-            String token = CreateToken.createToken(username, password);
-
-            Cookie cookie = new Cookie("token", token);
-            cookie.setHttpOnly(true);
-            cookie.setSecure(false);
-            cookie.setPath("/");
-            cookie.setMaxAge(60 * 60 * 13);
-
-            res.addCookie(cookie);
-        }
     }
 
     private String getCookieValue(HttpServletRequest request, String cookieName) {
