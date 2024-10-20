@@ -49,11 +49,11 @@ jobs:
         
     - name: Build and Push DockerFile
       run: |
-        docker build -t lmao1415/dath_cnpm
+        docker build -t lmao1415/dath_cnpm .
         docker push lmao1415/dath_cnpm
   
-    - name: Stop and remove containers
-      run: docker-compose -f docker-compose.yaml down
+    - name: Remove Docker Image
+      run: docker rmi lmao1415/dath_cnpm
   
   deploy:
     environment:
