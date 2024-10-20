@@ -22,7 +22,7 @@ public class FundingRateIntervalScheduler {
             if (newInterval != null && fundingRateIntervalService.hasFundingRateIntervalChanged(newInterval)) {
                 
                 fundingRateIntervalService.saveFundingRateInterval(newInterval);
-                System.out.println("Funding rate interval của " + symbol + " đã thay đổi: " + newInterval.getIntervalHours());
+                System.out.println("Funding rate interval của " + symbol + " đã thay đổi: " + newInterval.getIntervalTime()); // Sửa đổi ở đây
             }
         }
     }

@@ -9,10 +9,14 @@ import java.time.LocalDateTime;
 public class FundingRateInterval {
 
     @Id
-    private String id;
+    private String id; 
     private String symbol;
-    private int intervalHours;
-    private LocalDateTime timestamp;
+    private long fundingTime;
+    private long nextFundingTime;
+
+    public long getIntervalTime() {
+        return nextFundingTime - fundingTime; // Tính toán intervalTime
+    }
 
     public String getSymbol() {
         return symbol;
@@ -22,14 +26,25 @@ public class FundingRateInterval {
         this.symbol = symbol;
     }
 
-   
-    public int getIntervalHours() {
-        return intervalHours;
+    // Getter và Setter cho fundingTime
+    public long getFundingTime() {
+        return fundingTime;
     }
 
-    public void setIntervalHours(int intervalHours) {
-        this.intervalHours = intervalHours;
+    public void setFundingTime(long fundingTime) {
+        this.fundingTime = fundingTime;
     }
+
+    // Getter và Setter cho nextFundingTime
+    public long getNextFundingTime() {
+        return nextFundingTime;
+    }
+
+    public void setNextFundingTime(long nextFundingTime) {
+        this.nextFundingTime = nextFundingTime;
+    }
+
+    private LocalDateTime timestamp;
 
     public LocalDateTime getTimestamp() {
         return timestamp;

@@ -16,12 +16,12 @@ public class FundingRateIntervalService {
         String apiUrl = "https://fapi.binance.com/fapi/v1/fundingRate?symbol=" + symbol + "&limit=1";
         RestTemplate restTemplate = new RestTemplate();
         FundingRateInterval[] fundingRates = restTemplate.getForObject(apiUrl, FundingRateInterval[].class);
-
+    
         if (fundingRates != null && fundingRates.length > 0) {
             FundingRateInterval newInterval = new FundingRateInterval();
             newInterval.setSymbol(fundingRates[0].getSymbol());
-            newInterval.setIntervalHours(8);  
-            newInterval.setTimestamp(fundingRates[0].getTimestamp());
+            newInterval.setFundingTime(fundingRates[0].getFundingTime());
+            newInterval.setNextFundingTime(fundingRates[0].getNextFundingTime());
             return newInterval;
         }
         return null;
@@ -29,7 +29,7 @@ public class FundingRateIntervalService {
 
     public boolean hasFundingRateIntervalChanged(FundingRateInterval newInterval) {
         FundingRateInterval lastInterval = fundingRateIntervalRepository.findTopBySymbolOrderByTimestampDesc(newInterval.getSymbol());
-        return lastInterval == null || lastInterval.getIntervalHours() != newInterval.getIntervalHours();
+        return lastInterval == null || lastInterval.getIntervalTime() != newInterval.getIntervalTime(); // Sửa đổi ở đây
     }
 
     public void saveFundingRateInterval(FundingRateInterval interval) {
