@@ -10,8 +10,10 @@ import java.time.LocalDateTime;
 @Component
 public class FutureSnoozeCondition {
 
+
     private String username; // Thay thế symbol bằng usernameId làm khóa chính
     private String symbol;
+
     private String conditionType; // "One-time", "Once-in-duration", "Repeat"
     private LocalDateTime startTime;
     private LocalDateTime endTime;

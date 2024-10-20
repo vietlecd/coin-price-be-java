@@ -26,7 +26,7 @@ public class FutureSnoozeConditionService {
 
         // Check if a snooze condition already exists for the given symbol and username
         Optional<FutureSnoozeCondition> existingSnoozeCondition = futureSnoozeConditionRepository
-                .findBySymbolAndUsername(futureSnoozeCondition.getSymbol(), futureSnoozeCondition.getUsername());
+                .findBySymbolAndUsername(futureSnoozeCondition.getSymbol(), username);
 
         if (existingSnoozeCondition.isPresent()) {
             // If symbol and username exist together, throw an exception
