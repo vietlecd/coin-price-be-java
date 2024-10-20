@@ -6,6 +6,7 @@ import com.javaweb.dto.PriceDTO;
 import com.javaweb.config.WebSocketConfig;
 import com.javaweb.helpers.controller.GetUsernameHelper;
 import com.javaweb.helpers.sse.SseHelper;
+import com.javaweb.model.MarketCapResponse;
 import com.javaweb.service.impl.FuturePriceDataService;
 import com.javaweb.service.impl.MarketCapService;
 import com.javaweb.service.impl.SpotPriceDataService;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
@@ -61,7 +63,7 @@ public class PriceController {
     }
 
     @GetMapping("/get-future-price")
-    public SseEmitter streamFuturePrices(@RequestParam List<String> symbols,  HttpServletRequest request) {
+    public SseEmitter streamFuturePrices(@RequestParam List<String> symbols, HttpServletRequest request) {
         SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
         futureWebSocketService.connectToWebSocket(symbols);
 
@@ -80,14 +82,18 @@ public class PriceController {
     }
 
     @GetMapping("/get-market")
-    public ResponseEntity<List<Map<String, Object>>> getMarketData(@RequestParam List<String> symbols) {
-        if (symbols == null || symbols.isEmpty()) {
-            return ResponseEntity.badRequest().build();
+    // Phương thức mới nhận 'symbol' từ query parameter
+    public List<MarketCapResponse> getMarketCap(@RequestParam List<String> symbols) {
+        List<MarketCapResponse> marketCapResponses = new ArrayList<>();
+
+        // Lặp qua từng symbol trong danh sách và lấy kết quả từ service
+        for (String symbol : symbols) {
+            MarketCapResponse response = marketCapService.getMarketCapBySymbol(symbol);
+            marketCapResponses.add(response);  // Thêm kết quả vào danh sách
         }
 
-        List<Map<String, Object>> marketData = marketCapService.getMarketData(symbols);
-
-        return ResponseEntity.ok(marketData);
+        // Trả về danh sách các kết quả
+        return marketCapResponses;
     }
 
     @DeleteMapping("/close-websocket")
@@ -100,6 +106,6 @@ public class PriceController {
         sseHelper.closeAllWebSockets(webSocketConfig);
     }
 
-
-
 }
+
+

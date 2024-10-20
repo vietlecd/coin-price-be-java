@@ -1,48 +1,18 @@
 package com.javaweb.service.impl;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.javaweb.service.IMarketCapService;
+import com.javaweb.model.MarketCapResponse;
+import com.javaweb.repository.MarketCapRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @Service
 public class MarketCapService {
 
-    private final RestTemplate restTemplate = new RestTemplate();
-    private final ObjectMapper objectMapper = new ObjectMapper(); // Dùng để tạo JSON
+  @Autowired
+    private MarketCapRepository marketCapRepository;
 
-    // API từ CoinGecko
-    private static final String COINGECKO_API_URL = "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=";
-
-    public List<Map<String, Object>> getMarketData(List<String> symbols) {
-        List<Map<String, Object>> marketDataList = new ArrayList<>(); // Danh sách chứa dữ liệu thị trường cho các symbols
-
-        for (String symbol : symbols) {
-            String url = COINGECKO_API_URL + symbol;
-            JsonNode response = restTemplate.getForObject(url, JsonNode.class);
-
-            if (response != null && response.isArray() && response.size() > 0) {
-                JsonNode coinData = response.get(0);
-                double marketCap = coinData.get("market_cap").asDouble();
-                double tradingVolume = coinData.get("total_volume").asDouble();
-
-                Map<String, Object> symbolData = new HashMap<>();
-                symbolData.put("symbol", symbol);
-                symbolData.put("marketCap", marketCap);
-                symbolData.put("tradingVolume", tradingVolume);
-
-                marketDataList.add(symbolData);
-            }
-        }
-
-        return marketDataList;
+    // Phương thức mới lấy market cap theo 'symbol'
+    public MarketCapResponse getMarketCapBySymbol(String symbol) {
+        return marketCapRepository.fetchMarketCapBySymbol(symbol);
     }
 }
