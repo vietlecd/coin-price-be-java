@@ -124,11 +124,21 @@ public class AuthController {
     }
 
     @GetMapping("/logOut")
-    public ResponseEntity<?> logout(HttpServletResponse res) {
+    public ResponseEntity<?> logout(HttpServletResponse res, HttpServletRequest req) {
         Cookie cookie = new Cookie("token", null);
         cookie.setPath("/");
         cookie.setMaxAge(0);
         res.addCookie(cookie);
+
+        String token = getCookieValue(req, "token");
+        LoginRequest loginRequest = CreateToken.decodeToken(token);
+        String username = loginRequest.getUsername();
+        String ip = LoginFunc.getClientIp(req);
+
+        userData user = userRepository.findByUsername(username);
+        user.removeIp(ip);
+        userRepository.deleteByUsername(username);
+        userRepository.save(user);
 
         Map<String, Object> response = new HashMap<>();
         response.put("timestamp", new Date());
