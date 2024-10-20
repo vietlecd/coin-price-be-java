@@ -84,6 +84,7 @@ public class PriceController {
 
     @DeleteMapping("/close-all-web")
     public void closeAllWebSocket() {
+        fundingRateStreamService.closeAllWebSockets();
         priceStreamService.closeAllWebSockets();
     }
 

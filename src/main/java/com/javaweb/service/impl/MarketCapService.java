@@ -2,6 +2,7 @@ package com.javaweb.service.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.javaweb.dto.FundingIntervalDTO;
 import com.javaweb.service.IMarketCapService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -17,13 +18,12 @@ import java.util.Map;
 public class MarketCapService {
 
     private final RestTemplate restTemplate = new RestTemplate();
-    private final ObjectMapper objectMapper = new ObjectMapper(); // Dùng để tạo JSON
 
     // API từ CoinGecko
     private static final String COINGECKO_API_URL = "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=";
 
     public List<Map<String, Object>> getMarketData(List<String> symbols) {
-        List<Map<String, Object>> marketDataList = new ArrayList<>(); // Danh sách chứa dữ liệu thị trường cho các symbols
+        List<Map<String, Object>> marketDataList = new ArrayList<>();
 
         for (String symbol : symbols) {
             String url = COINGECKO_API_URL + symbol;

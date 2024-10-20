@@ -2,6 +2,7 @@ package com.javaweb.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+import lombok.Builder;
 import lombok.Getter;
 
 @Getter
@@ -9,8 +10,8 @@ import lombok.Getter;
 public class KlineDTO {
     private String symbol;
     private String eventTime;
-    private Long klineStartTime;
-    private Long klineCloseTime;
+    private String klineStartTime;
+    private String klineCloseTime;
     private String openPrice;
     private String closePrice;
     private String highPrice;
@@ -42,8 +43,8 @@ public class KlineDTO {
     public static class Builder {
         private String symbol;
         private String eventTime;
-        private Long klineStartTime;
-        private Long klineCloseTime;
+        private String klineStartTime;
+        private String klineCloseTime;
         private String openPrice;
         private String closePrice;
         private String highPrice;
@@ -64,12 +65,12 @@ public class KlineDTO {
             return this;
         }
 
-        public Builder klineStartTime(Long klineStartTime) {
+        public Builder klineStartTime(String klineStartTime) {
             this.klineStartTime = klineStartTime;
             return this;
         }
 
-        public Builder klineCloseTime(Long klineCloseTime) {
+        public Builder klineCloseTime(String klineCloseTime) {
             this.klineCloseTime = klineCloseTime;
             return this;
         }
