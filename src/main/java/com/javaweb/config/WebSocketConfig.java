@@ -25,6 +25,13 @@ public class WebSocketConfig {
     }
 
     public void connectToWebSocket(String webSocketUrl, WebSocketClient webSocketClient, TextWebSocketHandler handler) {
+        //Việt: thêm tính năng check HTTPS
+        if (webSocketUrl.startsWith("https://")) {
+            webSocketUrl = webSocketUrl.replace("https://", "wss://");
+        } else if (webSocketUrl.startsWith("http://")) {
+            webSocketUrl = webSocketUrl.replace("http://", "ws://");
+        }
+
         try {
             this.webSocketSession = webSocketClient.doHandshake(handler, webSocketUrl).get();
             System.out.println("Connected to WebSocket at: " + webSocketUrl);
