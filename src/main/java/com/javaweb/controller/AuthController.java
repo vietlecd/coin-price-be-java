@@ -5,6 +5,7 @@ import com.javaweb.model.RegisterRequest;
 import com.javaweb.model.mongo_entity.userData;
 import com.javaweb.repository.UserRepository;
 import com.javaweb.service.CreateToken;
+import com.javaweb.service.EmailSender;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
