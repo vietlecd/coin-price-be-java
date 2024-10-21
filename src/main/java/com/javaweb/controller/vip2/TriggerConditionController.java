@@ -10,6 +10,7 @@ import com.javaweb.service.trigger.CRUD.FuturePriceTriggerService;
 import com.javaweb.service.trigger.CRUD.PriceDifferenceTriggerService;
 import com.javaweb.service.trigger.CRUD.SpotPriceTriggerService;
 import com.javaweb.service.trigger.GetTriggerService;
+import com.javaweb.service.trigger.CRUD.IndicatorTriggerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,6 +29,9 @@ public class TriggerConditionController {
     private SpotPriceTriggerService spotPriceTriggerService;
     @Autowired
     private FuturePriceTriggerService futurePriceTriggerService;
+    @Autowired
+    private IndicatorTriggerService indicatorTriggerService;
+
     @Autowired
     private GetTriggerService getTriggerService;
 
@@ -102,6 +106,8 @@ public class TriggerConditionController {
                 case "funding-rate":
                     fundingRateTriggerService.deleteTrigger(symbol, username);
                     break;
+                    //Huy thêm trường hợp xóa Indicator ở đây
+
                 default:
                     return ResponseEntity.badRequest().body("Invalid trigger type");
             }
