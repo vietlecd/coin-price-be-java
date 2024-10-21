@@ -5,15 +5,20 @@ import com.javaweb.dto.trigger.FundingRateTriggerDTO;
 import com.javaweb.dto.trigger.FuturePriceTriggerDTO;
 import com.javaweb.dto.trigger.PriceDifferenceTriggerDTO;
 import com.javaweb.dto.trigger.SpotPriceTriggerDTO;
+import com.javaweb.model.trigger.IndicatorTrigger;
 import com.javaweb.service.trigger.CRUD.FundingRateTriggerService;
 import com.javaweb.service.trigger.CRUD.FuturePriceTriggerService;
 import com.javaweb.service.trigger.CRUD.PriceDifferenceTriggerService;
 import com.javaweb.service.trigger.CRUD.SpotPriceTriggerService;
+import com.javaweb.service.trigger.GetTriggerService;
+import com.javaweb.service.trigger.IndicatorTriggerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -25,6 +30,11 @@ public class TriggerConditionController {
     private SpotPriceTriggerService spotPriceTriggerService;
     @Autowired
     private FuturePriceTriggerService futurePriceTriggerService;
+    @Autowired
+    private IndicatorTriggerService indicatorTriggerService;
+
+    @Autowired
+    private GetTriggerService getTriggerService;
 
     @Autowired
     private PriceDifferenceTriggerService priceDifferenceTriggerService;
@@ -72,22 +82,39 @@ public class TriggerConditionController {
     }
 
 
-//    @GetMapping("/get/{symbol}")
-//    public ResponseEntity<?> getTriggerCondition(@PathVariable String symbol) {
-//        TriggerConditionDTO triggerConditionDTO = triggerDataService.getTriggerConditionBySymbol(symbol);
-//        return ResponseEntity.ok(triggerConditionDTO);
-//    }
-//
-//    @PutMapping("/update/{symbol}")
-//    public ResponseEntity<?> updateTriggerCondition(@PathVariable String symbol,
-//                                                    @RequestBody TriggerConditionDTO triggerConditionDTO) {
-//        triggerDataService.updateTriggerCondition(symbol, triggerConditionDTO);
-//        return ResponseEntity.ok("Trigger condition updated successfully.");
-//    }
-//
-//    @DeleteMapping("/delete/{symbol}")
-//    public ResponseEntity<?> deleteTriggerCondition(@PathVariable String symbol) {
-//        triggerDataService.deleteTriggerCondition(symbol);
-//        return ResponseEntity.ok(symbol + " have been deleted successfully.");
-//    }
+    @GetMapping("/get/alerts")
+    public ResponseEntity<List<Object>> getAllTriggersByUsername(HttpServletRequest request) {
+        String username = (String) request.getAttribute("username");
+        List<Object> allTriggers = getTriggerService.findAllTriggersByUsername(username);
+        return ResponseEntity.ok(allTriggers);
+    }
+
+
+    @DeleteMapping("/delete/{symbol}")
+    public ResponseEntity<?> deleteTriggerCondition(@PathVariable String symbol, @RequestParam("indicator") String indicator, HttpServletRequest request) {
+        try {
+            String username = (String) request.getAttribute("username");
+
+            switch (indicator) {
+                case "spot":
+                    indicatorTriggerService.deleteTrigger(symbol, username);
+                    break;
+//                case "future":
+//                    futurePriceTriggerService.deleteTrigger(symbol, username);
+//                    break;
+//                case "price-difference":
+//                    priceDifferenceTriggerService.deleteTrigger(symbol, username);
+//                    break;
+//                case "funding-rate":
+//                    fundingRateTriggerService.deleteTrigger(symbol, username);
+//                    break;
+                default:
+                    return ResponseEntity.badRequest().body("Invalid trigger type");
+            }
+
+            return ResponseEntity.ok(symbol + " has been deleted successfully.");
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error deleting trigger: " + e.getMessage());
+        }
+    }
 }

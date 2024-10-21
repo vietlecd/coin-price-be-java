@@ -28,4 +28,12 @@ public class IndicatorTriggerService {
         IndicatorTrigger savedTrigger = indicatorTriggerRepository.save(trigger);
         return savedTrigger.getAlert_id();
     }
+    public void deleteTrigger(String symbol, String username) {
+        IndicatorTrigger trigger = indicatorTriggerRepository.findBySymbolAndUsername(symbol, username);
+        if (trigger != null) {
+            indicatorTriggerRepository.delete(trigger);
+        } else {
+            throw new RuntimeException("Trigger not found for symbol: " + symbol);
+        }
+    }
 }

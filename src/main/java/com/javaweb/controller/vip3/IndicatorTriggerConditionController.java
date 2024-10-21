@@ -10,7 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -22,6 +24,8 @@ public class IndicatorTriggerConditionController {
     private IndicatorTriggerService indicatorTriggerService;
     @Autowired
     private FuturePriceTriggerService futurePriceTriggerService;
+    @Autowired
+    private GetTriggerService getTriggerService;
 
     @Autowired
     private PriceDifferenceTriggerService priceDifferenceTriggerService;
@@ -29,10 +33,10 @@ public class IndicatorTriggerConditionController {
     @Autowired
     private FundingRateTriggerService fundingRateTriggerService;
     @PostMapping("/create")
-    public ResponseEntity<?> createTriggerCondition(@RequestParam("triggerType") String triggerType, @RequestBody Map<String, Object> dtoMap) {
+    public ResponseEntity<?> createTriggerCondition(@RequestParam("indicator") String indicator, @RequestBody Map<String, Object> dtoMap) {
         try {
             String alertId = "";
-            switch (triggerType) {
+            switch (indicator) {
                 case "MA":
                     IndicatorTriggerDTO indicatorDTO = objectMapper.convertValue(dtoMap, IndicatorTriggerDTO.class);
                     alertId = indicatorTriggerService.createTrigger(indicatorDTO);
@@ -50,7 +54,7 @@ public class IndicatorTriggerConditionController {
 //                    alertId = fundingRateTriggerService.createTrigger(fundingDTO);
 //                    break;
                 default:
-                    return ResponseEntity.badRequest().body("Invalid trigger type");
+                    return ResponseEntity.badRequest().body("Invalid indicator type");
             }
 
             Map<String, String> response = new HashMap<>();
@@ -68,24 +72,40 @@ public class IndicatorTriggerConditionController {
         }
     }
 
-
-    @GetMapping("/get/{symbol}")
-    public ResponseEntity<?> getTriggerCondition(@PathVariable String symbol) {
-        TriggerConditionDTO triggerConditionDTO = triggerDataService.getTriggerConditionBySymbol(symbol);
-        return ResponseEntity.ok(triggerConditionDTO);
+    @GetMapping("/get/alerts")
+    public ResponseEntity<List<Object>> getAllTriggersByUsername(HttpServletRequest request) {
+        String username = (String) request.getAttribute("username");
+        List<Object> allTriggers = getTriggerService.findAllTriggersByUsername(username);
+        return ResponseEntity.ok(allTriggers);
     }
 
-    @PutMapping("/update/{symbol}")
-    public ResponseEntity<?> updateTriggerCondition(@PathVariable String symbol,
-                                                    @RequestBody TriggerConditionDTO triggerConditionDTO) {
-        triggerDataService.updateTriggerCondition(symbol, triggerConditionDTO);
-        return ResponseEntity.ok("Trigger condition updated successfully.");
-    }
 
     @DeleteMapping("/delete/{symbol}")
-    public ResponseEntity<?> deleteTriggerCondition(@PathVariable String symbol) {
-        triggerDataService.deleteTriggerCondition(symbol);
-        return ResponseEntity.ok(symbol + " have been deleted successfully.");
+    public ResponseEntity<?> deleteTriggerCondition(@PathVariable String symbol, @RequestParam("indicator") String indicator, HttpServletRequest request) {
+        try {
+            String username = (String) request.getAttribute("username");
+
+            switch (indicator) {
+                case "MA":
+                    indicatorTriggerService.deleteTrigger(symbol, username);
+                    break;
+//                case "future":
+//                    futurePriceTriggerService.deleteTrigger(symbol, username);
+//                    break;
+//                case "price-difference":
+//                    priceDifferenceTriggerService.deleteTrigger(symbol, username);
+//                    break;
+//                case "funding-rate":
+//                    fundingRateTriggerService.deleteTrigger(symbol, username);
+//                    break;
+                default:
+                    return ResponseEntity.badRequest().body("Invalid indicator type");
+            }
+
+            return ResponseEntity.ok(symbol + " has been deleted successfully.");
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error deleting trigger: " + e.getMessage());
+        }
     }
 }
 
