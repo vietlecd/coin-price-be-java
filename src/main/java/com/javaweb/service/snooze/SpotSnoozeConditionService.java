@@ -26,9 +26,9 @@ public class SpotSnoozeConditionService {
     // Method to create a new snooze condition
     public SpotSnoozeCondition createSnoozeCondition(SpotSnoozeCondition spotSnoozeCondition, String username) {
         // Set the usernameId in the spotSnoozeCondition object
-        System.out.print(username);
+
         spotSnoozeCondition.setUsername(username);
-        System.out.print(username);
+
         // Check if a snooze condition already exists for the given symbol and usernameId
         Optional<SpotSnoozeCondition> existingSnoozeCondition = spotSnoozeConditionRepository
                 .findBySymbolAndUsername(spotSnoozeCondition.getSymbol(), spotSnoozeCondition.getUsername());
