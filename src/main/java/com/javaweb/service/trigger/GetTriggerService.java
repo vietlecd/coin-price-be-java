@@ -36,11 +36,11 @@ public class GetTriggerService {
     private FundingRateTriggerRepository fundingRateTriggerRepository;
     public List<Object> findAllTriggersByUsername(String username) {
         // Lấy dữ liệu từ tất cả repository theo username
-        List<IndicatorTrigger> indicatorTriggers = indicatorTriggerRepository.findByUsername(username);
         List<SpotPriceTrigger> spotTriggers = spotPriceTriggerRepository.findByUsername(username);
         List<FuturePriceTrigger> futureTriggers = futurePriceTriggerRepository.findByUsername(username);
         List<PriceDifferenceTrigger> priceDifferenceTriggers = priceDifferenceTriggerRepository.findByUsername(username);
         List<FundingRateTrigger> fundingRateTriggers = fundingRateTriggerRepository.findByUsername(username);
+        List<IndicatorTrigger> indicatorTriggers = indicatorTriggerRepository.findByUsername(username);
 
         // Tạo một danh sách chung để trả về tất cả dữ liệu
         List<Object> allTriggers = new ArrayList<>();
