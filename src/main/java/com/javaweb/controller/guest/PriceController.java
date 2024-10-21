@@ -71,7 +71,7 @@ public class PriceController {
         return fundingRateStreamService.handleStreamFundingRate(symbols);
     }
 
-    @GetMapping("/get-market")
+    @GetMapping("/get-marketcap")
     // Phương thức mới nhận 'symbol' từ query parameter
     public List<MarketCapResponse> getMarketCap(@RequestParam List<String> symbols) {
         List<MarketCapResponse> marketCapResponses = new ArrayList<>();
@@ -82,7 +82,6 @@ public class PriceController {
             marketCapResponses.add(response);  // Thêm kết quả vào danh sách
         }
 
-        // Trả về danh sách các kết quả
         return marketCapResponses;
     }
 
