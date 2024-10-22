@@ -33,13 +33,27 @@ public class userData {
         coin = 0;
     }
 
-    public void spendingCoin(Integer amount) throws Exception {
+    public Integer spendingCoin(Integer newVip) throws Exception {
+        Integer amountToSpend = 0;
+        if(this.vip_role >= newVip)
+            throw new Exception("Vip này mua rồi thì không mua lại được!");
 
+        for(Integer i = this.vip_role; i < newVip; i++){
+            amountToSpend += 50000;
+        }
+
+        if(amountToSpend > coin)
+            throw new Exception("Không đủ tiền để thanh toán, yêu cầu" + amountToSpend);
+
+        vip_role = newVip;
+        coin -= amountToSpend;
+
+        return amountToSpend;
     }
 
     public void addCoin(Integer coin) throws Exception {
         if(coin < 10000) {
-            throw new Exception("Sao mày nghèo vậy cu");
+            throw new Exception("Yêu cầu nạp tiền ít hơn 10.000VNĐ!");
         }
 
         this.coin += coin;

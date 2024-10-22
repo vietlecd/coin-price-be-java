@@ -88,7 +88,7 @@ public class UserController {
         }
     }
 
-    @PostMapping("/donateTiTienChoBackend")
+    @PostMapping("/deposit")
     public ResponseEntity<?> donateTiTienChoBackend(HttpServletRequest request, @RequestParam Integer amount) {
         try {
             if(amount==null) {
@@ -128,8 +128,18 @@ public class UserController {
             }
             String username = request.getAttribute("username").toString();
             userData userData = userRepository.findByUsername(username);
-            userData.spendingCoin(vipLevel);
+            Integer amount = userData.spendingCoin(vipLevel);
 
+            userRepository.deleteByUsername(username);
+            userRepository.save(userData);
+
+            return new ResponseEntity<>(
+                    new Responses(
+                            new Date(),
+                            "200",
+                            "Thanh toán thành công, đã trừ " + amount + "đ trong tài khoản",
+                            "/api/purchaseVip"),
+                    HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(
                     new Responses(
