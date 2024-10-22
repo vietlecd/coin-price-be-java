@@ -44,6 +44,29 @@ public class AdminController {
         return userDataList;
     }
 
+    @DeleteMapping("/deleteAllUsername")
+    public ResponseEntity<?> deleteAllUsername() {
+        try {
+            userRepository.deleteAll();
+
+            return new ResponseEntity<>(
+                    new Responses(
+                            new Date(),
+                            "400",
+                            "Xóa toàn bộ user thành công!",
+                            "/admin/deleteAllUsername"),
+                    HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            return new ResponseEntity<>(
+                    new Responses(
+                            new Date(),
+                            "400",
+                            "Xóa user thành công!",
+                            "/admin/deleteAllUsername"),
+                    HttpStatus.BAD_REQUEST);
+        }
+    }
+
     @Data
     @AllArgsConstructor
     private class Responses{

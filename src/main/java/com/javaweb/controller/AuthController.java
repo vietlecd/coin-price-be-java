@@ -1,15 +1,20 @@
 package com.javaweb.controller;
 
+import com.javaweb.controller.guest.UserController;
 import com.javaweb.model.LoginRequest;
 import com.javaweb.model.RegisterRequest;
+import com.javaweb.model.mongo_entity.Otp;
 import com.javaweb.model.mongo_entity.userData;
 import com.javaweb.repository.UserRepository;
 import com.javaweb.service.CreateToken;
+import com.javaweb.service.EmailSender;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -25,6 +30,13 @@ import com.javaweb.service.authServices.*;
 public class AuthController {
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private EmailSender emailSender;
+
+    @Value("${domain}")
+    private String domain;
+    private JavaMailSenderImpl mailSender;
 
     @GetMapping("/refreshToken")
     public ResponseEntity<?> refreshToken(HttpServletRequest request, HttpServletResponse response) {
@@ -61,39 +73,45 @@ public class AuthController {
 
     @PutMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest, HttpServletResponse res, HttpServletRequest request) {
-        String username = loginRequest.getUsername();
-        String password = loginRequest.getPassword();
+        try {
+            String username = loginRequest.getUsername();
+            String password = loginRequest.getPassword();
 
-        userData user = userRepository.findByUsername(username);
-        LoginFunc.checkUser(user);
-        if (user.getPassword().equals(password)) {
-            LoginFunc.setCookie(username, password, res);
+            userData user = userRepository.findByUsername(username);
+            if (user.getPassword().equals(password)) {
+                LoginFunc.setCookie(username, password, res);
 
-            if(!user.getIp_list().contains(LoginFunc.getClientIp(request))) {
-                user.addIp(LoginFunc.getClientIp(request));
+                if (!user.getIp_list().contains(LoginFunc.getClientIp(request))) {
+                    user.addIp(LoginFunc.getClientIp(request));
 
-                try {
                     userRepository.deleteByUsername(username);
                     userRepository.save(user);
-                } catch (Exception e) {
-                    throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage() + LoginFunc.getClientIp(request));
                 }
+
+                return new ResponseEntity<>(
+                        new Responses(
+                                new Date(),
+                                "200",
+                                "Đăng nhập thành công",
+                                "/auth/login"),
+                        HttpStatus.OK);
             }
 
+            throw new Exception("Sai tên đăng nhập hoặc mật khẩu");
+        } catch (Exception e) {
             return new ResponseEntity<>(
                     new Responses(
                             new Date(),
-                            "200",
-                            "Đăng nhập thành công",
+                            "400",
+                            "Đăng nhập thất bại",
                             "/auth/login"),
-                    HttpStatus.OK);
+                    HttpStatus.BAD_REQUEST);
         }
-
-        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Sai tên đăng nhập hoặc mật khẩu");
     }
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest reg, HttpServletRequest req, HttpServletResponse res) {
+        try {
             RegisterFunc.bodyInformationCheck(reg);
 
             List<String> ip_list = new ArrayList<>();
@@ -117,6 +135,15 @@ public class AuthController {
                             "Đăng kí tài khoản thành công",
                             "/auth/logOut"),
                     HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(
+                    new Responses(
+                            new Date(),
+                            "400",
+                            e.getMessage(),
+                            "/auth/logOut"),
+                    HttpStatus.BAD_REQUEST);
+        }
     }
 
     @GetMapping("/logOut")
@@ -149,6 +176,70 @@ public class AuthController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @GetMapping("/forgetPassword")
+    public ResponseEntity<?> forgetPassword(@RequestParam String username) {
+        try {
+            userData userdata = userRepository.findByUsername(username);
+            emailSender.sendOtp(userdata.getEmail());
+
+            return new ResponseEntity<>(
+                    new Responses(
+                            new Date(),
+                            "200",
+                            "Gửi email thành công, check thư tại, " + userdata.getEmail() + "",
+                            "/api/forgetPassword"),
+                    HttpStatus.OK);
+
+        } catch (Exception e) {
+            return new ResponseEntity<>(
+                    new Responses(
+                            new Date(),
+                            "400",
+                            e.getMessage(),
+                            "/api/forgetPassword"),
+                    HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/resetPassword")
+    public ResponseEntity<?> resetPassword(@RequestParam String email, @RequestParam String otpCode, @RequestBody Map<String, String> params) {
+        try {
+            String newPassword = params.get("newPassword");
+            if(newPassword == null) {
+                throw new RuntimeException("Không tìm thấy 'newPassword' trong Body");
+            }
+
+            userData user = userRepository.findByEmail(email);
+            user.useOtp(otpCode);
+            //throw runtimeException nếu Otp không hợp lệ!
+
+            userRepository.deleteByUsername(user.getUsername());
+            user.setPassword(newPassword);
+            userRepository.save(user);
+
+            emailSender.sendEmail(user.getEmail(),
+                    "Phát hện yêu cầu đổi mật khẩu!",
+                    "Yêu cầu đổi mật khẩu thành công!");
+
+            return new ResponseEntity<>(
+                new Responses(
+                        new Date(),
+                        "200",
+                        "Đổi mật khẩu thành công, vui lòng đăng nhập lại.",
+                        "/api/forgetPassword"),
+                HttpStatus.OK);
+
+        } catch (Exception e) {
+            return new ResponseEntity<>(
+                new Responses(
+                    new Date(),
+                    "200",
+                    e.getMessage(),
+                    "/api/forgetPassword")
+                ,HttpStatus.BAD_REQUEST
+            );
+        }
+    }
     @Data
     @AllArgsConstructor
     private class Responses{
