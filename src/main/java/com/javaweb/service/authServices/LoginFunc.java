@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 public class LoginFunc {
-    public static String getClientIp(HttpServletRequest request) {
+    public static String getClientIp(HttpServletRequest request) throws Exception {
         String ip = request.getHeader("x-forwarded-for");
         if (ip != null && !ip.isEmpty()) {
             ip = ip.split(",")[0];

@@ -34,8 +34,6 @@ public class AuthController {
     @Autowired
     private EmailSender emailSender;
 
-    @Value("${domain}")
-    private String domain;
     private JavaMailSenderImpl mailSender;
 
     @GetMapping("/refreshToken")
@@ -79,7 +77,7 @@ public class AuthController {
         }
     }
 
-    @PutMapping("/login")
+    @GetMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest, HttpServletResponse res, HttpServletRequest request) {
         try {
             String username = loginRequest.getUsername();
@@ -194,7 +192,7 @@ public class AuthController {
         }
     }
 
-    @GetMapping("/forgetPassword")
+    @GetMapping("/forgotPassword")
     public ResponseEntity<?> forgetPassword(@RequestParam String username) {
         try {
             userData userdata = userRepository.findByUsername(username);
@@ -224,17 +222,15 @@ public class AuthController {
         }
     }
 
-    @GetMapping("/resetPassword")
+    @PutMapping("/resetPassword")
     public ResponseEntity<?> resetPassword(@RequestParam String email, @RequestParam String otpCode, @RequestBody Map<String, String> params) {
         try {
             String newPassword = params.get("newPassword");
             if(newPassword == null) {
                 throw new RuntimeException("Không tìm thấy 'newPassword' trong Body");
             }
-
             userData user = userRepository.findByEmail(email);
             user.useOtp(otpCode);
-            //throw runtimeException nếu Otp không hợp lệ!
 
             userRepository.deleteByUsername(user.getUsername());
             user.setPassword(newPassword);
@@ -265,6 +261,7 @@ public class AuthController {
     }
     @Data
     @AllArgsConstructor
+
     private class Responses{
         private Date timestamp;
         private String status;

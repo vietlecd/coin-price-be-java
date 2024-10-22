@@ -7,6 +7,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import java.security.SecureRandom;
+import java.text.NumberFormat;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -72,8 +73,9 @@ public class userData {
             amountToSpend += 50000;
         }
 
+        NumberFormat numberFormat = NumberFormat.getInstance();
         if(amountToSpend > coin)
-            throw new Exception("Không đủ tiền để thanh toán, yêu cầu " + amountToSpend);
+            throw new Exception("Không đủ tiền để thanh toán, yêu cầu " + numberFormat.format(amountToSpend) + " coin");
 
         vip_role = newVip;
         coin -= amountToSpend;

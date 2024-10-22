@@ -6,6 +6,7 @@ import com.javaweb.repository.UserRepository;
 import com.javaweb.service.EmailSender;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +14,10 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.text.NumberFormat;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -88,7 +92,7 @@ public class UserController {
         }
     }
 
-    @PostMapping("/deposit")
+    @PutMapping("/deposit")
     public ResponseEntity<?> donateTiTienChoBackend(HttpServletRequest request, @RequestParam Integer amount) {
         try {
             if(amount==null) {
@@ -120,7 +124,7 @@ public class UserController {
         }
     }
 
-    @PostMapping("/purchaseVip")
+    @PutMapping("/purchaseVip")
     public ResponseEntity<?> purchaseVip(HttpServletRequest request, @RequestParam Integer vipLevel) {
         try {
             if(vipLevel == null || vipLevel<=0 || vipLevel>3) {
@@ -133,11 +137,12 @@ public class UserController {
             userRepository.deleteByUsername(username);
             userRepository.save(userData);
 
+            NumberFormat numberFormat = NumberFormat.getInstance();
             return new ResponseEntity<>(
                     new Responses(
                             new Date(),
                             "200",
-                            "Thanh toán thành công, đã trừ " + amount + "đ trong tài khoản",
+                            "Thanh toán thành công, đã trừ " + numberFormat.format(amount) + "đ trong tài khoản",
                             "/api/purchaseVip"),
                     HttpStatus.OK);
         } catch (Exception e) {
@@ -148,6 +153,31 @@ public class UserController {
                             e.getMessage(),
                             "/api/purchaseVip"),
                     HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/info")
+    public ResponseEntity<?> info(HttpServletRequest request) {
+        try {
+            Map<String, Object> info = new HashMap<>();
+            String username = request.getAttribute("username").toString();
+            userData user = userRepository.findByUsername(username);
+
+            info.put("username", user.getUsername());
+            info.put("name", user.getName());
+            info.put("email", user.getEmail());
+            info.put("coin", user.getCoin());
+            info.put("vipRole", user.getVip_role());
+
+            return new ResponseEntity<>(info, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(
+                new Responses(
+                        new Date(),
+                        "400",
+                        e.getMessage(),
+                        "/api/info"),
+                HttpStatus.BAD_REQUEST);
         }
     }
 
