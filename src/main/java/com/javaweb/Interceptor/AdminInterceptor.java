@@ -27,7 +27,7 @@ public class AdminInterceptor implements HandlerInterceptor {
             throws Exception {
         String token = request.getHeader("token");
         if(token == null)
-            throw new Exception("Yêu cầu xác thực quyền admin vào gọi api từ endpoint này");
+            throw new Exception("Yêu cầu xác thực quyền admin mới gọi api từ endpoint này");
 
         if(token.equals(adminToken)) return true;
         else throw new Exception("Sai token");
