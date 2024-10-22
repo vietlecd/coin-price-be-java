@@ -58,13 +58,13 @@ jobs:
   deploy:
     environment:
       name: dev
-      url: 103.205.60.174:8080
+      url: nope
     runs-on: self-hosted
     needs: build
     steps:
       - name: Deploy to VPS
         env:
-          VPS_USER: root
+          VPS_USER: root1
           VPS_IP: ${{ secrets.VPS_IP }}
           VPS_PASSWORD: ${{ secrets.VPS_PASSWORD }} 
         run: |
