@@ -11,8 +11,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
 @Document(collection = "userData")
 public class userData {
     private String username;
@@ -23,9 +21,19 @@ public class userData {
     private List<String> ip_list;
     private Otp otp;
 
+    public userData(String username, String name, String password, String email, Integer vip_role, List<String> ip_list) throws Exception {
+        this.setUsername(username);
+        this.setPassword(password);
+        this.setEmail(email);
+        this.setVip_role(vip_role);
+        this.setIp_list(ip_list);
+        this.name = name;
+        this.setOtp(null);
+    }
+
     public void setPassword(String password) throws Exception {
         String usernameRegex = "^[a-zA-Z0-9_]{8,15}$";
-        if (password != null && password.matches(usernameRegex)) {
+        if (!(password != null && password.matches(usernameRegex))) {
             throw new Exception("Định dạng mật khẩu không hợp lệ, 8-15 ký tự");
         }
 
@@ -34,8 +42,8 @@ public class userData {
 
     public void setUsername(String username) throws Exception {
         String usernameRegex = "^[a-zA-Z0-9_]{3,15}$";
-        if (username != null && username.matches(usernameRegex)) {
-            throw new Exception("Định dạng username không hợp lệ");
+        if (!(username != null && username.matches(usernameRegex))) {
+            throw new Exception("Định dạng username không hợp lệ, 8-15 ký tự");
         }
 
         this.username = username;
@@ -43,7 +51,7 @@ public class userData {
 
     public void setEmail(String email) throws Exception {
         String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
-        if(email != null && email.matches(emailRegex)) {
+        if(!(email != null && email.matches(emailRegex))) {
             throw new Exception("Định dạng email không hợp lệ");
         }
 

@@ -73,22 +73,19 @@ public class AuthController {
 
     @PutMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest, HttpServletResponse res, HttpServletRequest request) {
-        String username = loginRequest.getUsername();
-        String password = loginRequest.getPassword();
+        try {
+            String username = loginRequest.getUsername();
+            String password = loginRequest.getPassword();
 
-        userData user = userRepository.findByUsername(username);
-        LoginFunc.checkUser(user);
-        if (user.getPassword().equals(password)) {
-            LoginFunc.setCookie(username, password, res);
+            userData user = userRepository.findByUsername(username);
+            if (user.getPassword().equals(password)) {
+                LoginFunc.setCookie(username, password, res);
 
-            if(!user.getIp_list().contains(LoginFunc.getClientIp(request))) {
-                user.addIp(LoginFunc.getClientIp(request));
+                if (!user.getIp_list().contains(LoginFunc.getClientIp(request))) {
+                    user.addIp(LoginFunc.getClientIp(request));
 
-                try {
                     userRepository.deleteByUsername(username);
                     userRepository.save(user);
-                } catch (Exception e) {
-                    throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage() + LoginFunc.getClientIp(request));
                 }
             }
 
@@ -99,13 +96,20 @@ public class AuthController {
                             "Đăng nhập thành công",
                             "/auth/login"),
                     HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(
+                    new Responses(
+                            new Date(),
+                            "200",
+                            "Đăng nhập thành công",
+                            "/auth/login"),
+                    HttpStatus.OK);
         }
-
-        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Sai tên đăng nhập hoặc mật khẩu");
     }
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest reg, HttpServletRequest req, HttpServletResponse res) {
+        try {
             RegisterFunc.bodyInformationCheck(reg);
 
             List<String> ip_list = new ArrayList<>();
@@ -116,8 +120,7 @@ public class AuthController {
                     reg.getPassword(),
                     reg.getEmail(),
                     0,
-                    ip_list,
-                    null
+                    ip_list
             );
             RegisterFunc.checkUserAndEmail(user, userRepository);
 
@@ -130,6 +133,15 @@ public class AuthController {
                             "Đăng kí tài khoản thành công",
                             "/auth/logOut"),
                     HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(
+                    new Responses(
+                            new Date(),
+                            "400",
+                            e.getMessage(),
+                            "/auth/logOut"),
+                    HttpStatus.BAD_REQUEST);
+        }
     }
 
     @GetMapping("/logOut")

@@ -8,31 +8,31 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.server.ResponseStatusException;
 
 public class RegisterFunc {
-    public static void checkUserAndEmail(userData userData, UserRepository userRepository) {
+    public static void checkUserAndEmail(userData userData, UserRepository userRepository) throws Exception {
         if(checkUser(userData.getUsername(), userRepository)) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Username này đã được đăng kí!");
+            throw new Exception("Username này đã được đăng kí!");
         }
 
         if(checkEmail(userData.getEmail(), userRepository)) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Email này đã được đăng kí!");
+            throw new Exception("Email này đã được đăng kí!");
         }
     }
 
-    public static void bodyInformationCheck(@RequestBody RegisterRequest req) {
+    public static void bodyInformationCheck(@RequestBody RegisterRequest req) throws Exception {
         if(req.getName() == null) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Chưa nhập tên");
+            throw new Exception("Chưa nhập tên");
         }
 
         if(req.getEmail() == null) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Chưa nhập địa chỉ Email");
+            throw new Exception("Chưa nhập địa chỉ Email");
         }
 
         if(req.getUsername() == null) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Chưa nhập Username");
+            throw new Exception("Chưa nhập Username");
         }
 
         if(req.getPassword() == null) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Chưa nhập Password");
+            throw new Exception("Chưa nhập Password");
         }
     }
 

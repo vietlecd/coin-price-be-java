@@ -20,11 +20,7 @@ public class LoginFunc {
 
         return ip;
     }
-    public static void checkUser(userData user) {
-        if(user == null) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Sai tên đăng nhập hoặc mật khẩu");
-        }
-    }
+
     public static void setCookie(String username, String password, HttpServletResponse res) {
         String token = CreateToken.createToken(username, password);
 
