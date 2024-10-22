@@ -85,7 +85,7 @@ public class userData {
 
     public void addCoin(Integer coin) throws Exception {
         if(coin < 10000) {
-            throw new Exception("Yêu cầu nạp tiền ít hơn 10.000VNĐ!");
+            throw new Exception("Yêu cầu nạp tiền nhiều hơn 10.000VNĐ!");
         }
 
         this.coin += coin;

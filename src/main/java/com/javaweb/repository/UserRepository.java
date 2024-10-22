@@ -12,7 +12,7 @@ import java.util.Optional;
 
 @Repository
 public interface UserRepository  extends MongoRepository<userData, String> {
-     userData findByUsername(String username);
+    userData findByUsername(String username);
     userData findByEmail(String email);
 
     void deleteByUsername(String username);

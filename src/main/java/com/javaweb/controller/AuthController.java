@@ -34,8 +34,6 @@ public class AuthController {
     @Autowired
     private EmailSender emailSender;
 
-    private JavaMailSenderImpl mailSender;
-
     @GetMapping("/refreshToken")
     public ResponseEntity<?> refreshToken(HttpServletRequest request, HttpServletResponse response) {
         try {
@@ -84,6 +82,10 @@ public class AuthController {
             String password = loginRequest.getPassword();
 
             userData user = userRepository.findByUsername(username);
+
+            if(user == null)
+                throw new Exception("Không tìm thấy username này!");
+
             if (user.getPassword().equals(password)) {
                 LoginFunc.setCookie(username, password, res);
 
