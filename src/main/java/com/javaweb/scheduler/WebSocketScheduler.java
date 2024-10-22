@@ -2,6 +2,7 @@ package com.javaweb.scheduler;
 
 import com.javaweb.connect.impl.FundingRateWebSocketService;
 import com.javaweb.connect.impl.FutureWebSocketService;
+import com.javaweb.connect.impl.IndicatorWebSocketService;
 import com.javaweb.connect.impl.SpotWebSocketService;
 import com.javaweb.service.trigger.TriggerService;
 import com.javaweb.service.trigger.TriggerSymbolService;
@@ -29,6 +30,9 @@ public class WebSocketScheduler {
     private FundingRateWebSocketService fundingRateWebSocketService;
 
     @Autowired
+    private IndicatorWebSocketService indicatorWebSocketService;
+
+    @Autowired
     private TriggerService triggerService;
 
     // Chạy mỗi 5 phút để kiểm tra và kết nối lại WebSocket nếu cần
@@ -38,6 +42,7 @@ public class WebSocketScheduler {
         Map<String, List<String>> usernamesWithSymbolsForFuture = triggerSymbolService.getUsernamesWithSymbolsFuture();
         Map<String, List<String>> usernamesWithSymbolsForSpotAndFuture = triggerSymbolService.getUsernamesWithSymbolsSpotAndFuture();
         Map<String, List<String>> usernamesWithSymbolsForFundingRate = triggerSymbolService.getUsernamesWithSymbolsFundingRate();
+        Map<String, List<String>> usernamesWithSymbolsForIndicator = triggerSymbolService.getUsernamesWithSymbolsIndicator();
 
         if (!usernamesWithSymbolsForSpot.isEmpty()) {
             for (Map.Entry<String, List<String>> entry : usernamesWithSymbolsForSpot.entrySet()) {
@@ -81,6 +86,18 @@ public class WebSocketScheduler {
                 List<String> symbols = entry.getValue();
 
                 //System.out.println("Checking Future WebSocket connections for username: " + username + ", symbols: " + symbols);
+                fundingRateWebSocketService.connectToWebSocket(symbols, true);
+
+                triggerService.handleAndSendAlertForFundingRate(symbols, username);
+            }
+        }
+
+        if (!usernamesWithSymbolsForIndicator.isEmpty()) {
+            for (Map.Entry<String, List<String>> entry : usernamesWithSymbolsForIndicator.entrySet()) {
+                String username = entry.getKey();
+                List<String> symbols = entry.getValue();
+
+                //System.out.println("Checking Indicator WebSocket connections for username: " + username + ", symbols: " + symbols);
                 fundingRateWebSocketService.connectToWebSocket(symbols, true);
 
                 triggerService.handleAndSendAlertForFundingRate(symbols, username);
