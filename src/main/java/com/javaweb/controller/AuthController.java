@@ -40,35 +40,43 @@ public class AuthController {
 
     @GetMapping("/refreshToken")
     public ResponseEntity<?> refreshToken(HttpServletRequest request, HttpServletResponse response) {
-        String token = OtherFunct.getCookieValue(request, "token");
+        try {
+            String token = OtherFunct.getCookieValue(request, "token");
 
-        if(token == null) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Không tìm thấy token!");
+            if (token == null) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Không tìm thấy token!");
+            }
+            LoginRequest loginRequest = CreateToken.decodeToken(token);
+
+            String username = loginRequest.getUsername();
+            String password = loginRequest.getPassword();
+
+            userData userData = userRepository.findByUsername(username);
+            List<String> ip_list = userData.getIp_list();
+
+            if (ip_list.contains(LoginFunc.getClientIp(request))) {
+                LoginFunc.setCookie(username, userData.getPassword(), response);
+            } else {
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Yêu cầu refresh token không hợp lệ vì tài khoản chưa được đăng nhập trên thiết bị này!, ip thiết bị:" + LoginFunc.getClientIp(request));
+            }
+
+            return new ResponseEntity<>(
+                    new Responses(
+                            new Date(),
+                            "200",
+                            "Yêu cầu refresh token thành công!",
+                            "auth/refreshToken"),
+                    HttpStatus.OK);
+
+        } catch (Exception e) {
+            return new ResponseEntity<>(
+                    new Responses(
+                            new Date(),
+                            "400",
+                            e.getMessage(),
+                            "auth/refreshToken"),
+                    HttpStatus.BAD_REQUEST);
         }
-
-        LoginRequest loginRequest = CreateToken.decodeToken(token);
-        System.out.println(loginRequest);
-
-        String username = loginRequest.getUsername();
-        String password = loginRequest.getPassword();
-
-        userData userData = userRepository.findByUsername(username);
-        List<String> ip_list = userData.getIp_list();
-
-        if(ip_list.contains(LoginFunc.getClientIp(request)) ) {
-            LoginFunc.setCookie(username, userData.getPassword(), response);
-        }
-        else {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Yêu cầu refresh token không hợp lệ vì tài khoản chưa được đăng nhập trên thiết bị này!, ip thiết bị:" + LoginFunc.getClientIp(request));
-        }
-
-        return new ResponseEntity<>(
-                new Responses(
-                        new Date(),
-                        "200",
-                        "Yêu cầu refresh token thành công!",
-                        "auth/refreshToken"),
-                HttpStatus.OK);
     }
 
     @PutMapping("/login")
@@ -148,32 +156,42 @@ public class AuthController {
 
     @GetMapping("/logOut")
     public ResponseEntity<?> logout(HttpServletResponse res, HttpServletRequest req) {
-        String token = OtherFunct.getCookieValue(req, "token");
-        if(token == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Không tìm thấy token trong cookie");
+        try {
+            String token = OtherFunct.getCookieValue(req, "token");
+            if (token == null) {
+                throw new Exception("Không tìm thấy token trong cookie");
+            }
+
+            Cookie cookie = new Cookie("token", null);
+            cookie.setPath("/");
+            cookie.setMaxAge(0);
+            res.addCookie(cookie);
+
+            LoginRequest loginRequest = CreateToken.decodeToken(token);
+            String username = loginRequest.getUsername();
+            String ip = LoginFunc.getClientIp(req);
+
+            userData user = userRepository.findByUsername(username);
+            user.removeIp(ip);
+            userRepository.deleteByUsername(username);
+            userRepository.save(user);
+
+            return new ResponseEntity<>(
+                    new Responses(
+                            new Date(),
+                            "200",
+                            "Đăng xuất thành công",
+                            "/auth/logOut"),
+                    HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(
+                    new Responses(
+                            new Date(),
+                            "400",
+                            e.getMessage(),
+                            "/auth/logOut"),
+                    HttpStatus.BAD_REQUEST);
         }
-
-        Cookie cookie = new Cookie("token", null);
-        cookie.setPath("/");
-        cookie.setMaxAge(0);
-        res.addCookie(cookie);
-
-        LoginRequest loginRequest = CreateToken.decodeToken(token);
-        String username = loginRequest.getUsername();
-        String ip = LoginFunc.getClientIp(req);
-
-        userData user = userRepository.findByUsername(username);
-        user.removeIp(ip);
-        userRepository.deleteByUsername(username);
-        userRepository.save(user);
-
-        Map<String, Object> response = new HashMap<>();
-        response.put("timestamp", new Date());
-        response.put("status", "200");
-        response.put("message", "Đăng xuất thành công");
-        response.put("path", "/auth/logOut");
-
-        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping("/forgetPassword")

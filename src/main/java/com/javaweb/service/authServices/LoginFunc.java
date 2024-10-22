@@ -21,7 +21,7 @@ public class LoginFunc {
         return ip;
     }
 
-    public static void setCookie(String username, String password, HttpServletResponse res) {
+    public static void setCookie(String username, String password, HttpServletResponse res) throws Exception {
         String token = CreateToken.createToken(username, password);
 
         Cookie cookie = new Cookie("token", token);
