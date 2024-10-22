@@ -49,11 +49,11 @@ jobs:
         
     - name: Build and Push DockerFile
       run: |
-        docker build -t lmao1415/dath_cnpm .
-        docker push lmao1415/dath_cnpm
+        sudo docker build -t lmao1415/dath_cnpm .
+        sudo docker push lmao1415/dath_cnpm
   
     - name: Remove Docker Image
-      run: docker rmi lmao1415/dath_cnpm
+      run: sudo docker rmi lmao1415/dath_cnpm
   
   deploy:
     environment:
@@ -78,10 +78,6 @@ jobs:
           tmux kill-session -t mysession 2>/dev/null || true &&
           tmux new-session -d -s mysession 'sudo docker compose up'
           "
-      
-      - name: Chờ 1 phút trước khi gửi thông báo
-        run: |
-          sleep 60
           
       - name: Thông Báo khởi động sv
         run: |
