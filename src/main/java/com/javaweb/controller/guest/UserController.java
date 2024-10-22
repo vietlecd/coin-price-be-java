@@ -58,7 +58,7 @@ public class UserController {
     }
 
     @PutMapping("/changeEmail")
-    public ResponseEntity<?> changeEmail(HttpServletRequest request, @RequestBody String email) {
+    public ResponseEntity<?> changeEmail(HttpServletRequest request, @RequestParam String email) {
         try {
             if(email==null) {
                 throw new Exception("Không tìm thấy email");

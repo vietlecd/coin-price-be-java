@@ -23,6 +23,33 @@ public class userData {
     private List<String> ip_list;
     private Otp otp;
 
+    public void setPassword(String password) throws Exception {
+        String usernameRegex = "^[a-zA-Z0-9_]{8,15}$";
+        if (password != null && password.matches(usernameRegex)) {
+            throw new Exception("Định dạng mật khẩu không hợp lệ, 8-15 ký tự");
+        }
+
+        this.password = password;
+    }
+
+    public void setUsername(String username) throws Exception {
+        String usernameRegex = "^[a-zA-Z0-9_]{3,15}$";
+        if (username != null && username.matches(usernameRegex)) {
+            throw new Exception("Định dạng username không hợp lệ");
+        }
+
+        this.username = username;
+    }
+
+    public void setEmail(String email) throws Exception {
+        String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
+        if(email != null && email.matches(emailRegex)) {
+            throw new Exception("Định dạng email không hợp lệ");
+        }
+
+        this.email = email;
+    }
+
     public void addIp(String ip) {
         ip_list.add(ip);
     }
@@ -55,7 +82,6 @@ public class userData {
         }
         return otpBuilder.toString();
     }
-
     private boolean checkOtp(String otpCode) throws Exception {
         if(this.otp == null) throw new Exception("Không tìm thấy mã Otp");
         if(this.otp.isExpired()) throw new Exception("Mã Otp đã hết hạn");
