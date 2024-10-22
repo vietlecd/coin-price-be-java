@@ -73,13 +73,27 @@ public class AdminController {
     }
 
     @GetMapping("/getHistoryPayment")
-    public List<paymentHistory> getHistoryPayment() {
+    public List<paymentHistory> getHistoryPayment(
+                                                  @RequestParam(required = false) Integer from,
+                                                  @RequestParam(required = false) Integer to
+    ) {
         try {
             List<paymentHistory> list = paymentRepository.findAll();
-            return list;
 
+            if(from != null && to != null) {
+                if(from > to) {
+                    throw new Exception("Yêu cầu không hợp lệ!, from > to");
+                }
+
+                if(from < 0 || to > list.size()) {
+                    throw new Exception("Yêu cầu không hợp lệ, from < 0 || to < 0");
+                }
+
+                return list.subList(from, to);
+            }
+            return list;
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Call api thất bại");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }
 
