@@ -39,9 +39,13 @@ public class FundingRateSnoozeConditionService {
     }
 
     // Method to deactivate (delete) a snooze condition by triggerId
-    public void deleteSnoozeConditionByTriggerId(String triggerId) {
-        Optional<FundingRateSnoozeCondition> snoozeCondition = fundingRateSnoozeConditionRepository
-                .findBySymbolAndUsername(fundingRateSnoozeCondition.getSymbol(), fundingRateSnoozeCondition.getUsername());
-        snoozeCondition.ifPresent(condition -> fundingRateSnoozeConditionRepository.delete(condition));
+    public void deleteSnoozeCondition(String symbol, String username) {
+        Optional<FundingRateSnoozeCondition> snoozeCondition = fundingRateSnoozeConditionRepository.findBySymbolAndUsername(symbol, username);
+        if (snoozeCondition.isPresent()) {
+            fundingRateSnoozeConditionRepository.delete(snoozeCondition.get());
+        } else {
+            throw new RuntimeException("Funding rate snooze condition not found for symbol: " + symbol);
+        }
     }
+
 }
