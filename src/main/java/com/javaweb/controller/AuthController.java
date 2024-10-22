@@ -109,7 +109,7 @@ public class AuthController {
                     new Responses(
                             new Date(),
                             "400",
-                            "Đăng nhập thất bại",
+                            e.getMessage(),
                             "/auth/login"),
                     HttpStatus.BAD_REQUEST);
         }

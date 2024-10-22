@@ -1,6 +1,8 @@
 package com.javaweb.controller;
 
+import com.javaweb.model.mongo_entity.paymentHistory;
 import com.javaweb.model.mongo_entity.userData;
+import com.javaweb.repository.PaymentRepository;
 import com.javaweb.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -18,6 +20,9 @@ import java.util.List;
 public class AdminController {
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    PaymentRepository paymentRepository;
 
     @DeleteMapping("/removeUserByUsername")
     public ResponseEntity<?> getUser(@RequestParam String username) {
@@ -61,9 +66,20 @@ public class AdminController {
                     new Responses(
                             new Date(),
                             "400",
-                            "Xóa user thành công!",
+                            e.getMessage(),
                             "/admin/deleteAllUsername"),
                     HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/getHistoryPayment")
+    public List<paymentHistory> getHistoryPayment() {
+        try {
+            List<paymentHistory> list = paymentRepository.findAll();
+            return list;
+
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Call api thất bại");
         }
     }
 

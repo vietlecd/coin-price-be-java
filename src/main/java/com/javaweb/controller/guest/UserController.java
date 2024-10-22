@@ -1,7 +1,9 @@
 package com.javaweb.controller.guest;
 
 import com.javaweb.controller.AuthController;
+import com.javaweb.model.mongo_entity.paymentHistory;
 import com.javaweb.model.mongo_entity.userData;
+import com.javaweb.repository.PaymentRepository;
 import com.javaweb.repository.UserRepository;
 import com.javaweb.service.EmailSender;
 import lombok.AllArgsConstructor;
@@ -28,6 +30,9 @@ public class UserController {
 
     @Autowired
     EmailSender emailSender;
+
+    @Autowired
+    PaymentRepository paymentRepository;
 
     @PutMapping("/changePassword")
     public ResponseEntity<?> changePassword(HttpServletRequest request,@RequestBody Map<String, String> pass) {
@@ -106,6 +111,13 @@ public class UserController {
             userRepository.deleteByUsername(username);
             userRepository.save(userData);
 
+            paymentRepository.save(new paymentHistory(
+                    new Date(),
+                    username,
+                    userData.getEmail(),
+                    amount
+            ));
+
             return new ResponseEntity<>(
                 new Responses(
                         new Date(),
@@ -136,6 +148,13 @@ public class UserController {
 
             userRepository.deleteByUsername(username);
             userRepository.save(userData);
+
+            paymentRepository.save(new paymentHistory(
+                    new Date(),
+                    username,
+                    userData.getEmail(),
+                    -amount
+            ));
 
             NumberFormat numberFormat = NumberFormat.getInstance();
             return new ResponseEntity<>(
