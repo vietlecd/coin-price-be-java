@@ -30,19 +30,14 @@ public class IndicatorTriggerConditionController {
     private GetUsernameHelper getUsernameHelper;
 
     @PostMapping("/create")
-    public ResponseEntity<?> createTriggerCondition(@RequestParam("indicator") String indicator, @RequestBody Map<String, Object> dtoMap,  HttpServletRequest request) {
+    public ResponseEntity<?> createTriggerCondition(@RequestBody Map<String, Object> dtoMap,  HttpServletRequest request) {
         try {
-            String username = getUsernameHelper.getUsername(request); //ở đây tui sử dụng helper cho gọn
+            String username = getUsernameHelper.getUsername(request); // sử dụng helper cho gọn
 
-            String alertId = ""; //chỗ này có mấy TH vậy ông, nếu một thì khỏi để Switch:)))))
-            switch (indicator) {
-                case "MA":
-                    IndicatorTriggerDTO indicatorDTO = objectMapper.convertValue(dtoMap, IndicatorTriggerDTO.class);
-                    alertId = indicatorTriggerService.createTrigger(indicatorDTO, username);
-                    break;
-                default:
-                    return ResponseEntity.badRequest().body("Invalid indicator type");
-            }
+            String alertId = "";
+
+            IndicatorTriggerDTO indicatorDTO = objectMapper.convertValue(dtoMap, IndicatorTriggerDTO.class);
+            alertId = indicatorTriggerService.createTrigger(indicatorDTO, username);
 
             Map<String, String> response = new HashMap<>();
             response.put("message", "Alert created successfully");
@@ -68,17 +63,11 @@ public class IndicatorTriggerConditionController {
 
 
     @DeleteMapping("/delete/{symbol}")
-    public ResponseEntity<?> deleteTriggerCondition(@PathVariable String symbol, @RequestParam("indicator") String indicator, HttpServletRequest request) {
+    public ResponseEntity<?> deleteTriggerCondition(@PathVariable String symbol, HttpServletRequest request) {
         try {
             String username = getUsernameHelper.getUsername(request);
 
-            switch (indicator) {
-                case "MA":
-                    indicatorTriggerService.deleteTrigger(symbol, username);
-                    break;
-                default:
-                    return ResponseEntity.badRequest().body("Invalid indicator type");
-            }
+            indicatorTriggerService.deleteTrigger(symbol, username);
 
             return ResponseEntity.ok(symbol + " has been deleted successfully.");
         } catch (Exception e) {
