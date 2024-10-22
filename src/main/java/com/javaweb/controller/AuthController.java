@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -35,6 +36,7 @@ public class AuthController {
 
     @Value("${domain}")
     private String domain;
+    private JavaMailSenderImpl mailSender;
 
     @GetMapping("/refreshToken")
     public ResponseEntity<?> refreshToken(HttpServletRequest request, HttpServletResponse response) {
@@ -186,7 +188,7 @@ public class AuthController {
     }
 
     @GetMapping("/resetPassword")
-    public ResponseEntity<?> resetPassword(@RequestParam String email, @RequestParam String otpCode, @RequestParam Map<String, String> params) {
+    public ResponseEntity<?> resetPassword(@RequestParam String email, @RequestParam String otpCode, @RequestBody Map<String, String> params) {
         try {
             String newPassword = params.get("newPassword");
             if(newPassword == null) {
@@ -194,13 +196,16 @@ public class AuthController {
             }
 
             userData user = userRepository.findByEmail(email);
-            if(user.useOtp(otpCode)) {
-                userRepository.deleteByUsername(user.getUsername());
-                userRepository.save(user);
-            }
-            else {
-                throw new Exception("Otp không tồn tại!");
-            }
+            user.useOtp(otpCode);
+            //throw runtimeException nếu Otp không hợp lệ!
+
+            userRepository.deleteByUsername(user.getUsername());
+            user.setPassword(newPassword);
+            userRepository.save(user);
+
+            emailSender.sendEmail(user.getEmail(),
+                    "Phát hện yêu cầu đổi mật khẩu!",
+                    "Yêu cầu đổi mật khẩu thành công!");
 
             return new ResponseEntity<>(
                 new Responses(
@@ -209,6 +214,7 @@ public class AuthController {
                         "Đổi mật khẩu thành công, vui lòng đăng nhập lại.",
                         "/api/forgetPassword"),
                 HttpStatus.OK);
+
         } catch (Exception e) {
             return new ResponseEntity<>(
                 new Responses(

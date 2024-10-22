@@ -23,8 +23,7 @@ public class EmailSender {
     @Value("${email}")
     private String email;
 
-    public void sendEmail(String to, String subject, String body) {
-        try {
+    public void sendEmail(String to, String subject, String body) throws MessagingException {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true);
 
@@ -34,30 +33,22 @@ public class EmailSender {
             helper.setText(body, true);
 
             mailSender.send(message);
-        } catch (MessagingException e) {
-            throw new RuntimeException(e);
-        }
     }
 
-    public void sendOtp(String mail) {
-        try {
-            userData userdata = userRepository.findByEmail(mail);
+    public void sendOtp(String mail) throws Exception {
+        userData userdata = userRepository.findByEmail(mail);
 
-            userdata.generateOtp(5, 5);
-            userRepository.deleteByUsername(userdata.getUsername());
-            userRepository.save(userdata);
+        userdata.generateOtp(5, 5);
+        userRepository.deleteByUsername(userdata.getUsername());
+        userRepository.save(userdata);
 
-            String emailBody = "<html>"
-                    + "<body>"
-                    + "<h2>Mã OTP là: "+ userdata.getOtp().getOtpCode() +"</h2>"
-                    + "<p></p>"
-                    + "</body>"
-                    + "</html>";
+        String emailBody = "<html>"
+                + "<body>"
+                + "<h2>Mã OTP là: "+ userdata.getOtp().getOtpCode() +"</h2>"
+                + "<p></p>"
+                + "</body>"
+                + "</html>";
 
-            sendEmail(userdata.getEmail(), "Yêu Cầu Cập Nhật Mật Khẩu", emailBody);
-
-        } catch (Exception e) {
-            throw e;
-        }
+        sendEmail(userdata.getEmail(), "Yêu Cầu Cập Nhật Mật Khẩu", emailBody);
     }
 }

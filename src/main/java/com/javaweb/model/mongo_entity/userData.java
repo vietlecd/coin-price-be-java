@@ -37,17 +37,12 @@ public class userData {
         this.otp.setExpiryDate(LocalDateTime.now().plusMinutes(validityInMinutes));
     }
 
-    public boolean useOtp(String otpCode) {
-        try {
-            if(checkOtp(otpCode)) {
-                otp = null;
-                return true;
-            }
-            else {
-                throw new Exception("Otp không tồn tại!");
-            }
-        } catch (Exception e) {
-            return false;
+    public void useOtp(String otpCode) throws Exception {
+        if(checkOtp(otpCode)) {
+            otp = null;
+        }
+        else {
+            throw new Exception("Otp không tồn tại!");
         }
     }
 
@@ -61,7 +56,11 @@ public class userData {
         return otpBuilder.toString();
     }
 
-    private boolean checkOtp(String otpCode) {
-        return otp!=null && !otp.isExpired() && otpCode.equals(this.otp.getOtpCode());
+    private boolean checkOtp(String otpCode) throws Exception {
+        if(this.otp == null) throw new Exception("Không tìm thấy mã Otp");
+        if(this.otp.isExpired()) throw new Exception("Mã Otp đã hết hạn");
+        if(otpCode.equals(this.otp.getOtpCode())) throw new Exception("Sai mã Otp");
+
+        return true;
     }
 }
