@@ -1,7 +1,9 @@
 package com.javaweb.controller;
 
+import com.javaweb.controller.guest.UserController;
 import com.javaweb.model.LoginRequest;
 import com.javaweb.model.RegisterRequest;
+import com.javaweb.model.mongo_entity.Otp;
 import com.javaweb.model.mongo_entity.userData;
 import com.javaweb.repository.UserRepository;
 import com.javaweb.service.CreateToken;
@@ -9,6 +11,7 @@ import com.javaweb.service.EmailSender;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,6 +29,12 @@ import com.javaweb.service.authServices.*;
 public class AuthController {
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private EmailSender emailSender;
+
+    @Value("${domain}")
+    private String domain;
 
     @GetMapping("/refreshToken")
     public ResponseEntity<?> refreshToken(HttpServletRequest request, HttpServletResponse response) {
@@ -105,7 +114,8 @@ public class AuthController {
                     reg.getPassword(),
                     reg.getEmail(),
                     0,
-                    ip_list
+                    ip_list,
+                    null
             );
             RegisterFunc.checkUserAndEmail(user, userRepository);
 
@@ -148,6 +158,67 @@ public class AuthController {
         response.put("path", "/auth/logOut");
 
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/forgetPassword")
+    public ResponseEntity<?> forgetPassword(@RequestParam String username) {
+        try {
+            userData userdata = userRepository.findByUsername(username);
+            emailSender.sendOtp(userdata.getEmail());
+
+            return new ResponseEntity<>(
+                    new Responses(
+                            new Date(),
+                            "200",
+                            "Gửi email thành công, check thư tại, " + userdata.getEmail() + "",
+                            "/api/forgetPassword"),
+                    HttpStatus.OK);
+
+        } catch (Exception e) {
+            return new ResponseEntity<>(
+                    new Responses(
+                            new Date(),
+                            "400",
+                            e.getMessage(),
+                            "/api/forgetPassword"),
+                    HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/resetPassword")
+    public ResponseEntity<?> resetPassword(@RequestParam String email, @RequestParam String otpCode, @RequestParam Map<String, String> params) {
+        try {
+            String newPassword = params.get("newPassword");
+            if(newPassword == null) {
+                throw new RuntimeException("Không tìm thấy 'newPassword' trong Body");
+            }
+
+            userData user = userRepository.findByEmail(email);
+            if(user.useOtp(otpCode)) {
+                userRepository.deleteByUsername(user.getUsername());
+                userRepository.save(user);
+            }
+            else {
+                throw new Exception("Otp không tồn tại!");
+            }
+
+            return new ResponseEntity<>(
+                new Responses(
+                        new Date(),
+                        "200",
+                        "Đổi mật khẩu thành công, vui lòng đăng nhập lại.",
+                        "/api/forgetPassword"),
+                HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(
+                new Responses(
+                    new Date(),
+                    "200",
+                    e.getMessage(),
+                    "/api/forgetPassword")
+                ,HttpStatus.BAD_REQUEST
+            );
+        }
     }
 
     @Data

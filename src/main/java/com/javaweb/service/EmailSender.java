@@ -1,13 +1,22 @@
 package com.javaweb.service;
 
+
+import com.javaweb.model.mongo_entity.userData;
+import com.javaweb.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
 
 @Service
 public class EmailSender {
+    @Autowired
+    UserRepository userRepository;
+
     @Autowired
     private JavaMailSender mailSender;
 
@@ -16,20 +25,39 @@ public class EmailSender {
 
     public void sendEmail(String to, String subject, String body) {
         try {
-            System.out.println("Sending email to " + to);
-            System.out.println("Subject: " + subject);
-            System.out.println("Body: " + body);
-            System.out.println("Email: " + email);
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
 
-            SimpleMailMessage message = new SimpleMailMessage();
-            message.setFrom(email);
-            message.setTo(to);
-            message.setText(body);
-            message.setSubject(subject);
+            helper.setFrom(email);
+            helper.setTo(to);
+            helper.setSubject(subject);
+            helper.setText(body, true);
 
             mailSender.send(message);
-        } catch (Exception e) {
+        } catch (MessagingException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    public void sendOtp(String mail) {
+        try {
+            userData userdata = userRepository.findByEmail(mail);
+
+            userdata.generateOtp(5, 5);
+            userRepository.deleteByUsername(userdata.getUsername());
+            userRepository.save(userdata);
+
+            String emailBody = "<html>"
+                    + "<body>"
+                    + "<h2>Mã OTP là: "+ userdata.getOtp().getOtpCode() +"</h2>"
+                    + "<p></p>"
+                    + "</body>"
+                    + "</html>";
+
+            sendEmail(userdata.getEmail(), "Yêu Cầu Cập Nhật Mật Khẩu", emailBody);
+
+        } catch (Exception e) {
+            throw e;
         }
     }
 }
