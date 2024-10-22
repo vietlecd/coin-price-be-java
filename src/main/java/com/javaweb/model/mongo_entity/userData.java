@@ -19,6 +19,7 @@ public class userData {
     private String email;
     private Integer vip_role;
     private List<String> ip_list;
+    private Integer coin;
     private Otp otp;
 
     public userData(String username, String name, String password, String email, Integer vip_role, List<String> ip_list) throws Exception {
@@ -29,6 +30,19 @@ public class userData {
         this.setIp_list(ip_list);
         this.name = name;
         this.setOtp(null);
+        coin = 0;
+    }
+
+    public void spendingCoin(Integer amount) throws Exception {
+
+    }
+
+    public void addCoin(Integer coin) throws Exception {
+        if(coin < 10000) {
+            throw new Exception("Sao mày nghèo vậy cu");
+        }
+
+        this.coin += coin;
     }
 
     public void setPassword(String password) throws Exception {

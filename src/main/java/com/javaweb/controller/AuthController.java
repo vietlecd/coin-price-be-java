@@ -87,23 +87,25 @@ public class AuthController {
                     userRepository.deleteByUsername(username);
                     userRepository.save(user);
                 }
+
+                return new ResponseEntity<>(
+                        new Responses(
+                                new Date(),
+                                "200",
+                                "Đăng nhập thành công",
+                                "/auth/login"),
+                        HttpStatus.OK);
             }
 
-            return new ResponseEntity<>(
-                    new Responses(
-                            new Date(),
-                            "200",
-                            "Đăng nhập thành công",
-                            "/auth/login"),
-                    HttpStatus.OK);
+            throw new Exception("Sai tên đăng nhập hoặc mật khẩu");
         } catch (Exception e) {
             return new ResponseEntity<>(
                     new Responses(
                             new Date(),
-                            "200",
-                            "Đăng nhập thành công",
+                            "400",
+                            "Đăng nhập thất bại",
                             "/auth/login"),
-                    HttpStatus.OK);
+                    HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -238,7 +240,6 @@ public class AuthController {
             );
         }
     }
-
     @Data
     @AllArgsConstructor
     private class Responses{

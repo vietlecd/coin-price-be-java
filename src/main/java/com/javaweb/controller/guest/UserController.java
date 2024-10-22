@@ -44,7 +44,7 @@ public class UserController {
                             new Date(),
                             "200",
                             "Đổi mật khẩu thành công!",
-                            "/auth/changePassword"),
+                            "/api/changePassword"),
                     HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(
@@ -52,7 +52,7 @@ public class UserController {
                             new Date(),
                             "400",
                             e.getMessage(),
-                            "/auth/changePassword"),
+                            "/api/changePassword"),
                     HttpStatus.BAD_REQUEST);
         }
     }
@@ -75,7 +75,7 @@ public class UserController {
                             new Date(),
                             "200",
                             "Đổi email thành công!",
-                            "/auth/changePassword"),
+                            "/api/changeEmail"),
                     HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(
@@ -83,7 +83,60 @@ public class UserController {
                             new Date(),
                             "400",
                             e.getMessage(),
-                            "/auth/changeEmail"),
+                            "/api/changeEmail"),
+                    HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PostMapping("/donateTiTienChoBackend")
+    public ResponseEntity<?> donateTiTienChoBackend(HttpServletRequest request, @RequestParam Integer amount) {
+        try {
+            if(amount==null) {
+                throw new Exception("Nhập tiền là số nguyên dương lớn hơn 10.000");
+            }
+
+            String username = request.getAttribute("username").toString();
+            userData userData = userRepository.findByUsername(username);
+            userData.addCoin(amount);
+
+            userRepository.deleteByUsername(username);
+            userRepository.save(userData);
+
+            return new ResponseEntity<>(
+                new Responses(
+                        new Date(),
+                        "200",
+                        "Nạp tiền thành công!",
+                        "/api/deposit"),
+                HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(
+                new Responses(
+                        new Date(),
+                        "400",
+                        e.getMessage(),
+                        "/api/deposit"),
+                HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PostMapping("/purchaseVip")
+    public ResponseEntity<?> purchaseVip(HttpServletRequest request, @RequestParam Integer vipLevel) {
+        try {
+            if(vipLevel == null || vipLevel<=0 || vipLevel>3) {
+                throw new Exception("Không tồn tại vip này");
+            }
+            String username = request.getAttribute("username").toString();
+            userData userData = userRepository.findByUsername(username);
+            userData.spendingCoin(vipLevel);
+
+        } catch (Exception e) {
+            return new ResponseEntity<>(
+                    new Responses(
+                            new Date(),
+                            "400",
+                            e.getMessage(),
+                            "/api/purchaseVip"),
                     HttpStatus.BAD_REQUEST);
         }
     }
