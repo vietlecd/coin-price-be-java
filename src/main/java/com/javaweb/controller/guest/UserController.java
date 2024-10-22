@@ -57,6 +57,37 @@ public class UserController {
         }
     }
 
+    @PutMapping("/changeEmail")
+    public ResponseEntity<?> changeEmail(HttpServletRequest request, @RequestBody String email) {
+        try {
+            if(email==null) {
+                throw new Exception("Không tìm thấy email");
+            }
+
+            String username = request.getAttribute("username").toString();
+            userData userData = userRepository.findByUsername(username);
+            userData.setEmail(email);
+            userRepository.deleteByUsername(username);
+            userRepository.save(userData);
+
+            return new ResponseEntity<>(
+                    new Responses(
+                            new Date(),
+                            "200",
+                            "Đổi email thành công!",
+                            "/auth/changePassword"),
+                    HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(
+                    new Responses(
+                            new Date(),
+                            "400",
+                            e.getMessage(),
+                            "/auth/changeEmail"),
+                    HttpStatus.BAD_REQUEST);
+        }
+    }
+
     @Data
     @AllArgsConstructor
     private class Responses{
