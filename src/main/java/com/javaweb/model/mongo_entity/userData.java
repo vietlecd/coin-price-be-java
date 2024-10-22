@@ -22,43 +22,7 @@ public class userData {
     private Integer coin;
     private Otp otp;
 
-    public userData(String username, String name, String password, String email, Integer vip_role, List<String> ip_list) throws Exception {
-        this.setUsername(username);
-        this.setPassword(password);
-        this.setEmail(email);
-        this.setVip_role(vip_role);
-        this.setIp_list(ip_list);
-        this.name = name;
-        this.setOtp(null);
-        coin = 0;
-    }
-
-    public Integer spendingCoin(Integer newVip) throws Exception {
-        Integer amountToSpend = 0;
-        if(this.vip_role >= newVip)
-            throw new Exception("Vip này mua rồi thì không mua lại được!");
-
-        for(Integer i = this.vip_role; i < newVip; i++){
-            amountToSpend += 50000;
-        }
-
-        if(amountToSpend > coin)
-            throw new Exception("Không đủ tiền để thanh toán, yêu cầu" + amountToSpend);
-
-        vip_role = newVip;
-        coin -= amountToSpend;
-
-        return amountToSpend;
-    }
-
-    public void addCoin(Integer coin) throws Exception {
-        if(coin < 10000) {
-            throw new Exception("Yêu cầu nạp tiền ít hơn 10.000VNĐ!");
-        }
-
-        this.coin += coin;
-    }
-
+    //Overide lên hàm Setter trong lombok
     public void setPassword(String password) throws Exception {
         String usernameRegex = "^[a-zA-Z0-9_]{8,15}$";
         if (!(password != null && password.matches(usernameRegex))) {
@@ -84,6 +48,45 @@ public class userData {
         }
 
         this.email = email;
+    }
+
+    //Constructor
+    public userData(String username, String name, String password, String email, Integer vip_role, List<String> ip_list) throws Exception {
+        this.setUsername(username);
+        this.setPassword(password);
+        this.setEmail(email);
+        this.setVip_role(vip_role);
+        this.setIp_list(ip_list);
+        this.name = name;
+        this.setOtp(null);
+        coin = 0;
+    }
+
+    //Service
+    public Integer spendingCoin(Integer newVip) throws Exception {
+        Integer amountToSpend = 0;
+        if(this.vip_role >= newVip)
+            throw new Exception("Vip này mua rồi thì không mua lại được!");
+
+        for(Integer i = this.vip_role; i < newVip; i++){
+            amountToSpend += 50000;
+        }
+
+        if(amountToSpend > coin)
+            throw new Exception("Không đủ tiền để thanh toán, yêu cầu " + amountToSpend);
+
+        vip_role = newVip;
+        coin -= amountToSpend;
+
+        return amountToSpend;
+    }
+
+    public void addCoin(Integer coin) throws Exception {
+        if(coin < 10000) {
+            throw new Exception("Yêu cầu nạp tiền ít hơn 10.000VNĐ!");
+        }
+
+        this.coin += coin;
     }
 
     public void addIp(String ip) {

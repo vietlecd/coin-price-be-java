@@ -180,6 +180,11 @@ public class AuthController {
     public ResponseEntity<?> forgetPassword(@RequestParam String username) {
         try {
             userData userdata = userRepository.findByUsername(username);
+
+            if(userdata == null) {
+                throw new Exception("Không có user này");
+            }
+
             emailSender.sendOtp(userdata.getEmail());
 
             return new ResponseEntity<>(

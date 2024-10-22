@@ -28,7 +28,7 @@ public class AuthenInterceptor implements HandlerInterceptor {
         String token = getCookieValue(request, "token");
 
         if(token == null) {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Missing or invalid Authorization header");
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Api yêu cầu đăng nhập");
             return false;
         }
 
