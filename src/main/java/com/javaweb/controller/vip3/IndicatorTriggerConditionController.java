@@ -40,7 +40,7 @@ public class IndicatorTriggerConditionController {
             alertId = indicatorTriggerService.createTrigger(indicatorDTO, username);
 
             Map<String, String> response = new HashMap<>();
-            response.put("message", "Alert created successfully");
+            response.put("message", "Indicator created successfully");
             response.put("alert_id", alertId);
 
             return ResponseEntity.status(201).body(response);
