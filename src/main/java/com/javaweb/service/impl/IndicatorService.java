@@ -133,7 +133,9 @@ public class IndicatorService implements IIndicatorService {
         String eventTime = DateTimeHelper.formatEventTime(eventTimeLong);
 
         String symbol = data.get("s").asText();
-        Map<String, Object> values = data.get("v");
+        JsonNode data1 = data.get("v");
+        Map<String, Object> values = new HashMap<>();
+        values.put(data1.get("S").asText(), data1.get("D").asDouble());
 
         long countdownInSeconds = (nextFundingTime - eventTimeLong) / 1000;
 

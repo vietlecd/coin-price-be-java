@@ -100,7 +100,7 @@ public class WebSocketScheduler {
                 //System.out.println("Checking Indicator WebSocket connections for username: " + username + ", symbols: " + symbols);
                 fundingRateWebSocketService.connectToWebSocket(symbols, true);
 
-                triggerService.handleAndSendAlertForFundingRate(symbols, username);
+                triggerService.handleAndSendAlertForIndicator(symbols, username);
             }
         }
     }

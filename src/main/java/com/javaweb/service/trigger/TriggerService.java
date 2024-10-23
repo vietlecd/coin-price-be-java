@@ -123,16 +123,16 @@ public class TriggerService {
 
     public void handleAndSendAlertForIndicator(List<String> symbols, String username) {
         Map<String, IndicatorDTO> priceDataMap = indicatorService.getIndicatorDataTriggers();
-        List<String> firedSymbols = triggerCheckHelper.checkSymbolAndTriggerAlert(symbols, priceDataMap, "Future", username);
-        boolean snoozeActive = snoozeCheckHelper.checkSymbolAndSnooze(symbols,"Future",username);
+        List<String> firedSymbols = triggerCheckHelper.checkSymbolAndTriggerAlert(symbols, priceDataMap, "Indicator", username);
+        boolean snoozeActive = snoozeCheckHelper.checkSymbolAndSnooze(symbols,"Indicator",username);
         if (!firedSymbols.isEmpty()) {
             for (String symbol : firedSymbols) {
                 if (snoozeActive) {
-                    System.out.println("Future is active, not sending alert for symbol: " + symbol);
+                    System.out.println("Indicator is active, not sending alert for symbol: " + symbol);
                 } else {
                     // Gửi thông báo qua Telegram
-                    telegramNotificationService.sendTriggerNotification("Future Trigger fired for symbol: " + symbol + " with username: " + username);
-                    System.out.println("Future Trigger fired for symbol: " + symbol);
+                    telegramNotificationService.sendTriggerNotification("Indicator Trigger fired for symbol: " + symbol + " with username: " + username);
+                    System.out.println("Indicator Trigger fired for symbol: " + symbol);
                 }
 
             }
