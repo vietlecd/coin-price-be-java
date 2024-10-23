@@ -200,7 +200,7 @@ public class UserController {
         }
     }
 
-    
+
     @Data
     @AllArgsConstructor
     private class Responses{
