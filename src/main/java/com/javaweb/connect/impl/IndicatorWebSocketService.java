@@ -34,12 +34,12 @@ public class IndicatorWebSocketService extends TextWebSocketHandler implements I
     @Autowired
     private WebSocketClient webSocketClient;
 
-    private String buildFundingRateWebSocketUrl(List<String> streams) {
+    private String buildIndicatorWebSocketUrl(List<String> streams) {
         String streamParam = streams.stream().map(s -> s.toLowerCase() + "@markPrice@1s").collect(Collectors.joining("/"));
-        return "wss://fstream.binance.com/stream?streams=" + streamParam;
+        return "wss://istream.coingecko.com/stream?streams=" + streamParam;
     }
     public void connectToWebSocket(List<String> streams, boolean isTriggerRequest) {
-        String wsUrl = buildFundingRateWebSocketUrl(streams);
+        String wsUrl = buildIndicatorWebSocketUrl(streams);
         // Truyền cờ isTriggerRequest trực tiếp vào handler
         webSocketConfig.connectToWebSocket(wsUrl, webSocketClient, new IndicatorWebSocketService.IndicatorWebSocketHandler(isTriggerRequest));
     }
