@@ -14,15 +14,15 @@ public class OtpService {
     @Autowired
     UserRepository userRepository;
 
-//    @Scheduled(fixedRate = 60000)
-//    public void deleteExpiredOtp() {
-//        List<userData> listUser = userRepository.findAll();
-//        for (userData user : listUser) {
-//            if(user.getOtp()!=null && user.getOtp().isExpired()) {
-//                user.setOtp(null);
-//                userRepository.deleteByUsername(user.getUsername());
-//                userRepository.save(user);
-//            }
-//        }
-//    }
+    @Scheduled(fixedRate = 60000)
+    public void deleteExpiredOtp() {
+        List<userData> listUser = userRepository.findAll();
+        for (userData user : listUser) {
+            if(user.getOtp()!=null && user.getOtp().isExpired()) {
+                user.setOtp(null);
+                userRepository.deleteByUsername(user.getUsername());
+                userRepository.save(user);
+            }
+        }
+    }
 }
