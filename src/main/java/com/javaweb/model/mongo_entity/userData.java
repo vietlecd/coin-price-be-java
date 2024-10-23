@@ -21,8 +21,6 @@ public class userData {
     private Integer vip_role;
     private List<String> ip_list;
     private Integer coin;
-
-    @Indexed(expireAfterSeconds = 300)
     private Otp otp;
 
     //Overide lên hàm Setter trong lombok
