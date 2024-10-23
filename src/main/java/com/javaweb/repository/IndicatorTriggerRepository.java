@@ -14,5 +14,5 @@ public interface IndicatorTriggerRepository extends MongoRepository<IndicatorTri
 
 
     @Query(value = "{}", fields = "{username: 1, symbol: 1}")
-    List<FundingRateTrigger> findAllUsernamesWithSymbols();
+    List<IndicatorTrigger> findAllUsernamesWithSymbols();
 }
