@@ -61,7 +61,7 @@ jobs:
     steps:
       - name: Deploy to VPS
         env:
-          VPS_USER: mk
+          VPS_USER: root
           VPS_IP: ${{ secrets.VPS_IP }}
           VPS_PASSWORD: ${{ secrets.VPS_PASSWORD }} 
         run: |
