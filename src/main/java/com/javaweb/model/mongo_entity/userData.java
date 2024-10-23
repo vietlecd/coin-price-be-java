@@ -126,7 +126,7 @@ public class userData {
     private boolean checkOtp(String otpCode) throws Exception {
         if(this.otp == null) throw new Exception("Không tìm thấy mã Otp");
         if(this.otp.isExpired()) throw new Exception("Mã Otp đã hết hạn");
-        if(otpCode.equals(this.otp.getOtpCode())) throw new Exception("Sai mã Otp");
+        if(!otpCode.equals(this.otp.getOtpCode())) throw new Exception("Sai mã Otp");
 
         return true;
     }
