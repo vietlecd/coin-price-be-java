@@ -40,7 +40,7 @@ public class AuthController {
             String token = OtherFunct.getCookieValue(request, "token");
 
             if (token == null) {
-                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Không tìm thấy token!");
+                throw new Exception("Không tìm thấy token!");
             }
             LoginRequest loginRequest = CreateToken.decodeToken(token);
 
@@ -53,7 +53,7 @@ public class AuthController {
             if (ip_list.contains(LoginFunc.getClientIp(request))) {
                 LoginFunc.setCookie(username, userData.getPassword(), response);
             } else {
-                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Yêu cầu refresh token không hợp lệ vì tài khoản chưa được đăng nhập trên thiết bị này!, ip thiết bị:" + LoginFunc.getClientIp(request));
+                throw new Exception("Yêu cầu refresh token không hợp lệ vì tài khoản chưa được đăng nhập trên thiết bị này!, ip thiết bị:" + LoginFunc.getClientIp(request));
             }
 
             return new ResponseEntity<>(
@@ -71,6 +71,52 @@ public class AuthController {
                             "400",
                             e.getMessage(),
                             "auth/refreshToken"),
+                    HttpStatus.BAD_REQUEST);
+        }
+    }
+
+
+    @GetMapping("/loginWithEmail")
+    public ResponseEntity<?> loginWithEmail(HttpServletRequest request, HttpServletResponse response, @RequestBody Map<String, String> info) {
+        try {
+            String email = info.get("email");
+            String password = info.get("password");
+
+            if(email == null || password == null) {
+                throw new Exception("Không tìm thấy email hoặc password");
+            }
+
+            userData user = userRepository.findByEmail(email);
+            if(user == null) {
+                throw new Exception("Không tìm thấy user");
+            }
+
+            if(user.getPassword().equals(password)) {
+                LoginFunc.setCookie(user.getUsername(), password, response);
+
+                if (!user.getIp_list().contains(LoginFunc.getClientIp(request))) {
+                    user.addIp(LoginFunc.getClientIp(request));
+
+                    userRepository.deleteByUsername(user.getUsername());
+                    userRepository.save(user);
+                }
+
+                return new ResponseEntity<>(
+                        new Responses(
+                                new Date(),
+                                "200",
+                                "Đăng nhập thành công",
+                                "/auth/login"),
+                        HttpStatus.OK);
+            }
+            throw new Exception("Sai email hoặc mật khẩu");
+        } catch (Exception e) {
+            return new ResponseEntity<>(
+                    new Responses(
+                        new Date(),
+                        "400",
+                        e.getMessage(),
+                        "/auth/loginWithEmail"),
                     HttpStatus.BAD_REQUEST);
         }
     }

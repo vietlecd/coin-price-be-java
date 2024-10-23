@@ -32,7 +32,7 @@ public class ExceptionHandlingController {
                 new Responses(
                         new Date(),
                         "400",
-                        e.getMessage(),
+                        "Không tìm thấy dữ liệu trong Body",
                         request.getRequestURL().toString())
                 ,HttpStatus.BAD_REQUEST
         );
