@@ -1,6 +1,8 @@
 package com.javaweb.controller;
 
+import com.javaweb.model.mongo_entity.paymentHistory;
 import com.javaweb.model.mongo_entity.userData;
+import com.javaweb.repository.PaymentRepository;
 import com.javaweb.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -18,6 +20,9 @@ import java.util.List;
 public class AdminController {
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    PaymentRepository paymentRepository;
 
     @DeleteMapping("/removeUserByUsername")
     public ResponseEntity<?> getUser(@RequestParam String username) {
@@ -42,6 +47,54 @@ public class AdminController {
         List<userData> userDataList = userRepository.findAll();
 
         return userDataList;
+    }
+
+    @DeleteMapping("/deleteAllUsername")
+    public ResponseEntity<?> deleteAllUsername() {
+        try {
+            userRepository.deleteAll();
+
+            return new ResponseEntity<>(
+                    new Responses(
+                            new Date(),
+                            "400",
+                            "Xóa toàn bộ user thành công!",
+                            "/admin/deleteAllUsername"),
+                    HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            return new ResponseEntity<>(
+                    new Responses(
+                            new Date(),
+                            "400",
+                            e.getMessage(),
+                            "/admin/deleteAllUsername"),
+                    HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/getHistoryPayment")
+    public List<paymentHistory> getHistoryPayment(
+                                                  @RequestParam(required = false) Integer from,
+                                                  @RequestParam(required = false) Integer to
+    ) {
+        try {
+            List<paymentHistory> list = paymentRepository.findAll();
+
+            if(from != null && to != null) {
+                if(from > to) {
+                    throw new Exception("Yêu cầu không hợp lệ!, from > to");
+                }
+
+                if(from < 0 || to > list.size()) {
+                    throw new Exception("Yêu cầu không hợp lệ, from < 0 || to < 0");
+                }
+
+                return list.subList(from, to);
+            }
+            return list;
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
     }
 
     @Data
