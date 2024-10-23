@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class KlineWebSocketService extends TextWebSocketHandler implements IConnectToWebSocketService {
+public class KlineWebSocketService extends TextWebSocketHandler{
     @Autowired
     private KlineDataService klineDataService;
 
@@ -39,7 +39,6 @@ public class KlineWebSocketService extends TextWebSocketHandler implements IConn
         return "wss://stream.binance.com/stream?streams=" + streamParam;
     }
 
-    @Override
     public void connectToWebSocket(List<String> streams) {
         String wsUrl = buildKlineWebSocketUrl(streams);
         webSocketConfig.connectToWebSocket(wsUrl, webSocketClient, this);

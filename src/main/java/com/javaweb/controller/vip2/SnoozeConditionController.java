@@ -37,28 +37,29 @@ public class SnoozeConditionController {
     private SnoozeMapHelper snoozeMapHelper;
     @Autowired
     private GetUsernameHelper getUsernameHelper;
+
     @PostMapping("/create/snooze")
-    public ResponseEntity<?> createTriggerCondition(@RequestParam("triggerType") String triggerType,
-                                                    @RequestBody Map<String, Object> snoozeConditionRequest, HttpServletRequest request) {
+    public ResponseEntity<?> createSnoozeCondition(@RequestParam("snoozeType") String snoozeType,
+                                                   @RequestBody Map<String, Object> snoozeConditionRequest, HttpServletRequest request) {
 
         try {
             String username = (String) request.getAttribute("username");
-            switch (triggerType) {
+            switch (snoozeType) {
                 case "spot":
-                    SpotSnoozeCondition spotSnoozeCondition = snoozeMapHelper.mapToSpotSnoozeCondition(snoozeConditionRequest,username);
-                    spotSnoozeConditionService.createSnoozeCondition(spotSnoozeCondition,username);
+                    SpotSnoozeCondition spotSnoozeCondition = snoozeMapHelper.mapToSpotSnoozeCondition(snoozeConditionRequest, username);
+                    spotSnoozeConditionService.createSnoozeCondition(spotSnoozeCondition, username);
                     break;
                 case "future":
-                    FutureSnoozeCondition futureSnoozeCondition = snoozeMapHelper.mapToFutureSnoozeCondition(snoozeConditionRequest);
-                    futureSnoozeConditionService.createSnoozeCondition(futureSnoozeCondition);
+                    FutureSnoozeCondition futureSnoozeCondition = snoozeMapHelper.mapToFutureSnoozeCondition(snoozeConditionRequest, username);
+                    futureSnoozeConditionService.createFutureSnoozeCondition(futureSnoozeCondition, username);
                     break;
                 case "price-difference":
-                    PriceDifferenceSnoozeCondition priceDifferenceSnoozeCondition = snoozeMapHelper.mapToPriceDifferenceSnoozeCondition(snoozeConditionRequest);
-                    priceDifferenceSnoozeConditionService.createSnoozeCondition(priceDifferenceSnoozeCondition);
+                    PriceDifferenceSnoozeCondition priceDifferenceSnoozeCondition = snoozeMapHelper.mapToPriceDifferenceSnoozeCondition(snoozeConditionRequest, username);
+                    priceDifferenceSnoozeConditionService.createSnoozeCondition(priceDifferenceSnoozeCondition, username);
                     break;
                 case "funding-rate":
-                    FundingRateSnoozeCondition fundingRateSnoozeCondition = snoozeMapHelper.mapToFundingRateSnoozeCondition(snoozeConditionRequest);
-                    fundingRateSnoozeConditionService.createSnoozeCondition(fundingRateSnoozeCondition);
+                    FundingRateSnoozeCondition fundingRateSnoozeCondition = snoozeMapHelper.mapToFundingRateSnoozeCondition(snoozeConditionRequest, username);
+                    fundingRateSnoozeConditionService.createSnoozeCondition(fundingRateSnoozeCondition, username);
                     break;
                 default:
                     return ResponseEntity.badRequest().body("Invalid trigger type");
@@ -68,4 +69,33 @@ public class SnoozeConditionController {
         }
         return ResponseEntity.ok("Snooze condition created successfully.");
     }
+
+    @DeleteMapping("/delete/snooze/{symbol}")
+    public ResponseEntity<?> deleteSnoozeCondition(@PathVariable String symbol, @RequestParam("snoozeType") String snoozeType, HttpServletRequest request) {
+        try {
+            String username = (String) request.getAttribute("username");
+
+            switch (snoozeType) {
+                case "spot":
+                    spotSnoozeConditionService.deleteSnoozeCondition(symbol, username);
+                    break;
+                case "future":
+                    futureSnoozeConditionService.deleteSnoozeCondition(symbol, username);
+                    break;
+                case "price-difference":
+                    priceDifferenceSnoozeConditionService.deleteSnoozeCondition(symbol, username);
+                    break;
+                case "funding-rate":
+                    fundingRateSnoozeConditionService.deleteSnoozeCondition(symbol, username);
+                    break;
+                default:
+                    return ResponseEntity.badRequest().body("Invalid snooze condition type");
+            }
+
+            return ResponseEntity.ok("Snooze condition for symbol " + symbol + " has been deleted successfully.");
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error deleting snooze condition: " + e.getMessage());
+        }
+    }
 }
+

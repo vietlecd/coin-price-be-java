@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.javaweb.dto.FundingIntervalDTO;
-import com.javaweb.helpers.service.FundingIntervalDTOHelper;
+import com.javaweb.converter.FundingIntervalDTOHelper;
 import com.javaweb.service.IFundingIntervalDataService;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit;
 public class FundingIntervalDataService implements IFundingIntervalDataService {
 
     private final Cache<String, FundingIntervalDTO> fundingIntervalCache = Caffeine.newBuilder()
-            .expireAfterWrite(15, TimeUnit.MINUTES)
+            .expireAfterWrite(1, TimeUnit.HOURS)
             .maximumSize(1000)
             .build();
 

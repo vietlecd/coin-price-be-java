@@ -2,55 +2,26 @@ package com.javaweb.dto.snooze;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 
-@Document(collection = "fundingrate_snooze_conditions")
+@Document(collection = "funding_rate_snooze_conditions")
+@Component
 public class FundingRateSnoozeCondition {
 
-    @Id
+    private String username; // Thay thế symbol bằng usernameId làm khóa chính
     private String symbol;
-    private String triggerId;
-
-    private String usernameId;
-    public String getSymbol() {
-        return symbol;
-    }
-
-    public String getUsernameId() {
-        return usernameId;
-    }
-
-    public void setUsernameId(String usernameId) {
-        this.usernameId = usernameId;
-    }
-
-    public void setSymbol(String symbol) {
-        this.symbol = symbol;
-    }
-
     private String conditionType; // "One-time", "Once-in-duration", "Repeat"
     private LocalDateTime startTime;
     private LocalDateTime endTime;
-
-    private String specificTime; // field is already named "specificTime"
-
-    public String getSpecificTime() {
-        return specificTime;
-    }
-    public String getSnoozeType() {
-        return conditionType;
-    }
-    public void setSpecificTime(String specificTime) {
-        this.specificTime = specificTime;
-    }
+    private String specificTime; // sửa lại từ SpecificTime thành specificTime
 
     // Constructors
     public FundingRateSnoozeCondition() {}
 
-    public FundingRateSnoozeCondition(String usernameId,String symbol, String conditionType, LocalDateTime startTime, LocalDateTime endTime, String specificTime) {
+    public FundingRateSnoozeCondition(String symbol, String conditionType, LocalDateTime startTime, LocalDateTime endTime, String specificTime) {
         this.symbol = symbol;
-        this.usernameId = usernameId;
         this.conditionType = conditionType;
         this.startTime = startTime;
         this.endTime = endTime;
@@ -58,16 +29,23 @@ public class FundingRateSnoozeCondition {
     }
 
     // Getters and Setters
-
-    public String getTriggerId() {
-        return triggerId;
+    public String getUsername() {
+        return username;
     }
 
-    public void setTriggerId(String triggerId) {
-        this.triggerId = triggerId;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
-    public String getConditionType() {
+    public String getSymbol() {
+        return symbol;
+    }
+
+    public void setSymbol(String symbol) {
+        this.symbol = symbol;
+    }
+
+    public String getSnoozeType() {
         return conditionType;
     }
 
@@ -89,5 +67,13 @@ public class FundingRateSnoozeCondition {
 
     public void setEndTime(LocalDateTime endTime) {
         this.endTime = endTime;
+    }
+
+    public String getSpecificTime() {
+        return specificTime;
+    }
+
+    public void setSpecificTime(String specificTime) {
+        this.specificTime = specificTime;
     }
 }

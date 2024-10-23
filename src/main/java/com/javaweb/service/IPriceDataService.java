@@ -7,7 +7,9 @@ import java.util.Map;
 
 public interface IPriceDataService {
 
-    void handleWebSocketMessage(JsonNode data);
+    void handleWebSocketMessage(JsonNode data, boolean isTriggered);
 
-    Map<String, PriceDTO> getPriceDataMap();
+    Map<String, PriceDTO> getPriceDataUsers();
+
+    Map<String, PriceDTO> getPriceDataTriggers();
 }

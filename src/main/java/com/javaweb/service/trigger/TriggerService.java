@@ -1,15 +1,8 @@
 package com.javaweb.service.trigger;
 
-import com.javaweb.config.WebSocketConfig;
-import com.javaweb.connect.impl.FundingIntervalWebService;
-import com.javaweb.connect.impl.FundingRateWebSocketService;
-import com.javaweb.connect.impl.FutureWebSocketService;
-import com.javaweb.connect.impl.SpotWebSocketService;
-import com.javaweb.dto.FundingIntervalDTO;
 import com.javaweb.dto.FundingRateDTO;
 import com.javaweb.dto.PriceDTO;
-import com.javaweb.helpers.controller.FundingRateAndIntervalHelper;
-import com.javaweb.helpers.sse.SseHelper;
+import com.javaweb.helpers.trigger.SnoozeCheckHelper;
 import com.javaweb.helpers.trigger.TriggerCheckHelper;
 import com.javaweb.service.impl.FundingRateDataService;
 import com.javaweb.service.impl.FuturePriceDataService;
@@ -33,19 +26,13 @@ import static java.lang.Math.abs;
 @Service
 public class TriggerService {
     @Autowired
-    private SseHelper sseHelper;
+    private SnoozeCheckHelper snoozeCheckHelper;
 
     @Autowired
     private TriggerCheckHelper triggerCheckHelper;
 
     @Autowired
-    private FundingRateWebSocketService fundingRateWebSocketService;
-
-    @Autowired
     private FundingRateDataService fundingRateDataService;
-
-    @Autowired
-    private FundingIntervalWebService fundingIntervalWebService;
 
     @Autowired
     private SpotPriceDataService spotPriceDataService;
@@ -57,83 +44,76 @@ public class TriggerService {
     private TelegramNotificationService telegramNotificationService;
 
     public void handleAndSendAlertForFundingRate(List<String> symbols, String username) {
-        Map<String, FundingRateDTO> fundingRateDataMap = fundingRateDataService.getFundingRateDataMap();
+        Map<String, FundingRateDTO> fundingRateDataMap = fundingRateDataService.getFundingRateDataTriggers();
 
         List<String> firedSymbols = triggerCheckHelper.checkSymbolAndTriggerAlert(symbols, fundingRateDataMap, "FundingRate" , username);
-
+        boolean snoozeActive = snoozeCheckHelper.checkSymbolAndSnooze(symbols,"Funding-rate",username);
         if (!firedSymbols.isEmpty()) {
             for (String symbol : firedSymbols) {
-                System.out.println("Spot Trigger fired for symbol: " + symbol);
-                // Gửi thông báo qua Telegram
-                telegramNotificationService.sendTriggerNotification("FundingRate Trigger fired for symbol: " + symbol + " with username: " + username);
+                if (snoozeActive) {
+                    System.out.println("Snooze is active, not sending alert for symbol: " + symbol);
+                } else {
+                    telegramNotificationService.sendTriggerNotification("FundingRate Trigger fired for symbol: " + symbol + " with username: " + username);
+                    System.out.println("FundingRate Trigger fired for symbol: " + symbol);
+                }
+
             }
         }
     }
     public void handleAndSendAlertForSpotAndFuture(List<String> symbols, String username) {
-        Map<String, PriceDTO> spotPriceDataMap = spotPriceDataService.getPriceDataMap();
-        Map<String, PriceDTO> futurePriceDataMap = futurePriceDataService.getPriceDataMap();
+        Map<String, PriceDTO> spotPriceDataMap = spotPriceDataService.getPriceDataTriggers();
+        Map<String, PriceDTO> futurePriceDataMap = futurePriceDataService.getPriceDataTriggers();
 
         List<String> firedSymbols = triggerCheckHelper.checkCompareSymbolndTriggerAlert(symbols, spotPriceDataMap, futurePriceDataMap, username);
-
+        boolean snoozeActive = snoozeCheckHelper.checkSymbolAndSnooze(symbols,"PriceDifference",username);
         if (!firedSymbols.isEmpty()) {
             for (String symbol : firedSymbols) {
-                System.out.println("Spot Trigger fired for symbol: " + symbol);
-                // Gửi thông báo qua Telegram
-                telegramNotificationService.sendTriggerNotification("Price Difference Trigger fired for symbol: " + symbol + " with username: " + username);
+
+                if (snoozeActive ) {
+                    System.out.println("Snooze is active, not sending alert for symbol: " + symbol);
+                } else {
+                    // Gửi thông báo qua Telegram
+                    telegramNotificationService.sendTriggerNotification("Price Difference Trigger fired for symbol: " + symbol + " with username: " + username);
+                    System.out.println("PriceDifference Trigger fired for symbol: " + symbol);
+                }
+
             }
         }
     }
     public void handleAndSendAlertForSpot(List<String> symbols, String username) {
-        Map<String, PriceDTO> priceDataMap = spotPriceDataService.getPriceDataMap();
+        Map<String, PriceDTO> priceDataMap = spotPriceDataService.getPriceDataTriggers();
         List<String> firedSymbols = triggerCheckHelper.checkSymbolAndTriggerAlert(symbols, priceDataMap, "Spot", username);
-
+        boolean snoozeActive = snoozeCheckHelper.checkSymbolAndSnooze(symbols,"Spot",username);
         if (!firedSymbols.isEmpty()) {
             for (String symbol : firedSymbols) {
-                System.out.println("Spot Trigger fired for symbol: " + symbol);
-                // Gửi thông báo qua Telegram
-                telegramNotificationService.sendTriggerNotification("Spot Trigger fired for symbol: " + symbol + " with username: " + username);
+
+                if (snoozeActive ) {
+                    System.out.println("Snooze is active, not sending alert for symbol: " + symbol);
+                } else {
+                    System.out.println("Spot Trigger fired for symbol: " + symbol);
+                    // Gửi thông báo qua Telegram
+                    telegramNotificationService.sendTriggerNotification("Spot Trigger fired for symbol: " + symbol + " with username: " + username);
+                }
             }
         }
     }
 
     public void handleAndSendAlertForFuture(List<String> symbols, String username) {
-        Map<String, PriceDTO> priceDataMap = futurePriceDataService.getPriceDataMap();
+        Map<String, PriceDTO> priceDataMap = futurePriceDataService.getPriceDataTriggers();
         List<String> firedSymbols = triggerCheckHelper.checkSymbolAndTriggerAlert(symbols, priceDataMap, "Future", username);
-
+        boolean snoozeActive = snoozeCheckHelper.checkSymbolAndSnooze(symbols,"Future",username);
         if (!firedSymbols.isEmpty()) {
             for (String symbol : firedSymbols) {
-                System.out.println("Future Trigger fired for symbol: " + symbol);
-                // Gửi thông báo qua Telegram
-                telegramNotificationService.sendTriggerNotification("Future Trigger fired for symbol: " + symbol + " with username: " + username);
+                if (snoozeActive) {
+                    System.out.println("Future is active, not sending alert for symbol: " + symbol);
+                } else {
+                    // Gửi thông báo qua Telegram
+                    telegramNotificationService.sendTriggerNotification("Future Trigger fired for symbol: " + symbol + " with username: " + username);
+                    System.out.println("Future Trigger fired for symbol: " + symbol);
+                }
+
             }
         }
     }
 
-    public SseEmitter handleStreamFundingRate(List<String> symbols, String username, WebSocketConfig webSocketConfig) {
-        SseEmitter sseEmitter = new SseEmitter(Long.MAX_VALUE);
-
-        //ham update data interval sau 15 min
-        scheduleFundingIntervalDataUpdate(symbols);
-
-        fundingRateWebSocketService.connectToWebSocket(symbols);
-
-        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-        scheduler.scheduleAtFixedRate(() -> {
-            Map<String, FundingRateDTO> fundingRateDataMap = fundingRateDataService.getFundingRateDataMap();
-            List<Map<String, FundingIntervalDTO>> fundingIntervalDataList = fundingIntervalWebService.getLatestFundingIntervalData(symbols);
-
-            FundingRateAndIntervalHelper.streamCombinedData(sseEmitter, symbols, fundingRateDataMap, fundingIntervalDataList);
-
-        }, 0, 5, TimeUnit.SECONDS); //trigger mỗi 5s
-
-        return sseEmitter;
-    }
-
-    public void scheduleFundingIntervalDataUpdate(List<String> symbols) {
-        ScheduledExecutorService dataUpdater = Executors.newScheduledThreadPool(1);
-        dataUpdater.scheduleAtFixedRate(() -> {
-            fundingIntervalWebService.getLatestFundingIntervalData(symbols);
-            System.out.println("FundingInterval data updated for symbols: " + symbols);
-        }, 0, 15, TimeUnit.MINUTES);
-    }
 }

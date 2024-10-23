@@ -24,9 +24,10 @@ public class SpotSnoozeConditionService {
 
 
     // Method to create a new snooze condition
-    public SpotSnoozeCondition createSnoozeCondition(SpotSnoozeCondition spotSnoozeCondition, String usernameId) {
+    public SpotSnoozeCondition createSnoozeCondition(SpotSnoozeCondition spotSnoozeCondition, String username) {
         // Set the usernameId in the spotSnoozeCondition object
-        spotSnoozeCondition.setUsername(usernameId);
+
+        spotSnoozeCondition.setUsername(username);
 
         // Check if a snooze condition already exists for the given symbol and usernameId
         Optional<SpotSnoozeCondition> existingSnoozeCondition = spotSnoozeConditionRepository
@@ -35,7 +36,7 @@ public class SpotSnoozeConditionService {
         if (existingSnoozeCondition.isPresent()) {
             // If symbol and usernameId exist together, throw an exception
             throw new IllegalArgumentException("Snooze condition with symbol '"
-                    + spotSnoozeCondition.getSymbol() + "' and usernameId '"
+                    + spotSnoozeCondition.getSymbol() + "' and username '"
                     + spotSnoozeCondition.getUsername() + "' already exists in the database");
         }
 
@@ -46,8 +47,14 @@ public class SpotSnoozeConditionService {
 
 
     // Method to deactivate (delete) a snooze condition by triggerId
-    public void deleteSnoozeConditionByTriggerId(String triggerId) {
-        Optional<SpotSnoozeCondition> snoozeCondition = spotSnoozeConditionRepository.findBySymbolAndUsername(spotSnoozeCondition.getSymbol(), spotSnoozeCondition.getUsername());
-        snoozeCondition.ifPresent(condition -> spotSnoozeConditionRepository.delete(condition));
+    public void deleteSnoozeCondition(String symbol, String username) {
+        Optional<SpotSnoozeCondition> snoozeCondition = spotSnoozeConditionRepository.findBySymbolAndUsername(symbol, username);
+        if (snoozeCondition.isPresent()) {
+            spotSnoozeConditionRepository.delete(snoozeCondition.get());
+        } else {
+            throw new RuntimeException("Snooze condition not found for symbol: " + symbol);
+        }
     }
+
+
 }
