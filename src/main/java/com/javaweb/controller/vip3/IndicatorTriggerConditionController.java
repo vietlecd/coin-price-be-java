@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/vip3")
+@RequestMapping("/api/vip3")
 public class IndicatorTriggerConditionController {
     @Autowired
     private ObjectMapper objectMapper;
