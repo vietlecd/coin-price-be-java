@@ -279,9 +279,9 @@ public class AuthController {
             }
             userData user = userRepository.findByEmail(email);
             user.useOtp(otpCode);
+            user.setPassword(newPassword);
 
             userRepository.deleteByUsername(user.getUsername());
-            user.setPassword(newPassword);
             userRepository.save(user);
 
             emailSender.sendEmail(user.getEmail(),
