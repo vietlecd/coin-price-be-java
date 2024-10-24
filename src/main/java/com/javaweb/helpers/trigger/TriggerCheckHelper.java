@@ -174,7 +174,7 @@ public class TriggerCheckHelper {
     private String getCurrentIndicatorValue(String symbol, Map<String, ?> indicatorDataMap) {
         IndicatorDTO indicatorDTO = null;
 
-        String spotKey = "Spot Indicator: " + symbol.toUpperCase();
+        String spotKey = "Indicator: " + symbol;
         if (indicatorDataMap.containsKey(spotKey)) {
             indicatorDTO = (IndicatorDTO) indicatorDataMap.get(spotKey);
         } else {
