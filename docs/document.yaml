@@ -1,7 +1,7 @@
 openapi: "3.0.3"
 info:
   title: Coin price
-  version: 1.0
+  version: "1.0"
   description: |-
     _This project is suitable for users who wish to monitor the cryptocurrency market, perform technical analysis, and automatically receive alerts based on price movements and technical indicators._  
     ## Libraries used in the Project:
@@ -31,7 +31,7 @@ info:
       - Version: `2.4.4`
       - Scope: `provided`
 servers:
-  - url: http://localhost:8080
+  - url: http://34.142.140.64
 tags:
   - name: auth-controller
     description: Xác thực người dùng. Tạo tài khoản, đăng nhập, đăng ký, đăng xuất.
@@ -75,7 +75,7 @@ paths:
                     example: Unauthorized
 
   /auth/login:
-    put:
+    get:
       tags:
         - auth-controller
       summary: Đăng nhập
@@ -86,6 +86,40 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/LoginBody"
+        required: true
+      responses:
+        "200":
+          description: Đăng nhập thành công!
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoginSuccess"
+        "401":
+          description: Đăng nhập không thành công!
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoginFail"
+ 
+  /auth/loginWithEmail:
+    get:
+      tags:
+        - auth-controller
+      summary: Đăng nhập bằng email
+      #operationID: login
+      requestBody:
+        description: Đăng nhập vào hệ thống bằng email
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email: 
+                  type: string
+                  example: toan123@gmail.com
+                password: 
+                  type: string
+                  example: toan789520
         required: true
       responses:
         "200":
@@ -151,7 +185,7 @@ paths:
                     type: string
                     example: 403
 
-  /auth/logout:
+  /auth/logOut:
     get:
       tags:
         - auth-controller
@@ -171,6 +205,8 @@ paths:
                   status:
                     type: string
                     example: 200
+
+
 
   /api/get-spot-price:
     get:
