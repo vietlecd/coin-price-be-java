@@ -24,7 +24,7 @@ info:
       - GroupId: `org.java-websocket`
       - ArtifactId: `Java-WebSocket`
       - Version: `1.5.4`
-      
+    
     - **spring-boot-starter-tomcat**:
       - GroupId: `org.springframework.boot`
       - ArtifactId: `spring-boot-starter-tomcat`
@@ -442,7 +442,7 @@ paths:
           description: Thất bại!
           content:
             application/json:
-              schema: 
+              schema:
                 $ref: "#/components/schemas/CommonFail403"
         "404":
           description: Thất bại!
