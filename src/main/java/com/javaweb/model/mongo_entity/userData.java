@@ -5,7 +5,6 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import javax.persistence.criteria.CriteriaBuilder;
 import java.security.SecureRandom;
 import java.text.NumberFormat;
 import java.time.LocalDateTime;

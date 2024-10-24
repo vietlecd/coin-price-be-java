@@ -25,7 +25,6 @@ public class ComparisonHelper {
             throw new IllegalArgumentException("Invalid current future price: must be a valid number", e);
         }
 
-
         switch (trigger.getCondition()) {
             case ">=":
                 return currentSpotPrice >= trigger.getSpotPriceThreshold();
