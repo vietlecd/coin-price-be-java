@@ -6,9 +6,9 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 
-@Document(collection = "future_snooze_conditions")
+@Document(collection = "indicator_snooze_conditions")
 @Component
-public class FutureSnoozeCondition {
+public class IndicatorSnoozeCondition {
 
     @Id
     private String id; // Sử dụng id để quản lý khóa chính trong MongoDB
@@ -52,9 +52,9 @@ public class FutureSnoozeCondition {
     }
 
     // Constructors
-    public FutureSnoozeCondition() {}
+    public IndicatorSnoozeCondition() {}
 
-    public FutureSnoozeCondition(String symbol, String conditionType, LocalDateTime startTime, LocalDateTime endTime, String specificTime) {
+    public IndicatorSnoozeCondition(String symbol, String conditionType, LocalDateTime startTime, LocalDateTime endTime, String specificTime) {
         this.symbol = symbol;
         this.conditionType = conditionType;
         this.startTime = startTime;
