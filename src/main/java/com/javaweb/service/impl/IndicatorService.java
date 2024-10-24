@@ -138,9 +138,6 @@ public class IndicatorService implements IIndicatorService {
 
         String eventTime = DateTimeHelper.formatEventTime(eventTimeLong);
 
-
-
-
         IndicatorDTO indicatorDTO = IndicatorDTOHelper.createIndicatorDTO(symbol, values, eventTime);
 
         if (!isTriggered) {
