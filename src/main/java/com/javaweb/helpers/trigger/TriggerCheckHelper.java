@@ -163,18 +163,18 @@ public class TriggerCheckHelper {
         return priceDTO != null ? priceDTO.getPrice() : null;
     }
 
-    private String getCurrentIndicatorValue(String symbol, Map<String, ?> indicatorDataMap) {
-        IndicatorDTO indicatorDTO = null;
-
-        String spotKey = "Indicator: " + symbol;
-        if (indicatorDataMap.containsKey(spotKey)) {
-            indicatorDTO = (IndicatorDTO) indicatorDataMap.get(spotKey);
-        } else {
-            System.out.println("Key not found: " + spotKey);
-        }
-
-        return indicatorDTO != null ? indicatorDTO.getValues().get(symbol).toString() : null;
-    }
+//    private String getCurrentIndicatorValue(String symbol, Map<String, ?> indicatorDataMap) {
+//        IndicatorDTO indicatorDTO = null;
+//
+//        String spotKey = "Indicator: " + symbol;
+//        if (indicatorDataMap.containsKey(spotKey)) {
+//            indicatorDTO = (IndicatorDTO) indicatorDataMap.get(spotKey);
+//        } else {
+//            System.out.println("Key not found: " + spotKey);
+//        }
+//
+//        return indicatorDTO != null ? indicatorDTO.getValues().get(symbol).toString() : null;
+//    }
 
     private Map<Long, Double> getHistoricalPrices(String symbol, int days) {
         String COINGECKO_API_URL = "https://api.coingecko.com/api/v3";
@@ -290,7 +290,7 @@ public class TriggerCheckHelper {
     private boolean checkIndicatorTrigger(String symbol, IndicatorTrigger indicatorTrigger, String username) {
         if (indicatorTrigger != null) {
             Map<Long, Double> historicalPrices = getHistoricalPrices(symbol, indicatorTrigger.getPeriod());
-            // Lấy giá trị Indicator hiện tại
+            // Lấy giá trị Indicator hiện tại đồng thời kiểm tra indicator condition
             switch (indicatorTrigger.getIndicator()) {
                 case "MA":
                     return comparisonHelper.checkMAAndEMACondition(indicatorTrigger, calculateMA(historicalPrices));
