@@ -1,9 +1,9 @@
 # Coin Price Backend Project
 ![Java](https://img.shields.io/badge/Java-ED8B00?style=for-the-badge&logo=java&logoColor=white) ![Spring](https://img.shields.io/badge/Spring-6DB33F?style=for-the-badge&logo=spring&logoColor=white) ![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white) ![MongoDB](https://img.shields.io/badge/MongoDB-47A248?style=for-the-badge&logo=mongodb&logoColor=white)
 
-- [http://34.142.140.64/swagger-ui/index.html]**API docs**)
-- [http://34.142.140.64:8081](**Thông tin dự án**)
-- [http://34.142.140.64:8080/](**API docs**)
+- [API docs](http://34.142.140.64/swagger-ui/index.html)
+- [Thông tin dự án](http://34.142.140.64:8081)
+- [API docs](http://34.142.140.64:8080/)
 
 ## Thông tin dự án
 Dự án này là một ứng dụng backend xử lý dữ liệu giá tiền mã hóa.
