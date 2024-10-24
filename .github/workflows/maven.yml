@@ -12,7 +12,7 @@ jobs:
     - name: Gửi thông báo đến Discord
       run: |
         curl -X POST -H "Content-Type: application/json" \
-        -d '{"content": "@everyone```Phát hiện Pull Request, đang tìm kiếm selfhost rảnh rỗi! ```"}' \
+        -d '{"content": "@everyone```Phát hiện Pull Request trên nhánh main, đang tìm kiếm selfhost rảnh rỗi! ```"}' \
         https://discord.com/api/webhooks/1297132713119191121/B72OrNxwgv1-l5svlDvzUzIWLhtnlmnb4xoPH9BqoX6vG655uPK-vKirbAvmGIjHgt3R
 
   build:
