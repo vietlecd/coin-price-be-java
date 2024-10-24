@@ -116,7 +116,6 @@ public class TriggerService {
                     telegramNotificationService.sendTriggerNotification("Future Trigger fired for symbol: " + symbol + " with username: " + username);
                     System.out.println("Future Trigger fired for symbol: " + symbol);
                 }
-
             }
         }
     }
