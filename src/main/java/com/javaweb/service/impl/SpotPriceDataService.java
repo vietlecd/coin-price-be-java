@@ -3,32 +3,20 @@ package com.javaweb.service.impl;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.javaweb.dto.PriceDTO;
 import com.javaweb.helpers.service.DateTimeHelper;
-import com.javaweb.helpers.service.PriceDTOHelper;
-import com.javaweb.helpers.sse.SseHelper;
-import com.javaweb.helpers.trigger.TriggerCheckHelper;
+import com.javaweb.converter.PriceDTOHelper;
 import com.javaweb.service.IPriceDataService;
-import com.javaweb.service.snooze.SnoozeConditionService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
-import java.io.IOException;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class SpotPriceDataService implements IPriceDataService {
-    @Autowired
-    private TriggerCheckHelper triggerCheckHelper;
-    @Autowired
-    private SseHelper sseHelper;
-    @Autowired
-    private SnoozeConditionService snoozeConditionService;
-    private Map<String, PriceDTO> spotPriceDataMap = new ConcurrentHashMap<>();
+    private final Map<String, PriceDTO> spotPriceDataUsers = new ConcurrentHashMap<>();
+    private final Map<String, PriceDTO> spotPriceDataTriggers = new ConcurrentHashMap<>();
 
     @Override
-    public void handleWebSocketMessage(JsonNode data) {
+    public void handleWebSocketMessage(JsonNode data, boolean isTriggered) {
         long eventTimeLong = data.get("E").asLong();
         String eventTime = DateTimeHelper.formatEventTime(eventTimeLong);
 
@@ -37,35 +25,25 @@ public class SpotPriceDataService implements IPriceDataService {
 
         PriceDTO priceDTO = PriceDTOHelper.createPriceDTO(symbol, price, eventTime);
 
-        spotPriceDataMap.put("Spot Price: " + symbol, priceDTO);
-
-        /************************** Trigger ***********************************/
-        // Kiểm tra xem snooze có đang hoạt động cho trigger này không
-        boolean snoozeActive = snoozeConditionService.isSnoozeActive(symbol);
-
-        // Nếu không có snooze hoạt động và điều kiện được đáp ứng, gửi thông báo qua SSE
-        boolean conditionMet = triggerCheckHelper.checkSymbolAndTriggerAlert(Arrays.asList(symbol), spotPriceDataMap, "spot");
-        if (conditionMet) {
-            SseEmitter emitter = sseHelper.getSseEmitterBySymbol(symbol, "Spot");
-            if (emitter != null) {
-                try {
-                    // Nếu snooze đang hoạt động, không gửi thông báo
-                    if (snoozeActive) {
-                        System.out.println("Snooze is active, not sending alert for symbol: " + symbol);
-                    } else {
-                        // Nếu snooze không hoạt động, gửi thông báo qua emitter
-                        emitter.send(SseEmitter.event().name("price-alert").data("spot price condition met for " + symbol));
-                    }
-                } catch (IOException e) {
-                    emitter.completeWithError(e);
-                }
-            } else {
-                System.out.println("No emitter found for symbol: " + symbol);
-            }
+        if (!isTriggered) {
+            spotPriceDataUsers.put("Spot Price: " + symbol, priceDTO);
         }
+        else {
+            spotPriceDataTriggers.put("Spot Price: " + symbol, priceDTO);
+        }
+
     }
 
-    public Map<String, PriceDTO> getPriceDataMap() {
-        return spotPriceDataMap;
+    @Override
+    public Map<String, PriceDTO> getPriceDataUsers(){
+            return spotPriceDataUsers;
     }
+
+    @Override
+    public Map<String, PriceDTO> getPriceDataTriggers(){
+        return spotPriceDataTriggers;
+    }
+
+
+
 }

@@ -34,18 +34,25 @@ public class FundingRateWebSocketService extends TextWebSocketHandler implements
         String streamParam = streams.stream().map(s -> s.toLowerCase() + "@markPrice@1s").collect(Collectors.joining("/"));
         return "wss://fstream.binance.com/stream?streams=" + streamParam;
     }
-    @Override
-    public void connectToWebSocket(List<String> streams) {
+    public void connectToWebSocket(List<String> streams, boolean isTriggerRequest) {
         String wsUrl = buildFundingRateWebSocketUrl(streams);
-        webSocketConfig.connectToWebSocket(wsUrl, webSocketClient, this);
+        // Truyền cờ isTriggerRequest trực tiếp vào handler
+        webSocketConfig.connectToWebSocket(wsUrl, webSocketClient, new FungdingRateWebSocketHandler(isTriggerRequest));
     }
 
-    @Override
-    protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-        String payload = message.getPayload();
-        JsonNode data = objectMapper.readTree(payload).get("data");
+    private class FungdingRateWebSocketHandler extends TextWebSocketHandler {
+        private final boolean isTriggerRequest;
 
-        fundingRateDataService.handleFundingRateWebSocketMessage(data);
+        public FungdingRateWebSocketHandler(boolean isTriggerRequest) {
+            this.isTriggerRequest = isTriggerRequest;
+        }
 
+        @Override
+        protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
+            String payload = message.getPayload();
+            JsonNode data = objectMapper.readTree(payload).get("data");
+
+            fundingRateDataService.handleFundingRateWebSocketMessage(data, isTriggerRequest);
+        }
     }
 }
