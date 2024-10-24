@@ -7,10 +7,16 @@ import com.javaweb.dto.IndicatorDTO;
 import com.javaweb.dto.PriceDTO;
 import com.javaweb.helpers.service.DateTimeHelper;
 import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Autowired;
 import com.javaweb.service.IIndicatorService;
 import com.javaweb.repository.IndicatorRepository;
+import com.javaweb.service.IUserIndicatorService;
 import org.springframework.web.client.RestTemplate;
 
+
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.SimpleBindings;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,6 +31,8 @@ public class IndicatorService implements IIndicatorService {
     private final Map<String, IndicatorDTO> indicatorDataTriggers = new ConcurrentHashMap<>();
 
     private final IndicatorRepository indicatorRepository = new IndicatorRepository();
+    @Autowired
+    private IUserIndicatorService userIndicatorService;
     @Override
     public Map<String, IndicatorDTO> getIndicatorData(List<String> symbols, List<String> indicators, int days) {
         Map<String, IndicatorDTO> indicatorDataMap = new HashMap<>();
@@ -35,16 +43,22 @@ public class IndicatorService implements IIndicatorService {
             for (String indicator : indicators) {
                 switch (indicator) {
                     case "MA":
-                        values.put("MA", calculateMA(prices));
+                        values.put(indicator, calculateMA(prices));
                         break;
                     case "EMA":
-                        values.put("EMA", calculateEMA(prices));
+                        values.put(indicator, calculateEMA(prices));
                         break;
                     case "BOLL":
-                        values.put("BOLL", calculateBOLL(prices));
+                        values.put(indicator, calculateBOLL(prices));
                         break;
                     default:
-                        throw new RuntimeException("Indicator không được hỗ trợ: " + indicator);
+                        String code = userIndicatorService.getIndicatorCode(indicator);
+                        if (code != null) {
+                            Object indicatorValues = calculateUserIndicator(prices, code, indicator);
+                            values.put(indicator, indicatorValues);
+                        } else {
+                            throw new RuntimeException("Indicator không được hỗ trợ: " + indicator);
+                        }
                 }
             }
             IndicatorDTO indicatorDTO = new IndicatorDTO.Builder()
@@ -103,6 +117,30 @@ public class IndicatorService implements IIndicatorService {
         bands.put("LowerBand", lowerBand);
 
         return bands;
+    }
+
+    private Object calculateUserIndicator(Map<Long, Double> prices, String groovyScript, String indicator) {
+        List<Double> priceList = new ArrayList<>(prices.values());
+        List<Long> timeList = new ArrayList<>(prices.keySet());
+        int size = prices.size();
+
+        ScriptEngineManager manager = new ScriptEngineManager();
+        ScriptEngine engine = manager.getEngineByName("groovy");
+
+        Map<String, Object> variables = new HashMap<>();
+        variables.put("prices", priceList);
+        variables.put("times", timeList);
+        variables.put("size", size);
+        variables.put(indicator, null);
+
+        SimpleBindings bindings = new SimpleBindings(variables);
+
+        try {
+            engine.eval(groovyScript, bindings);
+            return bindings.get(indicator);
+        } catch (Exception e) {
+            throw new RuntimeException("Lỗi khi thực thi script người dùng");
+        }
     }
     @Override
     public void handleFundingRateWebSocketMessage(JsonNode data,  boolean isTriggered) {

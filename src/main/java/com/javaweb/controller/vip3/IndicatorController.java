@@ -1,13 +1,12 @@
 package com.javaweb.controller.vip3;
 
 import com.javaweb.dto.IndicatorDTO;
-import com.javaweb.service.impl.IndicatorService;
+import com.javaweb.model.UserIndicatorRequest;
+import com.javaweb.service.IIndicatorService;
+import com.javaweb.service.IUserIndicatorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
@@ -16,7 +15,9 @@ import java.util.Map;
 @RequestMapping("/api/vip3")
 public class IndicatorController {
     @Autowired
-    private IndicatorService indicatorService;
+    private IIndicatorService indicatorService;
+    @Autowired
+    private IUserIndicatorService userIndicatorService;
     @GetMapping("/indicators")
     public ResponseEntity<Map<String, IndicatorDTO>> getIndicators(
             @RequestParam("symbols") List<String> symbols,
@@ -29,5 +30,11 @@ public class IndicatorController {
         Map<String, IndicatorDTO> indicatorDataMap = indicatorService.getIndicatorData(symbols, indicators, days);
 
         return ResponseEntity.ok(indicatorDataMap);
+    }
+
+    @PostMapping("/user-indicators")
+    public ResponseEntity<String> addUserIndicator(@RequestBody UserIndicatorRequest request) {
+        userIndicatorService.addIndicator(request.getName(), request.getCode());
+        return ResponseEntity.ok("Đã thêm indicator " + request.getName() + " thành công!");
     }
 }
