@@ -29,8 +29,8 @@ public class ListingWebSocketService {
         try {
             URI uri = new URI("wss://stream.binance.com:9443/ws"); // Binance WebSocket URL
             WebSocketContainer container = ContainerProvider.getWebSocketContainer();
-            container.connectToServer(this, uri); // Connect to Binance WebSocket
-            startTokenCheck(); // Start checking for new token listings
+            container.connectToServer(this, uri); // Kết nối với WebSocket
+            startTokenCheck(); // Bắt đầu kiểm tra token mới
             System.out.println("WebSocket client started on application startup.");
         } catch (Exception e) {
             e.printStackTrace();
@@ -47,10 +47,10 @@ public class ListingWebSocketService {
     public void onMessage(String message) {
         System.out.println("Received message: " + message);
 
-        // Check for new token listings
+        // Kiểm tra thông báo cho token niêm yết mới
         if (message.contains("NEW LISTING")) {
-            tokenService.handleNewToken(message); // Handle new token using the service
-            telegramNotificationService.sendTriggerNotification("New token listed: " + message); // Send notification
+            tokenService.handleNewToken(message); // Xử lý token mới
+            telegramNotificationService.sendTriggerNotification("Token mới niêm yết: " + message); // Gửi thông báo qua Telegram
         }
     }
 
@@ -75,10 +75,10 @@ public class ListingWebSocketService {
                     System.out.println("Checking for new token listings...");
                 }
             }
-        }, 0, 10000); // Check every 10 seconds
+        }, 0, 10000); // Kiểm tra mỗi 10 giây
     }
 
-    private void stopTokenCheck() {
+    public void stopTokenCheck() {
         if (timer != null) {
             timer.cancel();
         }
