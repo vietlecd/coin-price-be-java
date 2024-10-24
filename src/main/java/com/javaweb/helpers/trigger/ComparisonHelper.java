@@ -1,9 +1,6 @@
 package com.javaweb.helpers.trigger;
 
-import com.javaweb.model.trigger.FundingRateTrigger;
-import com.javaweb.model.trigger.FuturePriceTrigger;
-import com.javaweb.model.trigger.PriceDifferenceTrigger;
-import com.javaweb.model.trigger.SpotPriceTrigger;
+import com.javaweb.model.trigger.*;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -72,6 +69,26 @@ public class ComparisonHelper {
                 return currentFundingRate >= trigger.getFundingRateThreshold();
             case "<":
                 return currentFundingRate < trigger.getFundingRateThreshold();
+            default:
+                throw new IllegalArgumentException("Invalid comparison operator for funding rate");
+        }
+    }
+
+    // Kiểm tra Indicator Trigger
+    public boolean checkIndicatorCondition(IndicatorTrigger trigger, String currentIndicatorValueStr) {
+        CheckString(currentIndicatorValueStr);
+        double currentIndicatorValue;
+        try {
+            currentIndicatorValue = Double.parseDouble(currentIndicatorValueStr);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Invalid current spot price: must be a valid number", e);
+        }
+
+        switch (trigger.getCondition()) {
+            case ">=":
+                return currentIndicatorValue >= trigger.getValue();
+            case "<":
+                return currentIndicatorValue < trigger.getValue();
             default:
                 throw new IllegalArgumentException("Invalid comparison operator for funding rate");
         }

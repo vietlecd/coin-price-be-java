@@ -2,15 +2,10 @@ package com.javaweb.helpers.trigger;
 
 import com.javaweb.config.WebSocketConfig;
 import com.javaweb.dto.FundingRateDTO;
+import com.javaweb.dto.IndicatorDTO;
 import com.javaweb.dto.PriceDTO;
-import com.javaweb.model.trigger.FundingRateTrigger;
-import com.javaweb.model.trigger.FuturePriceTrigger;
-import com.javaweb.model.trigger.PriceDifferenceTrigger;
-import com.javaweb.model.trigger.SpotPriceTrigger;
-import com.javaweb.repository.FundingRateTriggerRepository;
-import com.javaweb.repository.FuturePriceTriggerRepository;
-import com.javaweb.repository.PriceDifferenceTriggerRepository;
-import com.javaweb.repository.SpotPriceTriggerRepository;
+import com.javaweb.model.trigger.*;
+import com.javaweb.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -29,6 +24,8 @@ public class TriggerCheckHelper {
     private SpotPriceTriggerRepository spotPriceTriggerRepository;
     @Autowired
     private FundingRateTriggerRepository fundingRateTriggerRepository;
+    @Autowired
+    private IndicatorTriggerRepository indicatorTriggerRepository;
     @Autowired
     private ComparisonHelper comparisonHelper;
 
@@ -118,6 +115,33 @@ public class TriggerCheckHelper {
         return firedSymbols;
     }
 
+    public List<String> checkIndicatorSymbolsAndTriggerAlert(List<String> symbols, Map<String, ?> indicatorDataMap, String type, String username) {
+        List<String> firedSymbols = new ArrayList<>();
+
+
+        for (String symbol : symbols) {
+            boolean conditionMet = false;
+
+            // Lấy giá trị indicator hiện tại
+            String currentIndicatorValue = getCurrentIndicatorValue(symbol, indicatorDataMap);
+
+                if (currentIndicatorValue == null || currentIndicatorValue.trim().isEmpty()) {
+                System.out.println("Current price is null or empty for symbol: " + symbol);
+                continue;
+            }
+
+            // Kiểm tra điều kiện trigger
+            conditionMet = checkSpotTrigger(symbol, currentIndicatorValue, username);
+
+            // Nếu điều kiện được thỏa mãn thì in ra log và đánh dấu kết quả
+            if (conditionMet) {
+                firedSymbols.add(symbol);
+            }
+        }
+
+        return firedSymbols;
+    }
+
     private String getCurrentPrice(String symbol, Map<String, ?> priceDataMap, String type) {
         PriceDTO priceDTO = null;
 
@@ -145,6 +169,19 @@ public class TriggerCheckHelper {
         }
 
         return priceDTO != null ? priceDTO.getPrice() : null;
+    }
+
+    private String getCurrentIndicatorValue(String symbol, Map<String, ?> indicatorDataMap) {
+        IndicatorDTO indicatorDTO = null;
+
+        String spotKey = "Spot Indicator: " + symbol.toUpperCase();
+        if (indicatorDataMap.containsKey(spotKey)) {
+            indicatorDTO = (IndicatorDTO) indicatorDataMap.get(spotKey);
+        } else {
+            System.out.println("Key not found: " + spotKey);
+        }
+
+        return indicatorDTO != null ? indicatorDTO.getValues().get(symbol).toString() : null;
     }
 
     private String getCurrentFundingRate(String symbol, Map<String, ?> priceDataMap) {
@@ -183,6 +220,14 @@ public class TriggerCheckHelper {
         FundingRateTrigger fundingRateTrigger = fundingRateTriggerRepository.findBySymbolAndUsername(symbol, username);
         if (fundingRateTrigger != null) {
             return comparisonHelper.checkFundingRateCondition(fundingRateTrigger, currentFundingRate);
+        }
+        return false;
+    }
+
+    private boolean checkIndicatorTrigger(String symbol, String currentIndicatorValue, String username) {
+        IndicatorTrigger indicatorTrigger = indicatorTriggerRepository.findBySymbolAndUsername(symbol, username);
+        if (indicatorTrigger != null) {
+            return comparisonHelper.checkIndicatorCondition(indicatorTrigger, currentIndicatorValue);
         }
         return false;
     }

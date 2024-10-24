@@ -11,6 +11,8 @@ import org.springframework.scheduling.Trigger;
 public class IndicatorTrigger extends TriggerCondition {
     private String symbol;
     private String indicator;
+    private double value;
+    private String condition;
     private String notification_method;
     private int period;
 }
