@@ -29,8 +29,6 @@ public class TriggerConditionController {
     private SpotPriceTriggerService spotPriceTriggerService;
     @Autowired
     private FuturePriceTriggerService futurePriceTriggerService;
-    @Autowired
-    private IndicatorTriggerService indicatorTriggerService;
 
     @Autowired
     private GetTriggerService getTriggerService;
@@ -106,10 +104,6 @@ public class TriggerConditionController {
                 case "funding-rate":
                     fundingRateTriggerService.deleteTrigger(symbol, username);
                     break;
-                case "indicator":
-                    indicatorTriggerService.deleteTrigger(symbol, username);
-                    break;
-
                 default:
                     return ResponseEntity.badRequest().body("Invalid trigger type");
             }
