@@ -12,10 +12,6 @@ public interface FundingRateTriggerRepository extends MongoRepository<FundingRat
 
     List<FundingRateTrigger> findByUsername(String username);
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 7a466b8b04f4fd9b915d5b86c7a4a2cc1f94642c
     @Query(value = "{}", fields = "{username: 1, symbol: 1}")
     List<FundingRateTrigger> findAllUsernamesWithSymbols();
 }
