@@ -204,7 +204,7 @@ public class AuthController {
         try {
             String token = OtherFunct.getCookieValue(req, "token");
             if (token == null) {
-                throw new Exception("Không tìm thấy token trong cookie");
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Không tìm thấy token trong cookie");
             }
 
             Cookie cookie = new Cookie("token", null);
@@ -228,6 +228,15 @@ public class AuthController {
                             "Đăng xuất thành công",
                             "/auth/logOut"),
                     HttpStatus.OK);
+
+        } catch (ResponseStatusException e) {
+            return new ResponseEntity<>(
+                    new Responses(
+                            new Date(),
+                            e.getReason(),
+                            e.getMessage(),
+                            "/auth/logOut"),
+                    e.getStatus());
         } catch (Exception e) {
             return new ResponseEntity<>(
                     new Responses(
@@ -264,7 +273,7 @@ public class AuthController {
                             new Date(),
                             "400",
                             e.getMessage(),
-                            "/api/forgetPassword"),
+                            "/api/forgotPassword"),
                     HttpStatus.BAD_REQUEST);
         }
     }
@@ -299,7 +308,7 @@ public class AuthController {
             return new ResponseEntity<>(
                 new Responses(
                     new Date(),
-                    "200",
+                    "400",
                     e.getMessage(),
                     "/api/forgetPassword")
                 ,HttpStatus.BAD_REQUEST
