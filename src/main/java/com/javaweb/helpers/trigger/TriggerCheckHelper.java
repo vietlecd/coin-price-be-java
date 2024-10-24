@@ -115,7 +115,7 @@ public class TriggerCheckHelper {
         return firedSymbols;
     }
 
-    public List<String> checkIndicatorSymbolsAndTriggerAlert(List<String> symbols, Map<String, ?> indicatorDataMap, String type, String username) {
+    public List<String> checkIndicatorSymbolsAndTriggerAlert(List<String> symbols, Map<String, ?> indicatorDataMap, String username) {
         List<String> firedSymbols = new ArrayList<>();
 
 

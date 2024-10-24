@@ -123,7 +123,7 @@ public class TriggerService {
 
     public void handleAndSendAlertForIndicator(List<String> symbols, String username) {
         Map<String, IndicatorDTO> priceDataMap = indicatorService.getIndicatorDataTriggers();
-        List<String> firedSymbols = triggerCheckHelper.checkSymbolAndTriggerAlert(symbols, priceDataMap, "Indicator", username);
+        List<String> firedSymbols = triggerCheckHelper.checkIndicatorSymbolsAndTriggerAlert(symbols, priceDataMap, username);
         boolean snoozeActive = snoozeCheckHelper.checkSymbolAndSnooze(symbols,"Indicator",username);
         if (!firedSymbols.isEmpty()) {
             for (String symbol : firedSymbols) {
