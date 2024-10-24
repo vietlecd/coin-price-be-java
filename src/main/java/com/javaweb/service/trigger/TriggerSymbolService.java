@@ -1,9 +1,6 @@
 package com.javaweb.service.trigger;
 
-import com.javaweb.repository.FundingRateTriggerRepository;
-import com.javaweb.repository.FuturePriceTriggerRepository;
-import com.javaweb.repository.PriceDifferenceTriggerRepository;
-import com.javaweb.repository.SpotPriceTriggerRepository;
+import com.javaweb.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.javaweb.model.trigger.*;
@@ -25,6 +22,9 @@ public class TriggerSymbolService {
 
     @Autowired
     private FundingRateTriggerRepository fundingRateTriggerRepository;
+
+    @Autowired
+    private IndicatorTriggerRepository indicatorTriggerRepository;
 
     public Map<String, List<String>> getUsernamesWithSymbolsFundingRate() {
         List<FundingRateTrigger> triggers = fundingRateTriggerRepository.findAllUsernamesWithSymbols();
@@ -63,6 +63,16 @@ public class TriggerSymbolService {
                 .collect(Collectors.groupingBy(
                         FuturePriceTrigger::getUsername,
                         Collectors.mapping(FuturePriceTrigger::getSymbol, Collectors.toList())
+                ));
+    }
+
+    public Map<String, List<String>> getUsernamesWithSymbolsIndicator() {
+        List<IndicatorTrigger> triggers = indicatorTriggerRepository.findAllUsernamesWithSymbols();
+
+        return triggers.stream()
+                .collect(Collectors.groupingBy(
+                        IndicatorTrigger::getUsername,
+                        Collectors.mapping(IndicatorTrigger::getSymbol, Collectors.toList())
                 ));
     }
 }

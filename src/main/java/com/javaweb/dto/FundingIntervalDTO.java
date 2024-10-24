@@ -48,5 +48,4 @@ public class FundingIntervalDTO {
             return new FundingIntervalDTO(this);
         }
     }
-
 }
