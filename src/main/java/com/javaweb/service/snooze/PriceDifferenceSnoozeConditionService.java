@@ -39,9 +39,14 @@ public class PriceDifferenceSnoozeConditionService {
     }
 
     // Method to deactivate (delete) a snooze condition by triggerId
-    public void deleteSnoozeConditionByTriggerId(String triggerId) {
-        Optional<PriceDifferenceSnoozeCondition> snoozeCondition = priceDifferenceSnoozeConditionRepository
-                .findBySymbolAndUsername(priceDifferenceSnoozeCondition.getSymbol(), priceDifferenceSnoozeCondition.getUsername());
-        snoozeCondition.ifPresent(condition -> priceDifferenceSnoozeConditionRepository.delete(condition));
+    public void deleteSnoozeCondition(String symbol, String username) {
+        Optional<PriceDifferenceSnoozeCondition> snoozeCondition = priceDifferenceSnoozeConditionRepository.findBySymbolAndUsername(symbol, username);
+        if (snoozeCondition.isPresent()) {
+            priceDifferenceSnoozeConditionRepository.delete(snoozeCondition.get());
+        } else {
+            throw new RuntimeException("Price difference snooze condition not found for symbol: " + symbol);
+        }
     }
-}
+
+    }
+

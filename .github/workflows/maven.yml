@@ -12,7 +12,7 @@ jobs:
     - name: Gửi thông báo đến Discord
       run: |
         curl -X POST -H "Content-Type: application/json" \
-        -d '{"content": "```Phát hiện Pull Request, đang tìm kiếm selfhost rảnh rỗi! ```"}' \
+        -d '{"content": "@everyone```Phát hiện Pull Request, đang tìm kiếm selfhost rảnh rỗi! ```"}' \
         https://discord.com/api/webhooks/1297132713119191121/B72OrNxwgv1-l5svlDvzUzIWLhtnlmnb4xoPH9BqoX6vG655uPK-vKirbAvmGIjHgt3R
 
   build:
@@ -42,31 +42,20 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y docker-compose
-  
-    - name: Hello world
-      run: |
-        touch .env
-        echo DOCKER_HUB_ACCESS_TOKEN=${{ secrets.DOCKER_HUB_ACCESS_TOKEN }} >> .env
-        echo DOCKER_HUB_ACCESS_USER=${{ secrets.DOCKER_HUB_ACCESS_USER }} >> .env
-        echo MONGO_DB_URI=${{ secrets.MONGO_DB_URI }} >> .env
-        echo MONGO_DB_NAME=${{ secrets.MONGO_DB_NAME }} >> .env
-  
-    - name: Login to DockerHub
-      run: |
-        echo "${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}" | docker login -u "${{ secrets.DOCKER_HUB_ACCESS_USER }}" --password-stdin
         
     - name: Build and Push DockerFile
       run: |
-        docker-compose -f docker-compose.yaml build
-        docker-compose -f docker-compose.yaml push
+        echo "${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}" | sudo docker login -u "${{ secrets.DOCKER_HUB_ACCESS_USER }}" --password-stdin
+        sudo docker build -t lmao1415/dath_cnpm .
+        sudo docker push lmao1415/dath_cnpm
   
-    - name: Stop and remove containers
-      run: docker-compose -f docker-compose.yaml down
+    - name: Remove Docker Image
+      run: sudo docker rmi lmao1415/dath_cnpm
   
   deploy:
     environment:
       name: dev
-      url: 103.205.60.174:8080
+      url: nope
     runs-on: self-hosted
     needs: build
     steps:
@@ -80,16 +69,12 @@ jobs:
           
           sshpass -p $VPS_PASSWORD ssh -o StrictHostKeyChecking=no $VPS_USER@$VPS_IP "
           cd server/
-          docker compose down
-          docker rmi lmao1415/dath_cnpm
+          sudo docker compose down
+          sudo docker rmi lmao1415/dath_cnpm
           # Tạo mới hoặc kết nối tới một phiên tmux
           tmux kill-session -t mysession 2>/dev/null || true &&
-          tmux new-session -d -s mysession 'docker compose up'
+          tmux new-session -d -s mysession 'sudo docker compose up'
           "
-      
-      - name: Chờ 1 phút trước khi gửi thông báo
-        run: |
-          sleep 60
           
       - name: Thông Báo khởi động sv
         run: |

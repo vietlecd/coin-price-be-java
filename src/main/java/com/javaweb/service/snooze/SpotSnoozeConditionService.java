@@ -26,9 +26,9 @@ public class SpotSnoozeConditionService {
     // Method to create a new snooze condition
     public SpotSnoozeCondition createSnoozeCondition(SpotSnoozeCondition spotSnoozeCondition, String username) {
         // Set the usernameId in the spotSnoozeCondition object
-        System.out.print(username);
+
         spotSnoozeCondition.setUsername(username);
-        System.out.print(username);
+
         // Check if a snooze condition already exists for the given symbol and usernameId
         Optional<SpotSnoozeCondition> existingSnoozeCondition = spotSnoozeConditionRepository
                 .findBySymbolAndUsername(spotSnoozeCondition.getSymbol(), spotSnoozeCondition.getUsername());
@@ -47,8 +47,14 @@ public class SpotSnoozeConditionService {
 
 
     // Method to deactivate (delete) a snooze condition by triggerId
-    public void deleteSnoozeConditionByTriggerId(String triggerId) {
-        Optional<SpotSnoozeCondition> snoozeCondition = spotSnoozeConditionRepository.findBySymbolAndUsername(spotSnoozeCondition.getSymbol(), spotSnoozeCondition.getUsername());
-        snoozeCondition.ifPresent(condition -> spotSnoozeConditionRepository.delete(condition));
+    public void deleteSnoozeCondition(String symbol, String username) {
+        Optional<SpotSnoozeCondition> snoozeCondition = spotSnoozeConditionRepository.findBySymbolAndUsername(symbol, username);
+        if (snoozeCondition.isPresent()) {
+            spotSnoozeConditionRepository.delete(snoozeCondition.get());
+        } else {
+            throw new RuntimeException("Snooze condition not found for symbol: " + symbol);
+        }
     }
+
+
 }

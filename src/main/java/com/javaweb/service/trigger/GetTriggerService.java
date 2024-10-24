@@ -1,9 +1,5 @@
 package com.javaweb.service.trigger;
 
-import com.javaweb.dto.trigger.FundingRateTriggerDTO;
-import com.javaweb.dto.trigger.FuturePriceTriggerDTO;
-import com.javaweb.dto.trigger.PriceDifferenceTriggerDTO;
-import com.javaweb.dto.trigger.SpotPriceTriggerDTO;
 import com.javaweb.model.trigger.FundingRateTrigger;
 import com.javaweb.model.trigger.FuturePriceTrigger;
 import com.javaweb.model.trigger.PriceDifferenceTrigger;
@@ -12,10 +8,8 @@ import com.javaweb.repository.FundingRateTriggerRepository;
 import com.javaweb.repository.FuturePriceTriggerRepository;
 import com.javaweb.repository.PriceDifferenceTriggerRepository;
 import com.javaweb.repository.SpotPriceTriggerRepository;
-import com.javaweb.service.trigger.CRUD.FundingRateTriggerService;
-import com.javaweb.service.trigger.CRUD.FuturePriceTriggerService;
-import com.javaweb.service.trigger.CRUD.PriceDifferenceTriggerService;
-import com.javaweb.service.trigger.CRUD.SpotPriceTriggerService;
+import com.javaweb.model.trigger.*;
+import com.javaweb.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +20,8 @@ import java.util.Map;
 
 @Service
 public class GetTriggerService {
+    @Autowired
+    private IndicatorTriggerRepository indicatorTriggerRepository;
 
     @Autowired
     private SpotPriceTriggerRepository spotPriceTriggerRepository;
@@ -44,6 +40,7 @@ public class GetTriggerService {
         List<FuturePriceTrigger> futureTriggers = futurePriceTriggerRepository.findByUsername(username);
         List<PriceDifferenceTrigger> priceDifferenceTriggers = priceDifferenceTriggerRepository.findByUsername(username);
         List<FundingRateTrigger> fundingRateTriggers = fundingRateTriggerRepository.findByUsername(username);
+        List<IndicatorTrigger> indicatorTriggers = indicatorTriggerRepository.findByUsername(username);
 
         // Tạo một danh sách chung để trả về tất cả dữ liệu
         List<Object> allTriggers = new ArrayList<>();
@@ -51,9 +48,9 @@ public class GetTriggerService {
         allTriggers.addAll(futureTriggers);
         allTriggers.addAll(priceDifferenceTriggers);
         allTriggers.addAll(fundingRateTriggers);
+        allTriggers.addAll(indicatorTriggers);
 
         return allTriggers;
     }
-
-
 }
+

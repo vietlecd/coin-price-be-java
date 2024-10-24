@@ -11,9 +11,9 @@ public class FundingRateAndIntervalDTOHelper {
                 fundingRateDTO.getFundingRate(),
                 fundingRateDTO.getFundingCountdown(),
                 fundingRateDTO.getEventTime(),
-                fundingIntervalDTO.getAdjustedFundingRateCap(),
-                fundingIntervalDTO.getAdjustedFundingRateFloor(),
-                fundingIntervalDTO.getFundingIntervalHours()
+                fundingIntervalDTO != null ? fundingIntervalDTO.getAdjustedFundingRateCap() : "0",
+                fundingIntervalDTO != null ? fundingIntervalDTO.getAdjustedFundingRateFloor() : "0",
+                fundingIntervalDTO != null ? fundingIntervalDTO.getFundingIntervalHours() : 0
         );
     }
 }

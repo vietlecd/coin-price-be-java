@@ -23,6 +23,20 @@ public class SnoozeMapHelper {
         );
 
         // Set the username (usernameId) for the SpotSnoozeCondition object
+        if (snoozeConditionRequest.get("repeatCount") != null) {
+            spotSnoozeCondition.setRepeatCount((Integer) snoozeConditionRequest.get("repeatCount"));
+        } else {
+            spotSnoozeCondition.setRepeatCount(0); // default value if not provided
+        }
+
+        if (snoozeConditionRequest.get("maxRepeatCount") != null) {
+            spotSnoozeCondition.setMaxRepeatCount((Integer) snoozeConditionRequest.get("maxRepeatCount"));
+        } else {
+            spotSnoozeCondition.setMaxRepeatCount(1); // default value if not provided
+        }
+
+        // Print out the object after mapping for debugging purposes
+        System.out.println("SpotSnoozeCondition after mapping: " + spotSnoozeCondition);
         spotSnoozeCondition.setUsername(username);
         System.out.println("SpotSnoozeCondition after mapping: " + spotSnoozeCondition);
         return spotSnoozeCondition;

@@ -17,13 +17,14 @@ public class PriceStreamService {
     private final Map<String, SseEmitter> emitters = new ConcurrentHashMap<>();
 
     public SseEmitter createSseEmitter(SseEmitter emitter, String type, String symbol,
-                                       Runnable sendTask) {
+                                       Runnable sendTask, Map<String, PriceDTO> priceDataMap,
+                                       Map<String, KlineDTO> klineDataMap) {
         String key = type + " Price: " + symbol.toUpperCase();
         System.out.println(key);
 
         ScheduledFuture<?> scheduledFuture = executor.scheduleAtFixedRate(sendTask, 0, 1, TimeUnit.SECONDS);
         scheduledTasks.put(key, scheduledFuture);
-        emitters.put(key, emitter); // Lưu emitter với key đúng định dạng
+        emitters.put(key, emitter);
 
         Runnable cancelTask = () -> {
             if (scheduledTasks.containsKey(key)) {
@@ -40,6 +41,17 @@ public class PriceStreamService {
                 System.out.println("Removed SSE emitter for type: " + key);
             }
 
+            // Xóa dữ liệu của symbol khỏi priceDataMap khi kết nối SSE bị đóng
+            if (priceDataMap != null) {
+                priceDataMap.remove(key);
+                System.out.println("Removed price data for symbol: " + symbol);
+            }
+
+            if (klineDataMap != null) {
+                klineDataMap.remove("Kline Price: " + symbol);
+                System.out.println("Removed kline data for symbol: " + symbol);
+            }
+
             System.out.println("Connection closed and data cleared for type: " + key);
         };
 
@@ -54,26 +66,32 @@ public class PriceStreamService {
                                             Map<String, PriceDTO> priceDataMap) {
         Runnable sendPriceTask = () -> {
             try {
-                emitter.send(priceDataMap.values());
+                PriceDTO priceDTO = priceDataMap.get(type + " Price: " + symbol.toUpperCase());
+                if (priceDTO != null) {
+                    emitter.send(priceDTO);
+                }
             } catch (IOException e) {
                 emitter.completeWithError(e);
             }
         };
 
-        return createSseEmitter(emitter, type, symbol, sendPriceTask);
+        return createSseEmitter(emitter, type, symbol, sendPriceTask, priceDataMap, null);
     }
 
     public SseEmitter createKlineSseEmitter(SseEmitter emitter, String type, String symbol,
                                             Map<String, KlineDTO> klineDataMap) {
         Runnable sendKlineTask = () -> {
             try {
-                emitter.send(klineDataMap.values());
+                KlineDTO klineDTO = klineDataMap.get("Kline Price: " + symbol);
+                if (klineDTO != null) {
+                    emitter.send(klineDTO);
+                }
             } catch (IOException e) {
                 emitter.completeWithError(e);
             }
         };
 
-        return createSseEmitter(emitter, type, symbol, sendKlineTask);
+        return createSseEmitter(emitter, type, symbol, sendKlineTask, null, klineDataMap);
     }
 
     public void closeAllWebSockets() {
@@ -90,5 +108,6 @@ public class PriceStreamService {
             }
         }
         emitters.clear();
+
     }
 }

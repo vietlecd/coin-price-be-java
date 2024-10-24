@@ -23,8 +23,8 @@ public class KlineDataService extends TextWebSocketHandler {
         String eventTime = DateTimeHelper.formatEventTime(eventTimeLong);
 
         JsonNode data1 = data.get("k");
-        Long klineStartTime = data1.get("t").asLong();
-        Long klineCloseTime = data1.get("T").asLong();
+        Long klineStartTimeLong = data1.get("t").asLong();
+        Long klineCloseTimeLong = data1.get("T").asLong();
         String openPrice = data1.get("o").asText();
         String closePrice = data1.get("c").asText();
         String highPrice = data1.get("h").asText();
@@ -35,6 +35,8 @@ public class KlineDataService extends TextWebSocketHandler {
         String takerBuyBaseVolume = data1.get("Q").asText(); // Khối lượng mua tài sản cơ sở của taker
         String volume = data1.get("v").asText(); // Khối lượng giao dịch
 
+        String klineStartTime = DateTimeHelper.formatEventTime(klineStartTimeLong);
+        String klineCloseTime = DateTimeHelper.formatEventTime(klineCloseTimeLong);
 
         // Tạo KlineDTO sử dụng Builder pattern
         KlineDTO klineDTO = KlineDTOHelper.createKlineDTO(
@@ -42,7 +44,6 @@ public class KlineDataService extends TextWebSocketHandler {
                 numberOfTrades, baseAssetVolume, takerBuyVolume, takerBuyBaseVolume, volume, eventTime
         );
 
-        System.out.println("Event Time: " + eventTime + "Symbol: " + symbol + ", Kline Price: " + closePrice);
         klineDataMap.put("Kline Price: " + symbol, klineDTO);
     }
 

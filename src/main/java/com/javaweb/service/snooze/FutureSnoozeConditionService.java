@@ -1,6 +1,7 @@
 package com.javaweb.service.snooze;
 
 import com.javaweb.dto.snooze.FutureSnoozeCondition;
+import com.javaweb.dto.snooze.SpotSnoozeCondition;
 import com.javaweb.repository.FutureSnoozeConditionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -40,9 +41,13 @@ public class FutureSnoozeConditionService {
     }
 
     // Method to deactivate (delete) a snooze condition by triggerId
-    public void deleteSnoozeConditionByTriggerId(String triggerId) {
-        Optional<FutureSnoozeCondition> snoozeCondition = futureSnoozeConditionRepository
-                .findBySymbolAndUsername(futureSnoozeCondition.getSymbol(), futureSnoozeCondition.getUsername());
-        snoozeCondition.ifPresent(condition -> futureSnoozeConditionRepository.delete(condition));
+    public void deleteSnoozeCondition(String symbol, String username) {
+        Optional<FutureSnoozeCondition> snoozeCondition = futureSnoozeConditionRepository.findBySymbolAndUsername(symbol, username);
+        if (snoozeCondition.isPresent()) {
+            futureSnoozeConditionRepository.delete(snoozeCondition.get());
+        } else {
+            throw new RuntimeException("Future snooze condition not found for symbol: " + symbol);
+        }
     }
+
 }

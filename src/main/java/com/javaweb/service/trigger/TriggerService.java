@@ -1,21 +1,15 @@
 package com.javaweb.service.trigger;
 
-import com.javaweb.config.WebSocketConfig;
-import com.javaweb.connect.impl.FundingIntervalWebService;
-import com.javaweb.connect.impl.FundingRateWebSocketService;
-import com.javaweb.connect.impl.FutureWebSocketService;
-import com.javaweb.connect.impl.SpotWebSocketService;
-import com.javaweb.dto.FundingIntervalDTO;
 import com.javaweb.dto.FundingRateDTO;
+import com.javaweb.dto.IndicatorDTO;
 import com.javaweb.dto.PriceDTO;
 
-import com.javaweb.helpers.controller.FundingRateAndIntervalHelper;
-import com.javaweb.helpers.sse.SseHelper;
 import com.javaweb.helpers.trigger.SnoozeCheckHelper;
 
 import com.javaweb.helpers.trigger.TriggerCheckHelper;
 import com.javaweb.service.impl.FundingRateDataService;
 import com.javaweb.service.impl.FuturePriceDataService;
+import com.javaweb.service.impl.IndicatorService;
 import com.javaweb.service.impl.SpotPriceDataService;
 import com.javaweb.service.webhook.TelegramNotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,9 +29,6 @@ import static java.lang.Math.abs;
 
 @Service
 public class TriggerService {
-
-    @Autowired
-    private SseHelper sseHelper;
     @Autowired
     private SnoozeCheckHelper snoozeCheckHelper;
 
@@ -56,6 +47,9 @@ public class TriggerService {
     @Autowired
     private TelegramNotificationService telegramNotificationService;
 
+    @Autowired
+    private IndicatorService indicatorService;
+
     public void handleAndSendAlertForFundingRate(List<String> symbols, String username) {
         Map<String, FundingRateDTO> fundingRateDataMap = fundingRateDataService.getFundingRateDataTriggers();
 
@@ -63,13 +57,13 @@ public class TriggerService {
         boolean snoozeActive = snoozeCheckHelper.checkSymbolAndSnooze(symbols,"Funding-rate",username);
         if (!firedSymbols.isEmpty()) {
             for (String symbol : firedSymbols) {
-                if (snoozeActive ) {
+                if (snoozeActive) {
                     System.out.println("Snooze is active, not sending alert for symbol: " + symbol);
                 } else {
+                    telegramNotificationService.sendTriggerNotification("FundingRate Trigger fired for symbol: " + symbol + " with username: " + username);
                     System.out.println("FundingRate Trigger fired for symbol: " + symbol);
                 }
-                // Gửi thông báo qua Telegram
-                telegramNotificationService.sendTriggerNotification("FundingRate Trigger fired for symbol: " + symbol + " with username: " + username);
+
             }
         }
     }
@@ -85,10 +79,11 @@ public class TriggerService {
                 if (snoozeActive ) {
                     System.out.println("Snooze is active, not sending alert for symbol: " + symbol);
                 } else {
+                    // Gửi thông báo qua Telegram
+                    telegramNotificationService.sendTriggerNotification("Price Difference Trigger fired for symbol: " + symbol + " with username: " + username);
                     System.out.println("PriceDifference Trigger fired for symbol: " + symbol);
                 }
-                // Gửi thông báo qua Telegram
-                telegramNotificationService.sendTriggerNotification("Price Difference Trigger fired for symbol: " + symbol + " with username: " + username);
+
             }
         }
     }
@@ -116,15 +111,32 @@ public class TriggerService {
         boolean snoozeActive = snoozeCheckHelper.checkSymbolAndSnooze(symbols,"Future",username);
         if (!firedSymbols.isEmpty()) {
             for (String symbol : firedSymbols) {
-
-
-                if (snoozeActive ) {
+                if (snoozeActive) {
                     System.out.println("Future is active, not sending alert for symbol: " + symbol);
                 } else {
+                    // Gửi thông báo qua Telegram
+                    telegramNotificationService.sendTriggerNotification("Future Trigger fired for symbol: " + symbol + " with username: " + username);
                     System.out.println("Future Trigger fired for symbol: " + symbol);
                 }
-                // Gửi thông báo qua Telegram
-                telegramNotificationService.sendTriggerNotification("Future Trigger fired for symbol: " + symbol + " with username: " + username);
+
+            }
+        }
+    }
+
+    public void handleAndSendAlertForIndicator(List<String> symbols, String username) {
+        Map<String, IndicatorDTO> priceDataMap = indicatorService.getIndicatorDataTriggers();
+        List<String> firedSymbols = triggerCheckHelper.checkSymbolAndTriggerAlert(symbols, priceDataMap, "Indicator", username);
+        boolean snoozeActive = snoozeCheckHelper.checkSymbolAndSnooze(symbols,"Indicator",username);
+        if (!firedSymbols.isEmpty()) {
+            for (String symbol : firedSymbols) {
+                if (snoozeActive) {
+                    System.out.println("Indicator is active, not sending alert for symbol: " + symbol);
+                } else {
+                    // Gửi thông báo qua Telegram
+                    telegramNotificationService.sendTriggerNotification("Indicator Trigger fired for symbol: " + symbol + " with username: " + username);
+                    System.out.println("Indicator Trigger fired for symbol: " + symbol);
+                }
+
             }
         }
     }

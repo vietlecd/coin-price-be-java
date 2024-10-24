@@ -16,54 +16,44 @@ import java.util.Date;
 public class CreateToken {
     private final static String SECRET = System.getenv("JWT_SECRET");
 
-    public static String createToken(String username, String password) {
+    public static String createToken(String username, String password) throws JOSEException {
         System.out.println(SECRET);
-        try {
-            JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
-                    .subject(username)
-                    .claim("password", password)
-                    .issuer("MK")
-                    .expirationTime(new Date(System.currentTimeMillis() + 1000 * 60))
-                    .build();
+        JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
+                .subject(username)
+                .claim("password", password)
+                .issuer("MK")
+                .expirationTime(new Date(System.currentTimeMillis() + 30 * 60 * 1000))
+                .build();
 
-            JWSSigner signer = new MACSigner(SECRET.getBytes(StandardCharsets.UTF_8));
+        JWSSigner signer = new MACSigner(SECRET.getBytes(StandardCharsets.UTF_8));
 
-            SignedJWT signedJWT = new SignedJWT(
-                    new JWSHeader(JWSAlgorithm.HS256),
-                    claimsSet);
+        SignedJWT signedJWT = new SignedJWT(
+                new JWSHeader(JWSAlgorithm.HS256),
+                claimsSet);
 
-            signedJWT.sign(signer);
+        signedJWT.sign(signer);
 
-            return signedJWT.serialize();
-        } catch (Exception e) {
-            System.out.println(SECRET);
-            return "false, there's some error";
-        }
+        return signedJWT.serialize();
     }
 
-    public static LoginRequest decodeToken(String token) {
-        try {
-            SignedJWT signedJWT = SignedJWT.parse(token);
+    public static LoginRequest decodeToken(String token) throws Exception {
+        SignedJWT signedJWT = SignedJWT.parse(token);
 
-            JWSVerifier verifier = new MACVerifier(SECRET.getBytes(StandardCharsets.UTF_8));
+        JWSVerifier verifier = new MACVerifier(SECRET.getBytes(StandardCharsets.UTF_8));
 
-            if (signedJWT.verify(verifier)) {
-                JWTClaimsSet claims = signedJWT.getJWTClaimsSet();
-                Date expirationTime = claims.getExpirationTime();
+        if (signedJWT.verify(verifier)) {
+            JWTClaimsSet claims = signedJWT.getJWTClaimsSet();
+            Date expirationTime = claims.getExpirationTime();
 
-                System.out.println("expirationTime: " + expirationTime);
+            System.out.println("expirationTime: " + expirationTime);
 
-                if (expirationTime != null && new Date().after(expirationTime)) {
-                    return new LoginRequest(claims.getSubject(), "expired");
-                }
-
-                return new LoginRequest(claims.getSubject(), claims.getStringClaim("password"));
-            } else {
-                throw new JOSEException("Invalid JWT");
+            if (expirationTime != null && new Date().after(expirationTime)) {
+                return new LoginRequest(claims.getSubject(), "expired");
             }
-        } catch (Exception e) {
-            System.out.println("Error decoding token: " + e.getMessage());
-            return new LoginRequest("error", "error");
+
+            return new LoginRequest(claims.getSubject(), claims.getStringClaim("password"));
+        } else {
+            throw new JOSEException("Invalid JWT");
         }
     }
 

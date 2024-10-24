@@ -10,6 +10,7 @@ import com.javaweb.service.trigger.CRUD.FuturePriceTriggerService;
 import com.javaweb.service.trigger.CRUD.PriceDifferenceTriggerService;
 import com.javaweb.service.trigger.CRUD.SpotPriceTriggerService;
 import com.javaweb.service.trigger.GetTriggerService;
+import com.javaweb.service.trigger.CRUD.IndicatorTriggerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,6 +29,7 @@ public class TriggerConditionController {
     private SpotPriceTriggerService spotPriceTriggerService;
     @Autowired
     private FuturePriceTriggerService futurePriceTriggerService;
+
     @Autowired
     private GetTriggerService getTriggerService;
 

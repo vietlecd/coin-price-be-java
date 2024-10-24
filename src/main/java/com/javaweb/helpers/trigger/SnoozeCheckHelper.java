@@ -101,7 +101,21 @@ public class SnoozeCheckHelper {
                         snoozeActive = true; // Snooze hoạt động
                     }
                     break;
-
+                case "FOREVER":
+                    // Luôn kích hoạt snooze cho loại này
+                    System.out.println("Forever snooze for symbol: " + symbol + " is active.");
+                    snoozeActive = true; // Snooze hoạt động
+                    break;
+                case "REPEAT_TILL_N_TIMES":
+                    // Kiểm tra nếu số lần đã lặp nhỏ hơn n và thời gian hiện tại vẫn trong khoảng thời gian
+                    if (condition.getRepeatCount() < condition.getMaxRepeatCount() && now.isBefore(condition.getEndTime())) {
+                        System.out.println("Repeat till n times snooze for symbol: " + symbol + " is active.");
+                        snoozeActive = true; // Snooze hoạt động
+                        // Tăng số lần lặp
+                        condition.setRepeatCount(condition.getRepeatCount() + 1);
+                        spotSnoozeConditionRepository.save(condition); // Lưu thay đổi
+                    }
+                    break;
                 default:
                     System.out.println("Unknown snooze type for symbol: " + symbol);
                     break;

@@ -3,17 +3,19 @@ package com.javaweb.controller.guest;
 import com.javaweb.connect.impl.FutureWebSocketService;
 import com.javaweb.connect.impl.SpotWebSocketService;
 import com.javaweb.dto.PriceDTO;
-import com.javaweb.config.WebSocketConfig;
 import com.javaweb.service.stream.FundingRateStreamService;
+import com.javaweb.model.MarketCapResponse;
 import com.javaweb.service.impl.FuturePriceDataService;
 import com.javaweb.service.impl.MarketCapService;
 import com.javaweb.service.impl.SpotPriceDataService;
 import com.javaweb.service.stream.PriceStreamService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
@@ -71,20 +73,25 @@ public class PriceController {
         return fundingRateStreamService.handleStreamFundingRate(symbols);
     }
 
-    @GetMapping("/get-market")
-    public ResponseEntity<List<Map<String, Object>>> getMarketData(@RequestParam List<String> symbols) {
-        if (symbols == null || symbols.isEmpty()) {
-            return ResponseEntity.badRequest().build();
+    @GetMapping("/get-marketcap")
+    // Phương thức mới nhận 'symbol' từ query parameter
+    public List<MarketCapResponse> getMarketCap(@RequestParam List<String> symbols) {
+        List<MarketCapResponse> marketCapResponses = new ArrayList<>();
+
+        // Lặp qua từng symbol trong danh sách và lấy kết quả từ service
+        for (String symbol : symbols) {
+            MarketCapResponse response = marketCapService.getMarketCapBySymbol(symbol);
+            marketCapResponses.add(response);  // Thêm kết quả vào danh sách
         }
 
-        List<Map<String, Object>> marketData = marketCapService.getMarketData(symbols);
-
-        return ResponseEntity.ok(marketData);
+        return marketCapResponses;
     }
 
     @DeleteMapping("/close-all-web")
     public void closeAllWebSocket() {
+        fundingRateStreamService.closeAllWebSockets();
         priceStreamService.closeAllWebSockets();
     }
-
 }
+
+
