@@ -46,10 +46,9 @@ public class TriggerMapHelper {
     public IndicatorTrigger mapIndicatorTrigger(IndicatorTriggerDTO dto) {
         IndicatorTrigger trigger = new IndicatorTrigger();
         trigger.setSymbol(dto.getSymbol());
-        trigger.setIndicatorType(dto.getIndicatorType());
-        trigger.setTriggerType(dto.getTriggerType());
-        trigger.setShortTermPeriod(dto.getShortTermPeriod());
-        trigger.setLongTermPeriod(dto.getLongTermPeriod());
+        trigger.setIndicator(dto.getIndicator());
+        trigger.setNotification_method(dto.getNotification_method());
+        trigger.setPeriod(dto.getPeriod());
         return trigger;
     }
 }

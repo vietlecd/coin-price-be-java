@@ -106,7 +106,9 @@ public class TriggerConditionController {
                 case "funding-rate":
                     fundingRateTriggerService.deleteTrigger(symbol, username);
                     break;
-                    //Huy thêm trường hợp xóa Indicator ở đây
+                case "indicator":
+                    indicatorTriggerService.deleteTrigger(symbol, username);
+                    break;
 
                 default:
                     return ResponseEntity.badRequest().body("Invalid trigger type");

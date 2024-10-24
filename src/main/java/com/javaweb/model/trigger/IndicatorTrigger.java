@@ -9,8 +9,8 @@ import org.springframework.scheduling.Trigger;
 @Setter
 @Document(collection = "indicator_trigger")
 public class IndicatorTrigger extends TriggerCondition {
-    private String indicatorType;
-    private String triggerType;
-    private int shortTermPeriod;
-    private int longTermPeriod;
+    private String symbol;
+    private String indicator;
+    private String notification_method;
+    private int period;
 }

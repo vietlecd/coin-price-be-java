@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/vip3")
+@RequestMapping("/api/vip3")
 public class IndicatorTriggerConditionController {
     @Autowired
     private ObjectMapper objectMapper;
@@ -40,7 +40,7 @@ public class IndicatorTriggerConditionController {
             alertId = indicatorTriggerService.createTrigger(indicatorDTO, username);
 
             Map<String, String> response = new HashMap<>();
-            response.put("message", "Alert created successfully");
+            response.put("message", "Indicator created successfully");
             response.put("alert_id", alertId);
 
             return ResponseEntity.status(201).body(response);

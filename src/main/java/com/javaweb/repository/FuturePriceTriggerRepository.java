@@ -14,4 +14,5 @@ public interface FuturePriceTriggerRepository extends MongoRepository<FuturePric
 
     @Query(value = "{}", fields = "{username: 1, symbol: 1}")
     List<FuturePriceTrigger> findAllUsernamesWithSymbols();
+
 }

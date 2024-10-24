@@ -9,6 +9,7 @@ import com.javaweb.service.impl.FundingIntervalDataService;
 import com.javaweb.service.impl.FundingRateDataService;
 import com.javaweb.service.impl.IndicatorService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -20,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Service
 public class IndicatorWebSocketService extends TextWebSocketHandler implements IConnectToWebSocketService {
 
     @Autowired
