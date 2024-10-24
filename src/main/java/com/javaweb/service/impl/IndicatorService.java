@@ -1,13 +1,24 @@
 package com.javaweb.service.impl;
 
+<<<<<<< Updated upstream
 import com.javaweb.dto.IndicatorDTO;
+=======
+import com.fasterxml.jackson.databind.JsonNode;
+import com.javaweb.converter.IndicatorDTOHelper;
+
+import com.javaweb.dto.IndicatorDTO;
+
+>>>>>>> Stashed changes
 import com.javaweb.helpers.service.DateTimeHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.javaweb.service.IIndicatorService;
 import com.javaweb.repository.IndicatorRepository;
 import com.javaweb.service.IUserIndicatorService;
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -19,6 +30,12 @@ import java.util.Map;
 
 @Service
 public class IndicatorService implements IIndicatorService {
+<<<<<<< Updated upstream
+=======
+    private final Map<String, IndicatorDTO> indicatorDataUsers = new ConcurrentHashMap<>();
+    private final Map<String, IndicatorDTO> indicatorDataTriggers = new ConcurrentHashMap<>();
+
+>>>>>>> Stashed changes
     private final IndicatorRepository indicatorRepository = new IndicatorRepository();
     @Autowired
     private IUserIndicatorService userIndicatorService;
@@ -132,4 +149,42 @@ public class IndicatorService implements IIndicatorService {
             throw new RuntimeException("Lỗi khi thực thi script người dùng");
         }
     }
+<<<<<<< Updated upstream
+=======
+    @Override
+    public void handleFundingRateWebSocketMessage(JsonNode data,  boolean isTriggered) {
+        long eventTimeLong = data.get("E").asLong();
+        long nextFundingTime = data.get("T").asLong();
+
+        String eventTime = DateTimeHelper.formatEventTime(eventTimeLong);
+
+        String symbol = data.get("s").asText();
+        JsonNode data1 = data.get("v");
+        Map<String, Object> values = new HashMap<>();
+        values.put(data1.get("S").asText(), data1.get("D").asDouble());
+
+        long countdownInSeconds = (nextFundingTime - eventTimeLong) / 1000;
+
+        String fundingCountdown = String.format("%02d:%02d:%02d",
+                TimeUnit.SECONDS.toHours(countdownInSeconds),
+                TimeUnit.SECONDS.toMinutes(countdownInSeconds) % 60,
+                countdownInSeconds % 60
+        );
+
+
+        IndicatorDTO indicatorDTO = IndicatorDTOHelper.createIndicatorDTO(symbol, values, eventTime);
+
+        if (!isTriggered) {
+            indicatorDataUsers.put("FundingRate Price: " + symbol, indicatorDTO);
+        }
+        else {
+            indicatorDataTriggers.put("FundingRate Price: " + symbol, indicatorDTO);
+        }
+    }
+
+    @Override
+    public Map<String, IndicatorDTO> getIndicatorDataTriggers(){
+        return indicatorDataTriggers;
+    }
+>>>>>>> Stashed changes
 }
