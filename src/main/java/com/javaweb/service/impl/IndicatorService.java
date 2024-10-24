@@ -1,24 +1,16 @@
 package com.javaweb.service.impl;
 
-<<<<<<< Updated upstream
-import com.javaweb.dto.IndicatorDTO;
-=======
 import com.fasterxml.jackson.databind.JsonNode;
 import com.javaweb.converter.IndicatorDTOHelper;
 
 import com.javaweb.dto.IndicatorDTO;
 
->>>>>>> Stashed changes
 import com.javaweb.helpers.service.DateTimeHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.javaweb.service.IIndicatorService;
 import com.javaweb.repository.IndicatorRepository;
 import com.javaweb.service.IUserIndicatorService;
-<<<<<<< Updated upstream
-
-=======
->>>>>>> Stashed changes
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -27,15 +19,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class IndicatorService implements IIndicatorService {
-<<<<<<< Updated upstream
-=======
     private final Map<String, IndicatorDTO> indicatorDataUsers = new ConcurrentHashMap<>();
     private final Map<String, IndicatorDTO> indicatorDataTriggers = new ConcurrentHashMap<>();
 
->>>>>>> Stashed changes
     private final IndicatorRepository indicatorRepository = new IndicatorRepository();
     @Autowired
     private IUserIndicatorService userIndicatorService;
@@ -68,7 +59,6 @@ public class IndicatorService implements IIndicatorService {
                 }
             }
             IndicatorDTO indicatorDTO = new IndicatorDTO.Builder()
-                    .symbol(symbol)
                     .values(values)
                     .eventTime(DateTimeHelper.formatEventTime(prices.keySet().stream().max(Long::compareTo).orElse(0L)))
                     .build();
@@ -149,8 +139,6 @@ public class IndicatorService implements IIndicatorService {
             throw new RuntimeException("Lỗi khi thực thi script người dùng");
         }
     }
-<<<<<<< Updated upstream
-=======
     @Override
     public void handleFundingRateWebSocketMessage(JsonNode data,  boolean isTriggered) {
         long eventTimeLong = data.get("E").asLong();
@@ -186,5 +174,4 @@ public class IndicatorService implements IIndicatorService {
     public Map<String, IndicatorDTO> getIndicatorDataTriggers(){
         return indicatorDataTriggers;
     }
->>>>>>> Stashed changes
 }
