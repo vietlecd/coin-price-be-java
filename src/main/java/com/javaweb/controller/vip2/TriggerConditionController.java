@@ -3,12 +3,11 @@ package com.javaweb.controller.vip2;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.javaweb.dto.trigger.FundingRateTriggerDTO;
 import com.javaweb.dto.trigger.FuturePriceTriggerDTO;
+import com.javaweb.dto.trigger.ListingDTO;
 import com.javaweb.dto.trigger.PriceDifferenceTriggerDTO;
 import com.javaweb.dto.trigger.SpotPriceTriggerDTO;
-import com.javaweb.service.trigger.FundingRateTriggerService;
-import com.javaweb.service.trigger.FuturePriceTriggerService;
-import com.javaweb.service.trigger.PriceDifferenceTriggerService;
-import com.javaweb.service.trigger.SpotPriceTriggerService;
+import com.javaweb.service.trigger.*;
+import com.javaweb.connect.impl.ListingWebSocketService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,10 +17,13 @@ import java.util.Map;
 @RestController
 @RequestMapping("/vip2")
 public class TriggerConditionController {
+
     @Autowired
     private ObjectMapper objectMapper;
+
     @Autowired
     private SpotPriceTriggerService spotPriceTriggerService;
+
     @Autowired
     private FuturePriceTriggerService futurePriceTriggerService;
 
@@ -30,6 +32,10 @@ public class TriggerConditionController {
 
     @Autowired
     private FundingRateTriggerService fundingRateTriggerService;
+
+    @Autowired
+    private ListingWebSocketService listingWebSocketService;
+
     @PostMapping("/create")
     public ResponseEntity<?> createTriggerCondition(@RequestParam("triggerType") String triggerType, @RequestBody Map<String, Object> dtoMap) {
         try {
@@ -50,32 +56,29 @@ public class TriggerConditionController {
                     FundingRateTriggerDTO fundingDTO = objectMapper.convertValue(dtoMap, FundingRateTriggerDTO.class);
                     fundingRateTriggerService.createTrigger(fundingDTO);
                     break;
+                case "new-symbol-listing":
+                    ListingDTO listingDTO = objectMapper.convertValue(dtoMap, ListingDTO.class);
+                    listingWebSocketService.startWebSocketClient();  // Khởi động WebSocket khi có trigger cho niêm yết mới
+                    break;
                 default:
                     return ResponseEntity.badRequest().body("Invalid trigger type");
             }
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             return ResponseEntity.status(500).body("Error processing trigger: " + e.getMessage());
         }
-            return ResponseEntity.ok("Trigger condition created successfully.");
+        return ResponseEntity.ok("Trigger condition created successfully.");
     }
 
-//    @GetMapping("/get/{symbol}")
-//    public ResponseEntity<?> getTriggerCondition(@PathVariable String symbol) {
-//        TriggerConditionDTO triggerConditionDTO = triggerDataService.getTriggerConditionBySymbol(symbol);
-//        return ResponseEntity.ok(triggerConditionDTO);
-//    }
-//
-//    @PutMapping("/update/{symbol}")
-//    public ResponseEntity<?> updateTriggerCondition(@PathVariable String symbol,
-//                                                    @RequestBody TriggerConditionDTO triggerConditionDTO) {
-//        triggerDataService.updateTriggerCondition(symbol, triggerConditionDTO);
-//        return ResponseEntity.ok("Trigger condition updated successfully.");
-//    }
-//
-//    @DeleteMapping("/delete/{symbol}")
-//    public ResponseEntity<?> deleteTriggerCondition(@PathVariable String symbol) {
-//        triggerDataService.deleteTriggerCondition(symbol);
-//        return ResponseEntity.ok(symbol + " have been deleted successfully.");
-//    }
+    @DeleteMapping("/delete/{symbol}")
+    public ResponseEntity<?> deleteTriggerCondition(@PathVariable String symbol, @RequestParam("triggerType") String triggerType) {
+        try {
+            if ("new-symbol-listing".equals(triggerType)) {
+                listingWebSocketService.stopTokenCheck();  // Ngừng WebSocket khi xóa trigger
+            }
+            // Các trigger khác cũng sẽ được xử lý ở đây
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error deleting trigger: " + e.getMessage());
+        }
+        return ResponseEntity.ok("Trigger condition deleted successfully.");
+    }
 }
