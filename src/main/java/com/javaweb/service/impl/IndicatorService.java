@@ -127,14 +127,19 @@ public class IndicatorService implements IIndicatorService {
 
     @Override
     public void handleIndicatorWebSocketMessage(JsonNode data,  boolean isTriggered) {
-        long eventTimeLong = data.get("E").asLong();
+        String symbol = "bitcoin";  // demo
+        JsonNode data1 = data.get("b");
+
+        Map<String, Object> values = new HashMap<>();
+        JsonNode data2 = data1.get("v");
+        values.put("MA", data2.get("M").asDouble());
+        values.put("EMA", data2.get("E").asDouble());
+
+        long eventTimeLong = data1.get("e").asLong();
 
         String eventTime = DateTimeHelper.formatEventTime(eventTimeLong);
 
-        String symbol = data.get("s").asText();
-        JsonNode data1 = data.get("v");
-        Map<String, Object> values = new HashMap<>();
-        values.put(data1.get("S").asText(), data1.get("D").asDouble());
+
 
 
         IndicatorDTO indicatorDTO = IndicatorDTOHelper.createIndicatorDTO(symbol, values, eventTime);
