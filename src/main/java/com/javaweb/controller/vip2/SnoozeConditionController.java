@@ -1,15 +1,9 @@
 package com.javaweb.controller.vip2;
 
-import com.javaweb.dto.snooze.FundingRateSnoozeCondition;
-import com.javaweb.dto.snooze.FutureSnoozeCondition;
-import com.javaweb.dto.snooze.PriceDifferenceSnoozeCondition;
-import com.javaweb.dto.snooze.SpotSnoozeCondition;
+import com.javaweb.dto.snooze.*;
 import com.javaweb.helpers.controller.GetUsernameHelper;
 import com.javaweb.helpers.trigger.SnoozeMapHelper;
-import com.javaweb.service.snooze.FundingRateSnoozeConditionService;
-import com.javaweb.service.snooze.FutureSnoozeConditionService;
-import com.javaweb.service.snooze.PriceDifferenceSnoozeConditionService;
-import com.javaweb.service.snooze.SpotSnoozeConditionService;
+import com.javaweb.service.snooze.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,7 +26,8 @@ public class SnoozeConditionController {
 
     @Autowired
     private FundingRateSnoozeConditionService fundingRateSnoozeConditionService;
-
+    @Autowired
+    private IndicatorSnoozeConditionService indicatorSnoozeConditionService;
     @Autowired
     private SnoozeMapHelper snoozeMapHelper;
     @Autowired
@@ -61,6 +56,11 @@ public class SnoozeConditionController {
                     FundingRateSnoozeCondition fundingRateSnoozeCondition = snoozeMapHelper.mapToFundingRateSnoozeCondition(snoozeConditionRequest, username);
                     fundingRateSnoozeConditionService.createSnoozeCondition(fundingRateSnoozeCondition, username);
                     break;
+                case "indicator":
+                    IndicatorSnoozeCondition indicatorSnoozeCondition = snoozeMapHelper.mapToIndicatorSnoozeCondition(snoozeConditionRequest, username);
+                    indicatorSnoozeConditionService.createSnoozeCondition(indicatorSnoozeCondition, username);
+                    break;
+
                 default:
                     return ResponseEntity.badRequest().body("Invalid trigger type");
             }
@@ -88,7 +88,10 @@ public class SnoozeConditionController {
                 case "funding-rate":
                     fundingRateSnoozeConditionService.deleteSnoozeCondition(symbol, username);
                     break;
-                default:
+                case "indicator":
+                    indicatorSnoozeConditionService.deleteSnoozeCondition(symbol,username);
+                    break;
+                    default:
                     return ResponseEntity.badRequest().body("Invalid snooze condition type");
             }
 

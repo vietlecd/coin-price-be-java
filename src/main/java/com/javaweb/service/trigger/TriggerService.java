@@ -3,7 +3,9 @@ package com.javaweb.service.trigger;
 import com.javaweb.dto.FundingRateDTO;
 import com.javaweb.dto.IndicatorDTO;
 import com.javaweb.dto.PriceDTO;
+
 import com.javaweb.helpers.trigger.SnoozeCheckHelper;
+
 import com.javaweb.helpers.trigger.TriggerCheckHelper;
 import com.javaweb.service.impl.FundingRateDataService;
 import com.javaweb.service.impl.FuturePriceDataService;

@@ -1,9 +1,6 @@
 package com.javaweb.helpers.trigger;
 
-import com.javaweb.dto.snooze.FundingRateSnoozeCondition;
-import com.javaweb.dto.snooze.FutureSnoozeCondition;
-import com.javaweb.dto.snooze.PriceDifferenceSnoozeCondition;
-import com.javaweb.dto.snooze.SpotSnoozeCondition;
+import com.javaweb.dto.snooze.*;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -44,7 +41,8 @@ public class SnoozeMapHelper {
 
 
     // Method to map the request body to a FutureSnoozeCondition DTO
-    public FutureSnoozeCondition mapToFutureSnoozeCondition(Map<String, Object> snoozeConditionRequest,String username) {
+    public FutureSnoozeCondition mapToFutureSnoozeCondition(Map<String, Object> snoozeConditionRequest, String username) {
+        // Perform the mapping of the request body to FutureSnoozeCondition
         FutureSnoozeCondition futureSnoozeCondition = new FutureSnoozeCondition(
 
                 (String) snoozeConditionRequest.get("symbol"),
@@ -54,11 +52,26 @@ public class SnoozeMapHelper {
                 (String) snoozeConditionRequest.get("specificTime")
         );
 
-        // Set the username (usernameId) for the SpotSnoozeCondition object
+        // Set the username (usernameId) for the FutureSnoozeCondition object
+        if (snoozeConditionRequest.get("repeatCount") != null) {
+            futureSnoozeCondition.setRepeatCount((Integer) snoozeConditionRequest.get("repeatCount"));
+        } else {
+            futureSnoozeCondition.setRepeatCount(0); // default value if not provided
+        }
+
+        if (snoozeConditionRequest.get("maxRepeatCount") != null) {
+            futureSnoozeCondition.setMaxRepeatCount((Integer) snoozeConditionRequest.get("maxRepeatCount"));
+        } else {
+            futureSnoozeCondition.setMaxRepeatCount(1); // default value if not provided
+        }
+
+        // Print out the object after mapping for debugging purposes
+        System.out.println("FutureSnoozeCondition after mapping: " + futureSnoozeCondition);
         futureSnoozeCondition.setUsername(username);
-        System.out.println("SpotSnoozeCondition after mapping: " + futureSnoozeCondition);
+        System.out.println("FutureSnoozeCondition after mapping: " + futureSnoozeCondition);
         return futureSnoozeCondition;
     }
+
 
     // Method to map the request body to a PriceDifferenceSnoozeCondition DTO
     public PriceDifferenceSnoozeCondition mapToPriceDifferenceSnoozeCondition(Map<String, Object> snoozeConditionRequest, String username) {
@@ -95,6 +108,37 @@ public class SnoozeMapHelper {
         System.out.println("FundingRateSnoozeCondition after mapping: " + fundingRateSnoozeCondition);
         return fundingRateSnoozeCondition;
     }
+    public IndicatorSnoozeCondition mapToIndicatorSnoozeCondition(Map<String, Object> snoozeConditionRequest, String username) {
+        // Perform the mapping of the request body to IndicatorSnoozeCondition
+        IndicatorSnoozeCondition indicatorSnoozeCondition = new IndicatorSnoozeCondition(
+
+                (String) snoozeConditionRequest.get("symbol"),
+                (String) snoozeConditionRequest.get("conditionType"),
+                LocalDateTime.parse((String) snoozeConditionRequest.get("startTime")),
+                LocalDateTime.parse((String) snoozeConditionRequest.get("endTime")),
+                (String) snoozeConditionRequest.get("specificTime")
+        );
+
+        // Set the username (usernameId) for the IndicatorSnoozeCondition object
+        if (snoozeConditionRequest.get("repeatCount") != null) {
+            indicatorSnoozeCondition.setRepeatCount((Integer) snoozeConditionRequest.get("repeatCount"));
+        } else {
+            indicatorSnoozeCondition.setRepeatCount(0); // default value if not provided
+        }
+
+        if (snoozeConditionRequest.get("maxRepeatCount") != null) {
+            indicatorSnoozeCondition.setMaxRepeatCount((Integer) snoozeConditionRequest.get("maxRepeatCount"));
+        } else {
+            indicatorSnoozeCondition.setMaxRepeatCount(1); // default value if not provided
+        }
+
+        // Print out the object after mapping for debugging purposes
+        System.out.println("IndicatorSnoozeCondition after mapping: " + indicatorSnoozeCondition);
+        indicatorSnoozeCondition.setUsername(username);
+        System.out.println("IndicatorSnoozeCondition after mapping: " + indicatorSnoozeCondition);
+        return indicatorSnoozeCondition;
+    }
+
 
 
 }
