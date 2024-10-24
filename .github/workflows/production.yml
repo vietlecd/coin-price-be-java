@@ -2,7 +2,8 @@ name: Production change
 
 on:
   push:
-    branches: [Production]
+    branches: 
+      - Production
 
 jobs:
   notify:
