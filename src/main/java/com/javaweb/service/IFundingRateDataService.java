@@ -6,7 +6,10 @@ import com.javaweb.dto.FundingRateDTO;
 import java.util.Map;
 
 public interface IFundingRateDataService {
-    public void handleFundingRateWebSocketMessage(JsonNode data);
+    void handleFundingRateWebSocketMessage(JsonNode data, boolean isTriggered);
 
-    Map<String, FundingRateDTO> getFundingRateDataMap();
+    Map<String, FundingRateDTO> getFundingRateDataUsers();
+
+
+    Map<String, FundingRateDTO> getFundingRateDataTriggers();
 }

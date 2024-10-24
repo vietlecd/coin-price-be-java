@@ -12,7 +12,7 @@ public class PriceDifferenceTriggerDTO {
     private final String notification_method;
     private final double spotPrice;
     private final double futurePrice;
-    private final double priceDifferenceThreshold;
+    private final double priceDifference;
 
     private PriceDifferenceTriggerDTO(Builder builder) {
         this.symbol = builder.symbol;
@@ -20,7 +20,7 @@ public class PriceDifferenceTriggerDTO {
         this.notification_method = builder.notification_method;
         this.spotPrice = builder.spotPrice;
         this.futurePrice = builder.futurePrice;
-        this.priceDifferenceThreshold = builder.priceDifferenceThreshold;
+        this.priceDifference = builder.priceDifference;
     }
 
 
@@ -31,7 +31,7 @@ public class PriceDifferenceTriggerDTO {
         private String notification_method;
         private double spotPrice;
         private double futurePrice;
-        private double priceDifferenceThreshold;
+        private double priceDifference;
 
         public Builder setSymbol(String symbol) {
             this.symbol = symbol;
@@ -59,8 +59,8 @@ public class PriceDifferenceTriggerDTO {
             return this;
         }
 
-        public Builder setPriceDifferenceThreshold(double priceDifferenceThreshold) {
-            this.priceDifferenceThreshold = priceDifferenceThreshold;
+        public Builder setPriceDifference(double priceDifference) {
+            this.priceDifference = priceDifference;
             return this;
         }
 

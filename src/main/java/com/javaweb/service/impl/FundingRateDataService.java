@@ -3,30 +3,20 @@ package com.javaweb.service.impl;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.javaweb.dto.FundingRateDTO;
 import com.javaweb.helpers.service.DateTimeHelper;
-import com.javaweb.helpers.service.FundingRateDTOHelper;
-import com.javaweb.helpers.sse.SseHelper;
-import com.javaweb.helpers.trigger.TriggerCheckHelper;
+import com.javaweb.converter.FundingRateDTOHelper;
 import com.javaweb.service.IFundingRateDataService;
-import com.javaweb.service.IPriceDataService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
-import java.io.IOException;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 @Service
 public class FundingRateDataService implements IFundingRateDataService {
-    @Autowired
-    private TriggerCheckHelper triggerCheckHelper;
-    @Autowired
-    private SseHelper sseHelper;
-    private final Map<String, FundingRateDTO> fundingRateDataMap = new ConcurrentHashMap<>();
-
-    public void handleFundingRateWebSocketMessage(JsonNode data) {
+    private final Map<String, FundingRateDTO> fundingRateDataUsers = new ConcurrentHashMap<>();
+    private final Map<String, FundingRateDTO> fundingRateDataTriggers = new ConcurrentHashMap<>();
+    @Override
+    public void handleFundingRateWebSocketMessage(JsonNode data,  boolean isTriggered) {
         long eventTimeLong = data.get("E").asLong();
         long nextFundingTime = data.get("T").asLong();
 
@@ -43,34 +33,28 @@ public class FundingRateDataService implements IFundingRateDataService {
                 countdownInSeconds % 60
         );
 
-//        System.out.println("Symbol: " + symbol);
-//        System.out.println("Funding Rate: " + fundingRate);
-//        System.out.println("Funding Rate Countdown: " + fundingCountdown);
-//        System.out.println("Event Time: " + eventTime);
 
         FundingRateDTO fundingRateDTO = FundingRateDTOHelper.createFundingRateDTO(symbol, fundingRate, fundingCountdown, eventTime);
 
-        fundingRateDataMap.put("FundingRate Price: " + symbol, fundingRateDTO);
-
-        boolean conditionMet = triggerCheckHelper.checkSymbolAndTriggerAlert(Arrays.asList(symbol), fundingRateDataMap, "FundingRate");
-
-        if (conditionMet) {
-            // Nếu có SseEmitter thì gửi thông báo qua SSE
-            SseEmitter emitter = sseHelper.getSseEmitterBySymbol(symbol, "FundingRate");
-            if (emitter != null) {
-                try {
-                    emitter.send(SseEmitter.event().name("price-alert").data("FundingRate price condition met for " + symbol));
-                } catch (IOException e) {
-                    emitter.completeWithError(e);
-                }
-            } else {
-                //ystem.out.println("No emitter found for symbol: " + symbol);
-            }
+        if (!isTriggered) {
+            fundingRateDataUsers.put("FundingRate Price: " + symbol, fundingRateDTO);
+        }
+        else {
+            fundingRateDataTriggers.put("FundingRate Price: " + symbol, fundingRateDTO);
         }
 
+
     }
 
-    public Map<String, FundingRateDTO> getFundingRateDataMap() {
-        return fundingRateDataMap;
+    @Override
+    public Map<String, FundingRateDTO> getFundingRateDataUsers() {
+        return fundingRateDataUsers;
     }
+
+    @Override
+    public Map<String, FundingRateDTO> getFundingRateDataTriggers() {
+        return fundingRateDataTriggers;
+    }
+
+
 }

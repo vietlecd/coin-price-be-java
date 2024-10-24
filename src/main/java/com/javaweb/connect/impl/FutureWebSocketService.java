@@ -39,18 +39,26 @@ public class FutureWebSocketService extends TextWebSocketHandler implements ICon
         return "wss://stream.binance.com/stream?streams=" + streamParam;
     }
 
-    @Override
-    public void connectToWebSocket(List<String> streams) {
+    public void connectToWebSocket(List<String> streams, boolean isTriggerRequest) {
         String wsUrl = buildFutureWebSocketUrl(streams);
-        webSocketConfig.connectToWebSocket(wsUrl, webSocketClient, this);
+        // Truyền cờ isTriggerRequest trực tiếp vào handler
+        webSocketConfig.connectToWebSocket(wsUrl, webSocketClient, new FutureWebSocketHandler(isTriggerRequest));
     }
 
-    @Override
-    protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-        String payload = message.getPayload();
-        JsonNode data = objectMapper.readTree(payload).get("data");
+    private class FutureWebSocketHandler extends TextWebSocketHandler {
+        private final boolean isTriggerRequest;
 
-        futurePriceDataService.handleWebSocketMessage(data);
+        public FutureWebSocketHandler(boolean isTriggerRequest) {
+            this.isTriggerRequest = isTriggerRequest;
+        }
+
+        @Override
+        protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
+            String payload = message.getPayload();
+            JsonNode data = objectMapper.readTree(payload).get("data");
+
+            futurePriceDataService.handleWebSocketMessage(data, isTriggerRequest);
+        }
     }
 
 }

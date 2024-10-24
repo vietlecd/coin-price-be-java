@@ -4,10 +4,8 @@ import com.javaweb.model.LoginRequest;
 import com.javaweb.model.mongo_entity.userData;
 import com.javaweb.repository.UserRepository;
 import com.javaweb.service.CreateToken;
-import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -28,13 +26,13 @@ public class AuthenInterceptor implements HandlerInterceptor {
         String token = getCookieValue(request, "token");
 
         if(token == null) {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Missing or invalid Authorization header");
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Api yêu cầu đăng nhập");
             return false;
         }
 
         LoginRequest temp_data = CreateToken.decodeToken(token);
 
-        if(temp_data.getUsername().equals("expired")) {
+        if(temp_data.getPassword().equals("expired")) {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Phiên đăng nhập đã hết hạn");
             return false;
         }
@@ -47,6 +45,8 @@ public class AuthenInterceptor implements HandlerInterceptor {
         }
 
         if(user.getPassword().equals(temp_data.getPassword())) {
+            request.setAttribute("username", user.getUsername());
+
             return true;
         }
 
