@@ -3,6 +3,10 @@ name: LearnJava
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - README.md
+      - docs/**
+      - .github/workflows/**
 
 jobs:
   notify:
