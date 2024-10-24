@@ -1,5 +1,6 @@
 package com.javaweb.scheduler;
 
+import com.javaweb.dto.FundingIntervalDTO;
 import com.javaweb.model.trigger.FundingRateInterval;
 import com.javaweb.service.trigger.FundingRateIntervalService;
 import com.javaweb.service.webhook.TelegramNotificationService;
@@ -18,24 +19,24 @@ public class FundingRateIntervalScheduler {
     @Autowired
     private TelegramNotificationService telegramNotificationService;
 
-    @Scheduled(cron = "0 0 * * * ?")  // Mỗi 1 giờ
+    @Scheduled(cron = "0 0 * * * ?")  // Every hour
     public void checkFundingRateIntervals() {
-        // Giả sử userId là người dùng hiện tại
+        // Assume userId is the current user
         String userId = "someUserId"; 
 
-        // Lấy danh sách các cặp giao dịch do người dùng chọn
+        // Get the list of trading pairs selected by the user
         List<String> tradingPairs = fundingRateIntervalService.getUserSelectedTradingPairs(userId);
 
         for (String symbol : tradingPairs) {
-            FundingRateInterval newInterval = fundingRateIntervalService.fetchLatestFundingRateInterval(symbol);
+            FundingIntervalDTO newInterval = fundingRateIntervalService.fetchLatestFundingRateInterval(symbol);
             if (newInterval != null && fundingRateIntervalService.hasFundingRateIntervalChanged(newInterval)) {
                 fundingRateIntervalService.saveFundingRateInterval(newInterval);
 
-                // Gửi thông báo qua Telegram
-                String message = "Funding rate interval của " + symbol + " đã thay đổi: " + newInterval.getIntervalTime();
+                // Send notification via Telegram
+                String message = "Funding rate interval of " + symbol + " has changed: " + newInterval.getFundingIntervalHours();
                 telegramNotificationService.sendTriggerNotification(message);
 
-                System.out.println("Thông báo: " + message);
+                System.out.println("Notification: " + message);
             }
         }
     }

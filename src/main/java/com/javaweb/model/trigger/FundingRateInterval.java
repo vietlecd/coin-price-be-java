@@ -15,7 +15,7 @@ public class FundingRateInterval {
     private long nextFundingTime;
 
     public long getIntervalTime() {
-        return nextFundingTime - fundingTime; // Tính toán intervalTime
+        return (nextFundingTime - fundingTime) / (1000 * 60 * 60); // Calculate intervalTime in hours
     }
 
     public String getSymbol() {
@@ -26,7 +26,6 @@ public class FundingRateInterval {
         this.symbol = symbol;
     }
 
-    // Getter và Setter cho fundingTime
     public long getFundingTime() {
         return fundingTime;
     }
@@ -35,7 +34,6 @@ public class FundingRateInterval {
         this.fundingTime = fundingTime;
     }
 
-    // Getter và Setter cho nextFundingTime
     public long getNextFundingTime() {
         return nextFundingTime;
     }

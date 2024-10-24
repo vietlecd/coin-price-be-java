@@ -1,6 +1,7 @@
 package com.javaweb.controller.vip2;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.javaweb.dto.FundingIntervalDTO;
 import com.javaweb.dto.trigger.FundingRateTriggerDTO;
 import com.javaweb.dto.trigger.FuturePriceTriggerDTO;
 import com.javaweb.dto.trigger.ListingDTO;
@@ -31,7 +32,10 @@ public class TriggerConditionController {
     private PriceDifferenceTriggerService priceDifferenceTriggerService;
 
     @Autowired
-    private FundingRateTriggerService fundingRateTriggerService;
+    private FundingRateTriggerService fundingRateTriggerService; // Assuming this service exists
+
+    @Autowired
+    private FundingRateIntervalService fundingRateIntervalService;
 
     @Autowired
     private ListingWebSocketService listingWebSocketService;
@@ -54,11 +58,15 @@ public class TriggerConditionController {
                     break;
                 case "funding-rate":
                     FundingRateTriggerDTO fundingDTO = objectMapper.convertValue(dtoMap, FundingRateTriggerDTO.class);
-                    fundingRateTriggerService.createTrigger(fundingDTO);
+                    fundingRateTriggerService.createTrigger(fundingDTO); // Ensure this method exists in the FundingRateTriggerService
                     break;
                 case "new-symbol-listing":
                     ListingDTO listingDTO = objectMapper.convertValue(dtoMap, ListingDTO.class);
-                    listingWebSocketService.startWebSocketClient();  // Khởi động WebSocket khi có trigger cho niêm yết mới
+                    listingWebSocketService.startWebSocketClient();  // Start WebSocket for new listing trigger
+                    break;
+                case "funding-rate-interval-changed":
+                    FundingIntervalDTO fundingIntervalDTO = objectMapper.convertValue(dtoMap, FundingIntervalDTO.class);
+                    fundingRateIntervalService.createFundingIntervalTrigger(fundingIntervalDTO); // Call the correct method
                     break;
                 default:
                     return ResponseEntity.badRequest().body("Invalid trigger type");
@@ -66,16 +74,22 @@ public class TriggerConditionController {
         } catch (Exception e) {
             return ResponseEntity.status(500).body("Error processing trigger: " + e.getMessage());
         }
-        return ResponseEntity.ok("Trigger condition created successfully.");
+        return ResponseEntity.ok("Trigger condition created successfully."); // Ensure return here
     }
 
     @DeleteMapping("/delete/{symbol}")
     public ResponseEntity<?> deleteTriggerCondition(@PathVariable String symbol, @RequestParam("triggerType") String triggerType) {
         try {
-            if ("new-symbol-listing".equals(triggerType)) {
-                listingWebSocketService.stopTokenCheck();  // Ngừng WebSocket khi xóa trigger
+            switch (triggerType) {
+                case "funding-rate-interval":
+                    fundingRateIntervalService.deleteFundingRateInterval(symbol); // Delete logic for funding rate interval
+                    break;
+                case "new-symbol-listing":
+                    listingWebSocketService.stopTokenCheck();  // Stop WebSocket when deleting trigger
+                    break;
+                default:
+                    return ResponseEntity.badRequest().body("Invalid trigger type");
             }
-            // Các trigger khác cũng sẽ được xử lý ở đây
         } catch (Exception e) {
             return ResponseEntity.status(500).body("Error deleting trigger: " + e.getMessage());
         }
