@@ -45,7 +45,6 @@ public class AuthController {
             LoginRequest loginRequest = CreateToken.decodeToken(token);
 
             String username = loginRequest.getUsername();
-            String password = loginRequest.getPassword();
 
             userData userData = userRepository.findByUsername(username);
             List<String> ip_list = userData.getIp_list();

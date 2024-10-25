@@ -17,7 +17,6 @@ public class CreateToken {
     private final static String SECRET = System.getenv("JWT_SECRET");
 
     public static String createToken(String username) throws JOSEException {
-        System.out.println(SECRET);
         JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
                 .subject(username)
                 .claim("password", "ai cho coi mật khẩu")
@@ -53,9 +52,5 @@ public class CreateToken {
         } else {
             throw new JOSEException("Sai Token");
         }
-    }
-
-    public static boolean validateToken(String token) {
-        return true;
     }
 }
