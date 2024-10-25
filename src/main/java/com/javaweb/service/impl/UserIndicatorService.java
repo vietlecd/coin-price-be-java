@@ -26,6 +26,11 @@ public class UserIndicatorService implements IUserIndicatorService {
         return userIndicatorOptional.map(userIndicator::getCode).orElse(null);
     }
 
+    @Override
+    public Optional<userIndicator> findByUsernameAndName(String username, String name) {
+        return userIndicatorRepository.findByUsernameAndName(username, name);
+    }
+
     private void validateGroovySyntax(String scriptCode) throws IllegalArgumentException {
         // Kiểm tra đơn giản thoi
         GroovyShell shell = new GroovyShell();
@@ -35,4 +40,5 @@ public class UserIndicatorService implements IUserIndicatorService {
             throw new IllegalArgumentException("Lỗi cú pháp trong mã Groovy: " + e.getMessage(), e);
         }
     }
+
 }

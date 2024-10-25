@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/vip3")
@@ -22,18 +23,24 @@ public class UserIndicatorsController {
     @PostMapping("/user-indicators")
     public ResponseEntity<String> addUserIndicator(HttpServletRequest request, @RequestBody UserIndicatorRequest userIndicatorRequest) {
         String username = (String) request.getAttribute("username");
-        userIndicator userIndicator = new userIndicator();
-        userIndicator.setName(userIndicatorRequest.getName());
-        userIndicator.setCode(userIndicatorRequest.getCode());
-        userIndicator.setUsername(username);
 
-        String code = userIndicatorService.getCode(username, userIndicatorRequest.getName());
-        if (code != null) {
-            return ResponseEntity.badRequest().body("Indicator " + userIndicatorRequest.getName() + " đã tồn tại!");
+        Optional<userIndicator> existingIndicator = userIndicatorService.findByUsernameAndName(username, userIndicatorRequest.getName());
+
+        if (existingIndicator.isPresent()) {
+            userIndicator userIndicator = existingIndicator.get();
+            userIndicator.setCode(userIndicatorRequest.getCode());
+            userIndicatorService.addIndicator(userIndicator);
+
+            return ResponseEntity.ok("Indicator " + userIndicatorRequest.getName() + " đã được cập nhật thành công!");
+        } else {
+            userIndicator userIndicator = new userIndicator();
+            userIndicator.setUsername(username);
+            userIndicator.setName(userIndicatorRequest.getName());
+            userIndicator.setCode(userIndicatorRequest.getCode());
+
+            userIndicatorService.addIndicator(userIndicator);
+
+            return ResponseEntity.ok("Đã thêm indicator " + userIndicatorRequest.getName() + " thành công!");
         }
-
-        userIndicatorService.addIndicator(userIndicator);
-
-        return ResponseEntity.ok("Đã thêm indicator " + userIndicatorRequest.getName() + " thành công!");
     }
 }
