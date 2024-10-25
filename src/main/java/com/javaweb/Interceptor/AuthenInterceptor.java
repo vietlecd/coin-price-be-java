@@ -32,11 +32,6 @@ public class AuthenInterceptor implements HandlerInterceptor {
 
         LoginRequest temp_data = CreateToken.decodeToken(token);
 
-        if(temp_data.getPassword().equals("expired")) {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Phiên đăng nhập đã hết hạn");
-            return false;
-        }
-
         userData user = userRepository.findByUsername(temp_data.getUsername());
 
         if(user == null) {
@@ -44,14 +39,8 @@ public class AuthenInterceptor implements HandlerInterceptor {
             return false;
         }
 
-        if(user.getPassword().equals(temp_data.getPassword())) {
-            request.setAttribute("username", user.getUsername());
-
-            return true;
-        }
-
-        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Tài khoản hoặc mật khẩu không tồn tại");
-        return false;
+        request.setAttribute("username", user.getUsername());
+        return true;
     }
 
     @Override
