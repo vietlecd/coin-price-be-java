@@ -16,11 +16,11 @@ import java.util.Date;
 public class CreateToken {
     private final static String SECRET = System.getenv("JWT_SECRET");
 
-    public static String createToken(String username, String password) throws JOSEException {
+    public static String createToken(String username) throws JOSEException {
         System.out.println(SECRET);
         JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
                 .subject(username)
-                .claim("password", password)
+                .claim("password", "ai cho coi mật khẩu")
                 .issuer("MK")
                 .expirationTime(new Date(System.currentTimeMillis() + 30 * 60 * 1000))
                 .build();
@@ -45,15 +45,13 @@ public class CreateToken {
             JWTClaimsSet claims = signedJWT.getJWTClaimsSet();
             Date expirationTime = claims.getExpirationTime();
 
-            System.out.println("expirationTime: " + expirationTime);
-
             if (expirationTime != null && new Date().after(expirationTime)) {
-                return new LoginRequest(claims.getSubject(), "expired");
+                throw new JOSEException("token đã hết hạn");
             }
 
             return new LoginRequest(claims.getSubject(), claims.getStringClaim("password"));
         } else {
-            throw new JOSEException("Invalid JWT");
+            throw new JOSEException("Sai Token");
         }
     }
 
