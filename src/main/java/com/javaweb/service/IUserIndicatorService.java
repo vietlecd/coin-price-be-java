@@ -1,6 +1,8 @@
 package com.javaweb.service;
 
+import com.javaweb.model.mongo_entity.userIndicator;
+
 public interface IUserIndicatorService {
-    void addIndicator(String name, String code);
-    String getIndicatorCode(String name);
+    void addIndicator(userIndicator userIndicator);
+    String getCode(String username, String name);
 }

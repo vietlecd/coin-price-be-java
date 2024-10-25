@@ -1,25 +1,29 @@
 package com.javaweb.service.impl;
+import com.javaweb.model.mongo_entity.userIndicator;
+import com.javaweb.repository.UserIndicatorRepository;
 import com.javaweb.service.IUserIndicatorService;
 import groovy.lang.GroovyShell;
 import org.codehaus.groovy.control.CompilationFailedException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class UserIndicatorService implements IUserIndicatorService {
-    private final Map<String, String> indicatorMap = new HashMap<>();
+    @Autowired
+    private UserIndicatorRepository userIndicatorRepository;
 
     @Override
-    public void addIndicator(String name, String expression) {
-        validateGroovySyntax(expression);
-        indicatorMap.put(name, expression);
+    public void addIndicator(userIndicator userIndicator) {
+        validateGroovySyntax(userIndicator.getCode());
+        userIndicatorRepository.save(userIndicator);
     }
 
     @Override
-    public String getIndicatorCode(String name) {
-        return indicatorMap.get(name);
+    public String getCode(String username, String name) {
+        Optional<userIndicator> userIndicatorOptional = userIndicatorRepository.findByUsernameAndName(username, name);
+        return userIndicatorOptional.map(userIndicator::getCode).orElse(null);
     }
 
     private void validateGroovySyntax(String scriptCode) throws IllegalArgumentException {

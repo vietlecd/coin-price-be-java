@@ -31,7 +31,7 @@ public class IndicatorService implements IIndicatorService {
     @Autowired
     private IUserIndicatorService userIndicatorService;
     @Override
-    public Map<String, IndicatorDTO> getIndicatorData(List<String> symbols, List<String> indicators, int days) {
+    public Map<String, IndicatorDTO> getIndicatorData(List<String> symbols, List<String> indicators, int days, String username) {
         Map<String, IndicatorDTO> indicatorDataMap = new HashMap<>();
 
         for (String symbol : symbols) {
@@ -49,7 +49,7 @@ public class IndicatorService implements IIndicatorService {
                         values.put(indicator, calculateBOLL(prices));
                         break;
                     default:
-                        String code = userIndicatorService.getIndicatorCode(indicator);
+                        String code = userIndicatorService.getCode(username, indicator);
                         if (code != null) {
                             Object indicatorValues = calculateUserIndicator(prices, code, indicator);
                             values.put(indicator, indicatorValues);
@@ -59,6 +59,7 @@ public class IndicatorService implements IIndicatorService {
                 }
             }
             IndicatorDTO indicatorDTO = new IndicatorDTO.Builder()
+                    .symbol(symbol)
                     .values(values)
                     .eventTime(DateTimeHelper.formatEventTime(prices.keySet().stream().max(Long::compareTo).orElse(0L)))
                     .build();
