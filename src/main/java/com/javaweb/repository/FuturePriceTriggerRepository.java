@@ -10,9 +10,9 @@ import java.util.List;
 public interface FuturePriceTriggerRepository extends MongoRepository<FuturePriceTrigger, String> {
     FuturePriceTrigger findBySymbolAndUsername(String symbol, String username);
 
-
     List<FuturePriceTrigger> findByUsername(String username);
 
     @Query(value = "{}", fields = "{username: 1, symbol: 1}")
     List<FuturePriceTrigger> findAllUsernamesWithSymbols();
+
 }

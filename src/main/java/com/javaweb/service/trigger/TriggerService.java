@@ -1,11 +1,15 @@
 package com.javaweb.service.trigger;
 
 import com.javaweb.dto.FundingRateDTO;
+import com.javaweb.dto.IndicatorDTO;
 import com.javaweb.dto.PriceDTO;
+
 import com.javaweb.helpers.trigger.SnoozeCheckHelper;
+
 import com.javaweb.helpers.trigger.TriggerCheckHelper;
 import com.javaweb.service.impl.FundingRateDataService;
 import com.javaweb.service.impl.FuturePriceDataService;
+import com.javaweb.service.impl.IndicatorService;
 import com.javaweb.service.impl.SpotPriceDataService;
 import com.javaweb.service.webhook.TelegramNotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +46,9 @@ public class TriggerService {
 
     @Autowired
     private TelegramNotificationService telegramNotificationService;
+
+    @Autowired
+    private IndicatorService indicatorService;
 
     public void handleAndSendAlertForFundingRate(List<String> symbols, String username) {
         Map<String, FundingRateDTO> fundingRateDataMap = fundingRateDataService.getFundingRateDataTriggers();
@@ -110,6 +117,23 @@ public class TriggerService {
                     // Gửi thông báo qua Telegram
                     telegramNotificationService.sendTriggerNotification("Future Trigger fired for symbol: " + symbol + " with username: " + username);
                     System.out.println("Future Trigger fired for symbol: " + symbol);
+                }
+            }
+        }
+    }
+
+    public void handleAndSendAlertForIndicator(List<String> symbols, String username) {
+        Map<String, IndicatorDTO> priceDataMap = indicatorService.getIndicatorDataTriggers();
+        List<String> firedSymbols = triggerCheckHelper.checkSymbolAndTriggerAlert(symbols, priceDataMap, "Indicator", username);
+        boolean snoozeActive = snoozeCheckHelper.checkSymbolAndSnooze(symbols,"Indicator",username);
+        if (!firedSymbols.isEmpty()) {
+            for (String symbol : firedSymbols) {
+                if (snoozeActive) {
+                    System.out.println("Indicator is active, not sending alert for symbol: " + symbol);
+                } else {
+                    // Gửi thông báo qua Telegram
+                    telegramNotificationService.sendTriggerNotification("Indicator Trigger fired for symbol: " + symbol + " with username: " + username);
+                    System.out.println("Indicator Trigger fired for symbol: " + symbol);
                 }
 
             }

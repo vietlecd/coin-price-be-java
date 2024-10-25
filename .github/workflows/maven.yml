@@ -3,6 +3,10 @@ name: LearnJava
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - README.md
+      - docs/**
+      - .github/workflows/**
 
 jobs:
   notify:
@@ -12,7 +16,7 @@ jobs:
     - name: Gửi thông báo đến Discord
       run: |
         curl -X POST -H "Content-Type: application/json" \
-        -d '{"content": "@everyone```Phát hiện Pull Request, đang tìm kiếm selfhost rảnh rỗi! ```"}' \
+        -d '{"content": "```Phát hiện Pull Request trên nhánh main, đang tìm kiếm selfhost rảnh rỗi! ```"}' \
         https://discord.com/api/webhooks/1297132713119191121/B72OrNxwgv1-l5svlDvzUzIWLhtnlmnb4xoPH9BqoX6vG655uPK-vKirbAvmGIjHgt3R
 
   build:
@@ -34,14 +38,6 @@ jobs:
   
     - name: Build with Maven
       run: mvn clean install
-  
-    - name: List files in target directory
-      run: ls target
-  
-    - name: Set up Docker
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y docker-compose
         
     - name: Build and Push DockerFile
       run: |
@@ -70,10 +66,9 @@ jobs:
           sshpass -p $VPS_PASSWORD ssh -o StrictHostKeyChecking=no $VPS_USER@$VPS_IP "
           cd server/
           sudo docker compose down
-          sudo docker rmi lmao1415/dath_cnpm
           # Tạo mới hoặc kết nối tới một phiên tmux
-          tmux kill-session -t mysession 2>/dev/null || true &&
-          tmux new-session -d -s mysession 'sudo docker compose up'
+          tmux kill-session -t spring 2>/dev/null || true &&
+          tmux new-session -d -s spring 'sudo docker compose up'
           "
           
       - name: Thông Báo khởi động sv

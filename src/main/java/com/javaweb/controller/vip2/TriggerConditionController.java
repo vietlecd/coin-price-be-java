@@ -1,8 +1,10 @@
 package com.javaweb.controller.vip2;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.javaweb.dto.FundingIntervalDTO;
 import com.javaweb.dto.trigger.FundingRateTriggerDTO;
 import com.javaweb.dto.trigger.FuturePriceTriggerDTO;
+import com.javaweb.dto.trigger.ListingDTO;
 import com.javaweb.dto.trigger.PriceDifferenceTriggerDTO;
 import com.javaweb.dto.trigger.SpotPriceTriggerDTO;
 import com.javaweb.service.trigger.CRUD.FundingRateTriggerService;
@@ -10,6 +12,8 @@ import com.javaweb.service.trigger.CRUD.FuturePriceTriggerService;
 import com.javaweb.service.trigger.CRUD.PriceDifferenceTriggerService;
 import com.javaweb.service.trigger.CRUD.SpotPriceTriggerService;
 import com.javaweb.service.trigger.GetTriggerService;
+import com.javaweb.service.trigger.*;
+import com.javaweb.connect.impl.ListingWebSocketService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,12 +26,16 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/vip2")
 public class TriggerConditionController {
+
     @Autowired
     private ObjectMapper objectMapper;
+
     @Autowired
     private SpotPriceTriggerService spotPriceTriggerService;
+
     @Autowired
     private FuturePriceTriggerService futurePriceTriggerService;
+
     @Autowired
     private GetTriggerService getTriggerService;
 
@@ -35,7 +43,14 @@ public class TriggerConditionController {
     private PriceDifferenceTriggerService priceDifferenceTriggerService;
 
     @Autowired
-    private FundingRateTriggerService fundingRateTriggerService;
+    private FundingRateTriggerService fundingRateTriggerService; // Assuming this service exists
+
+    @Autowired
+    private FundingRateIntervalService fundingRateIntervalService;
+
+    @Autowired
+    private ListingWebSocketService listingWebSocketService;
+
     @PostMapping("/create")
     public ResponseEntity<?> createTriggerCondition(@RequestParam("triggerType") String triggerType, @RequestBody Map<String, Object> dtoMap, HttpServletRequest request) {
         try {
@@ -57,6 +72,15 @@ public class TriggerConditionController {
                 case "funding-rate":
                     FundingRateTriggerDTO fundingDTO = objectMapper.convertValue(dtoMap, FundingRateTriggerDTO.class);
                     alertId = fundingRateTriggerService.createTrigger(fundingDTO, username);
+                    //fundingRateTriggerService.createTrigger(fundingDTO); // Ensure this method exists in the FundingRateTriggerService
+                    break;
+                case "new-symbol-listing":
+                    ListingDTO listingDTO = objectMapper.convertValue(dtoMap, ListingDTO.class);
+                    listingWebSocketService.startWebSocketClient();  // Start WebSocket for new listing trigger
+                    break;
+                case "funding-rate-interval-changed":
+                    FundingIntervalDTO fundingIntervalDTO = objectMapper.convertValue(dtoMap, FundingIntervalDTO.class);
+                    fundingRateIntervalService.createFundingIntervalTrigger(fundingIntervalDTO); // Call the correct method
                     break;
                 default:
                     return ResponseEntity.badRequest().body("Invalid trigger type");
@@ -102,13 +126,16 @@ public class TriggerConditionController {
                 case "funding-rate":
                     fundingRateTriggerService.deleteTrigger(symbol, username);
                     break;
-                default:
-                    return ResponseEntity.badRequest().body("Invalid trigger type");
+                case "funding-rate-interval":
+                    fundingRateIntervalService.deleteFundingRateInterval(symbol);
+                    break;
+                case "new-symbol-listing":
+                    listingWebSocketService.stopTokenCheck();
+                    break;
             }
-
-            return ResponseEntity.ok(symbol + " has been deleted successfully.");
         } catch (Exception e) {
-            return ResponseEntity.status(500).body("Error deleting trigger: " + e.getMessage());
+            return ResponseEntity.status(500).body("Error processing trigger: " + e.getMessage());
         }
+        return ResponseEntity.ok("Trigger condition delete successfully."); // Ensure return here
     }
 }

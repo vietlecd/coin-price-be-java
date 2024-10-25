@@ -1,27 +1,36 @@
 package com.javaweb.service.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.javaweb.converter.IndicatorDTOHelper;
+import com.javaweb.dto.FundingRateDTO;
 import com.javaweb.dto.IndicatorDTO;
+import com.javaweb.dto.PriceDTO;
 import com.javaweb.helpers.service.DateTimeHelper;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 import com.javaweb.service.IIndicatorService;
+import com.javaweb.repository.IndicatorRepository;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class IndicatorService implements IIndicatorService {
     private final RestTemplate restTemplate = new RestTemplate();
+    private final Map<String, IndicatorDTO> indicatorDataUsers = new ConcurrentHashMap<>();
+    private final Map<String, IndicatorDTO> indicatorDataTriggers = new ConcurrentHashMap<>();
 
+    private final IndicatorRepository indicatorRepository = new IndicatorRepository();
     @Override
     public Map<String, IndicatorDTO> getIndicatorData(List<String> symbols, List<String> indicators, int days) {
         Map<String, IndicatorDTO> indicatorDataMap = new HashMap<>();
 
         for (String symbol : symbols) {
-            Map<Long, Double> prices = getHistoricalPrices(symbol, days);
+            Map<Long, Double> prices = indicatorRepository.getHistoricalPrices(symbol, days);
             Map<String, Object> values = new HashMap<>();
             for (String indicator : indicators) {
                 switch (indicator) {
@@ -95,26 +104,41 @@ public class IndicatorService implements IIndicatorService {
 
         return bands;
     }
-    private Map<Long, Double> getHistoricalPrices(String symbol, int days) {
-        String COINGECKO_API_URL = "https://api.coingecko.com/api/v3";
-        String url = COINGECKO_API_URL + "/coins/" + symbol + "/market_chart?vs_currency=usd&days=" + days;
-        Map<Long, Double> prices = new HashMap<>();
+    @Override
+    public void handleFundingRateWebSocketMessage(JsonNode data,  boolean isTriggered) {
+        long eventTimeLong = data.get("E").asLong();
+        long nextFundingTime = data.get("T").asLong();
 
-        try {
-            JsonNode response = restTemplate.getForObject(url, JsonNode.class);
-            if (response != null && response.has("prices")) {
-                JsonNode pricesNode = response.get("prices");
+        String eventTime = DateTimeHelper.formatEventTime(eventTimeLong);
 
-                for (JsonNode priceNode : pricesNode) {
-                    prices.put(priceNode.get(0).asLong(), priceNode.get(1).asDouble());
-                }
-            } else {
-                throw new RuntimeException("Dữ liệu 'prices' không tồn tại cho symbol: " + symbol);
-            }
-        } catch (Exception e) {
-            throw new RuntimeException("Không tìm thấy dữ liệu giá cho symbol: " + symbol, e);
+        String symbol = data.get("s").asText();
+        JsonNode data1 = data.get("v");
+        Map<String, Object> values = new HashMap<>();
+        values.put(data1.get("S").asText(), data1.get("D").asDouble());
+
+        long countdownInSeconds = (nextFundingTime - eventTimeLong) / 1000;
+
+        String fundingCountdown = String.format("%02d:%02d:%02d",
+                TimeUnit.SECONDS.toHours(countdownInSeconds),
+                TimeUnit.SECONDS.toMinutes(countdownInSeconds) % 60,
+                countdownInSeconds % 60
+        );
+
+
+        IndicatorDTO indicatorDTO = IndicatorDTOHelper.createIndicatorDTO(symbol, values, eventTime);
+
+        if (!isTriggered) {
+            indicatorDataUsers.put("FundingRate Price: " + symbol, indicatorDTO);
+        }
+        else {
+            indicatorDataTriggers.put("FundingRate Price: " + symbol, indicatorDTO);
         }
 
-        return prices;
+
+    }
+
+    @Override
+    public Map<String, IndicatorDTO> getIndicatorDataTriggers(){
+        return indicatorDataTriggers;
     }
 }

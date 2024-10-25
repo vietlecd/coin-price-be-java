@@ -76,7 +76,7 @@ public class AuthController {
     }
 
 
-    @GetMapping("/loginWithEmail")
+    @PutMapping("/loginWithEmail")
     public ResponseEntity<?> loginWithEmail(HttpServletRequest request, HttpServletResponse response, @RequestBody Map<String, String> info) {
         try {
             String email = info.get("email");
@@ -121,7 +121,7 @@ public class AuthController {
         }
     }
 
-    @GetMapping("/login")
+    @PutMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest, HttpServletResponse res, HttpServletRequest request) {
         try {
             String username = loginRequest.getUsername();
