@@ -65,7 +65,11 @@ jobs:
           
           sshpass -p $VPS_PASSWORD ssh -o StrictHostKeyChecking=no $VPS_USER@$VPS_IP "
           cd server/
+          
+          echo 'y' | sudo docker container prune
+          sudo docker rmi $(docker images -a -q) 2>dev>null || true  
           sudo docker compose down
+          
           # Tạo mới hoặc kết nối tới một phiên tmux
           tmux kill-session -t spring 2>/dev/null || true &&
           tmux new-session -d -s spring 'sudo docker compose up'
