@@ -69,6 +69,7 @@ jobs:
           echo 'y' | sudo docker container prune
           sudo docker rmi $(docker images -a -q) 2>dev>null || true  
           sudo docker compose down
+          sudo docker compose pull
           
           # Tạo mới hoặc kết nối tới một phiên tmux
           tmux kill-session -t spring 2>/dev/null || true &&
