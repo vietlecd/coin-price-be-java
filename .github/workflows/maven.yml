@@ -8,6 +8,7 @@ on:
       - docs/**
       - .github/workflows/**
 
+
 jobs:
   notify:
     runs-on: self-hosted
@@ -38,14 +39,6 @@ jobs:
   
     - name: Build with Maven
       run: mvn clean install
-  
-    - name: List files in target directory
-      run: ls target
-  
-    - name: Set up Docker
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y docker-compose
         
     - name: Build and Push DockerFile
       run: |
@@ -55,29 +48,6 @@ jobs:
   
     - name: Remove Docker Image
       run: sudo docker rmi lmao1415/dath_cnpm
-  
-  deploy:
-    environment:
-      name: dev
-      url: nope
-    runs-on: self-hosted
-    needs: build
-    steps:
-      - name: Deploy to VPS
-        env:
-          VPS_USER: root
-          VPS_IP: ${{ secrets.VPS_IP }}
-          VPS_PASSWORD: ${{ secrets.VPS_PASSWORD }} 
-        run: |
-          sudo apt-get install -y sshpass
-          
-          sshpass -p $VPS_PASSWORD ssh -o StrictHostKeyChecking=no $VPS_USER@$VPS_IP "
-          cd server/
-          sudo docker compose down
-          # Tạo mới hoặc kết nối tới một phiên tmux
-          tmux kill-session -t spring 2>/dev/null || true &&
-          tmux new-session -d -s spring 'sudo docker compose up'
-          "
           
       - name: Thông Báo khởi động sv
         run: |
