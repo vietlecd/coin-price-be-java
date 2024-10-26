@@ -35,7 +35,7 @@ public class SpotWebSocketService extends TextWebSocketHandler implements IConne
         return "wss://stream.binance.com:9443/stream?streams=" + streamParam;
     }
 
-    public void connectToWebSocket(List<String> streams, boolean isTriggerRequest) {
+    public void connectToWebSocket(List<String> streams, boolean isTriggerRequest){
         String wsUrl = buildSpotWebSocketUrl(streams);
         // Truyền cờ isTriggerRequest trực tiếp vào handler
         webSocketConfig.connectToWebSocket(wsUrl, webSocketClient, new SpotWebSocketHandler(isTriggerRequest));

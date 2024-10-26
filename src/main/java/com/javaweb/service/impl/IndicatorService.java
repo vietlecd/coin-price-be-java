@@ -104,41 +104,5 @@ public class IndicatorService implements IIndicatorService {
 
         return bands;
     }
-    @Override
-    public void handleFundingRateWebSocketMessage(JsonNode data,  boolean isTriggered) {
-        long eventTimeLong = data.get("E").asLong();
-        long nextFundingTime = data.get("T").asLong();
 
-        String eventTime = DateTimeHelper.formatEventTime(eventTimeLong);
-
-        String symbol = data.get("s").asText();
-        JsonNode data1 = data.get("v");
-        Map<String, Object> values = new HashMap<>();
-        values.put(data1.get("S").asText(), data1.get("D").asDouble());
-
-        long countdownInSeconds = (nextFundingTime - eventTimeLong) / 1000;
-
-        String fundingCountdown = String.format("%02d:%02d:%02d",
-                TimeUnit.SECONDS.toHours(countdownInSeconds),
-                TimeUnit.SECONDS.toMinutes(countdownInSeconds) % 60,
-                countdownInSeconds % 60
-        );
-
-
-        IndicatorDTO indicatorDTO = IndicatorDTOHelper.createIndicatorDTO(symbol, values, eventTime);
-
-        if (!isTriggered) {
-            indicatorDataUsers.put("FundingRate Price: " + symbol, indicatorDTO);
-        }
-        else {
-            indicatorDataTriggers.put("FundingRate Price: " + symbol, indicatorDTO);
-        }
-
-
-    }
-
-    @Override
-    public Map<String, IndicatorDTO> getIndicatorDataTriggers(){
-        return indicatorDataTriggers;
-    }
 }
