@@ -6,7 +6,6 @@ on:
     paths-ignore:
       - README.md
       - docs/**
-      - .github/workflows/**
 
 
 jobs:
@@ -47,7 +46,8 @@ jobs:
         sudo docker push lmao1415/dath_cnpm
   
     - name: Remove Docker Image
-      run: sudo docker rmi lmao1415/dath_cnpm
+      run: |
+        sudo docker rmi lmao1415/dath_cnpm
           
       - name: Thông Báo khởi động sv
         run: |
