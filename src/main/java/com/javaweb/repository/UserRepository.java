@@ -1,5 +1,6 @@
 package com.javaweb.repository;
 
+import com.javaweb.dto.telegram.TelegramNotificationDTO;
 import com.javaweb.model.mongo_entity.userData;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
@@ -19,5 +20,5 @@ public interface UserRepository  extends MongoRepository<userData, String> {
 
     //Viet them cho phan in Vip_Role của TELE.
     @Query(value = "{ 'username': ?0 }", fields = "{ 'vip_role': 1 }")
-    Integer findVipRoleByUsername(String username);
+    Optional<userData> findVipRoleByUsername(String username);
 }

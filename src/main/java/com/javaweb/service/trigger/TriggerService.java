@@ -9,6 +9,7 @@ import com.javaweb.dto.telegram.TelegramNotificationDTO;
 import com.javaweb.helpers.trigger.SnoozeCheckHelper;
 
 import com.javaweb.helpers.trigger.TriggerCheckHelper;
+import com.javaweb.model.mongo_entity.userData;
 import com.javaweb.model.trigger.SpotPriceTrigger;
 import com.javaweb.repository.SpotPriceTriggerRepository;
 import com.javaweb.repository.UserRepository;
@@ -26,6 +27,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -96,31 +98,47 @@ public class TriggerService {
                     // Gửi thông báo qua Telegram
                     PriceDTO spotPriceDTO = priceDataMap.get("Spot Price: " + symbol);
                     if (spotPriceDTO != null) {
-                        double price = Double.parseDouble(spotPriceDTO.getPrice());
-                        String timestamp = spotPriceDTO.getEventTime();
+                        try {
+                            double price = Double.parseDouble(spotPriceDTO.getPrice());
+                            String timestamp = spotPriceDTO.getEventTime();
 
-                        SpotPriceTrigger trigger = spotPriceTriggerRepository.findBySymbolAndUsername(symbol, username);
-                        if (trigger != null) {
-                            double threshold = trigger.getSpotPriceThreshold();
-                            String condition = trigger.getCondition();
+                            SpotPriceTrigger trigger = spotPriceTriggerRepository.findBySymbolAndUsername(symbol, username);
+                            if (trigger != null) {
+                                double threshold = trigger.getSpotPriceThreshold();
+                                String condition = trigger.getCondition();
 
-                            Integer vip_role = userRepository.findVipRoleByUsername(username);
-                            Integer chat_id = Integer.valueOf(System.getenv("TELEGRAM_CHAT_ID"));
+                                Optional<userData> userDataOptional = userRepository.findVipRoleByUsername(username);
+                                Integer vip_role = userDataOptional
+                                        .map(userData::getVip_role)
+                                        .orElseThrow(() -> new IllegalArgumentException("User data not found for username: " + username));
 
-                            TelegramNotificationDTO notificationDTO = TelegramNotificationHelper.createTelegramNotificationDTO(
-                                    symbol,
-                                    price,
-                                    threshold,
-                                    condition,
-                                    vip_role,
-                                    chat_id,
-                                    timestamp
-                            );
+                                Integer chat_id = Optional.ofNullable(System.getenv("TELEGRAM_CHAT_ID"))
+                                        .map(Integer::parseInt)
+                                        .orElseThrow(() -> new IllegalArgumentException("TELEGRAM_CHAT_ID environment variable is not set."));
 
-                            telegramNotificationService.sendTriggerNotification(notificationDTO);
+
+                                TelegramNotificationDTO notificationDTO = TelegramNotificationHelper.createTelegramNotificationDTO(
+                                        symbol,
+                                        price,
+                                        threshold,
+                                        condition,
+                                        vip_role,
+                                        chat_id,
+                                        timestamp
+                                );
+
+                                telegramNotificationService.sendTriggerNotification(notificationDTO);
+                                System.out.println("Spot Trigger notification sent for symbol: " + symbol + " with threshold: " + threshold);
+                            } else {
+                                System.out.println("No SpotPriceTrigger found for symbol: " + symbol);
+                            }
+                        } catch(NumberFormatException e) {
+                            e.printStackTrace();
+                            System.out.println("sai so roi nha");
                         }
-
-
+                    }
+                    else {
+                        System.out.println("Co so nao dau ma lam");
                     }
 
                 }
@@ -146,3 +164,4 @@ public class TriggerService {
 //    }
 
 }
+

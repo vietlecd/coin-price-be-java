@@ -58,7 +58,7 @@ public class WebSocketScheduler {
                 System.out.println("Checking Future WebSocket connections for username: " + username + ", symbols: " + symbols);
                 futureWebSocketService.connectToWebSocket(symbols, true);
 
-                triggerService.handleAndSendAlertForFuture(symbols, username);
+                //triggerService.handleAndSendAlertForFuture(symbols, username);
             }
         }
 
@@ -70,7 +70,7 @@ public class WebSocketScheduler {
                 spotWebSocketService.connectToWebSocket(symbols, true);
                 futureWebSocketService.connectToWebSocket(symbols, true);
 
-                triggerService.handleAndSendAlertForPriceDifference(symbols, username);
+                //triggerService.handleAndSendAlertForPriceDifference(symbols, username);
             }
         }
 
@@ -82,7 +82,7 @@ public class WebSocketScheduler {
                 //System.out.println("Checking Future WebSocket connections for username: " + username + ", symbols: " + symbols);
                 fundingRateWebSocketService.connectToWebSocket(symbols, true);
 
-                triggerService.handleAndSendAlertForFundingRate(symbols, username);
+                //triggerService.handleAndSendAlertForFundingRate(symbols, username);
             }
         }
     }
