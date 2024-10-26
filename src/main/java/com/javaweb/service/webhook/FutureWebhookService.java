@@ -2,8 +2,8 @@ package com.javaweb.service.webhook;
 
 import com.javaweb.dto.PriceDTO;
 import com.javaweb.model.mongo_entity.userData;
-import com.javaweb.model.trigger.SpotPriceTrigger;
-import com.javaweb.repository.trigger.SpotPriceTriggerRepository;
+import com.javaweb.model.trigger.FuturePriceTrigger;
+import com.javaweb.repository.trigger.FuturePriceTriggerRepository;
 import com.javaweb.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,22 +14,22 @@ import java.util.Optional;
 
 @Service
 @AllArgsConstructor
-public class SpotWebhookService {
+public class FutureWebhookService {
 
     private final TelegramNotificationService telegramNotificationService;
-    private final SpotPriceTriggerRepository spotPriceTriggerRepository;
+    private final FuturePriceTriggerRepository futurePriceTriggerRepository;
     private final UserRepository userRepository;
 
-    public void processSpotNotification(String symbol, PriceDTO spotPriceDTO, String username) {
+    public void processFutureNotification(String symbol, PriceDTO futurePriceDTO, String username) {
         try {
-            double spotPrice = Double.parseDouble(spotPriceDTO.getPrice());
-            String timestamp = spotPriceDTO.getEventTime();
+            double futurePrice = Double.parseDouble(futurePriceDTO.getPrice());
+            String timestamp = futurePriceDTO.getEventTime();
 
-            SpotPriceTrigger trigger = spotPriceTriggerRepository.findBySymbolAndUsername(symbol, username);
+            FuturePriceTrigger trigger = futurePriceTriggerRepository.findBySymbolAndUsername(symbol, username);
             if (trigger != null) {
-                double threshold = trigger.getSpotPriceThreshold();
+                double threshold = trigger.getFuturePriceThreshold();
                 String condition = trigger.getCondition();
-                String triggerType = "Spot";
+                String triggerType = "Future";
 
                 Optional<userData> userDataOptional = Optional.ofNullable(userRepository.findByUsername(username));
                 if (userDataOptional.isPresent()) {
@@ -45,16 +45,15 @@ public class SpotWebhookService {
                     Map<String, Object> payload = new HashMap<>();
                     payload.put("triggerType", triggerType);
                     payload.put("symbol", symbol);
-                    payload.put("price", spotPrice);
+                    payload.put("price", futurePrice);
                     payload.put("threshold", threshold);
                     payload.put("condition", condition);
                     payload.put("vip_role", vip_role);
                     payload.put("chatID", chat_id);
                     payload.put("timestamp", timestamp);
 
-
                     telegramNotificationService.sendNotification(payload);
-                    System.out.println("Spot Trigger notification sent for symbol: " + symbol + " with threshold: " + threshold);
+                    System.out.println("Future Trigger notification sent for symbol: " + symbol + " with threshold: " + threshold);
                 }
             } else {
                 System.out.println("No SpotPriceTrigger found for symbol: " + symbol);

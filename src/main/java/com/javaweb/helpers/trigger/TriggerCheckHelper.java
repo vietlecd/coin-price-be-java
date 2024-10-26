@@ -1,23 +1,21 @@
 package com.javaweb.helpers.trigger;
 
-import com.javaweb.config.WebSocketConfig;
 import com.javaweb.dto.FundingRateDTO;
 import com.javaweb.dto.PriceDTO;
 import com.javaweb.model.trigger.FundingRateTrigger;
 import com.javaweb.model.trigger.FuturePriceTrigger;
 import com.javaweb.model.trigger.PriceDifferenceTrigger;
 import com.javaweb.model.trigger.SpotPriceTrigger;
-import com.javaweb.repository.FundingRateTriggerRepository;
-import com.javaweb.repository.FuturePriceTriggerRepository;
-import com.javaweb.repository.PriceDifferenceTriggerRepository;
-import com.javaweb.repository.SpotPriceTriggerRepository;
+import com.javaweb.repository.trigger.FundingRateTriggerRepository;
+import com.javaweb.repository.trigger.FuturePriceTriggerRepository;
+import com.javaweb.repository.trigger.PriceDifferenceTriggerRepository;
+import com.javaweb.repository.trigger.SpotPriceTriggerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @Component
 public class TriggerCheckHelper {

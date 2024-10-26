@@ -1,4 +1,4 @@
-package com.javaweb.repository;
+package com.javaweb.repository.trigger;
 
 import com.javaweb.model.trigger.PriceDifferenceTrigger;
 import com.javaweb.model.trigger.SpotPriceTrigger;

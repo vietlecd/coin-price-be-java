@@ -1,9 +1,10 @@
 package com.javaweb.service.webhook;
 
-import com.javaweb.dto.PriceDTO;
+import com.javaweb.dto.FundingRateDTO;
 import com.javaweb.model.mongo_entity.userData;
-import com.javaweb.model.trigger.SpotPriceTrigger;
-import com.javaweb.repository.trigger.SpotPriceTriggerRepository;
+import com.javaweb.model.trigger.FundingRateTrigger;
+import com.javaweb.repository.trigger.FundingRateTriggerRepository;
+import com.javaweb.repository.trigger.FuturePriceTriggerRepository;
 import com.javaweb.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,22 +15,22 @@ import java.util.Optional;
 
 @Service
 @AllArgsConstructor
-public class SpotWebhookService {
+public class FundingRateWebhookService {
 
     private final TelegramNotificationService telegramNotificationService;
-    private final SpotPriceTriggerRepository spotPriceTriggerRepository;
+    private final FundingRateTriggerRepository fundingRateTriggerRepository;
     private final UserRepository userRepository;
 
-    public void processSpotNotification(String symbol, PriceDTO spotPriceDTO, String username) {
+    public void processFundingRateNotification(String symbol, FundingRateDTO fundingRateDTO, String username) {
         try {
-            double spotPrice = Double.parseDouble(spotPriceDTO.getPrice());
-            String timestamp = spotPriceDTO.getEventTime();
+            double fundingRate = Double.parseDouble(fundingRateDTO.getFundingRate());
+            String timestamp = fundingRateDTO.getEventTime();
 
-            SpotPriceTrigger trigger = spotPriceTriggerRepository.findBySymbolAndUsername(symbol, username);
+            FundingRateTrigger trigger = fundingRateTriggerRepository.findBySymbolAndUsername(symbol, username);
             if (trigger != null) {
-                double threshold = trigger.getSpotPriceThreshold();
+                double threshold = trigger.getFundingRateThreshold();
                 String condition = trigger.getCondition();
-                String triggerType = "Spot";
+                String triggerType = "FundingRate";
 
                 Optional<userData> userDataOptional = Optional.ofNullable(userRepository.findByUsername(username));
                 if (userDataOptional.isPresent()) {
@@ -45,16 +46,15 @@ public class SpotWebhookService {
                     Map<String, Object> payload = new HashMap<>();
                     payload.put("triggerType", triggerType);
                     payload.put("symbol", symbol);
-                    payload.put("price", spotPrice);
+                    payload.put("fundingRate", fundingRate);
                     payload.put("threshold", threshold);
                     payload.put("condition", condition);
                     payload.put("vip_role", vip_role);
                     payload.put("chatID", chat_id);
                     payload.put("timestamp", timestamp);
 
-
                     telegramNotificationService.sendNotification(payload);
-                    System.out.println("Spot Trigger notification sent for symbol: " + symbol + " with threshold: " + threshold);
+                    System.out.println("FundingRate Trigger notification sent for symbol: " + symbol + " with threshold: " + threshold);
                 }
             } else {
                 System.out.println("No SpotPriceTrigger found for symbol: " + symbol);

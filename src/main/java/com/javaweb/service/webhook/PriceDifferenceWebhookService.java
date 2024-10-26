@@ -2,7 +2,11 @@ package com.javaweb.service.webhook;
 
 import com.javaweb.dto.PriceDTO;
 import com.javaweb.model.mongo_entity.userData;
+import com.javaweb.model.trigger.FuturePriceTrigger;
+import com.javaweb.model.trigger.PriceDifferenceTrigger;
 import com.javaweb.model.trigger.SpotPriceTrigger;
+import com.javaweb.repository.trigger.FuturePriceTriggerRepository;
+import com.javaweb.repository.trigger.PriceDifferenceTriggerRepository;
 import com.javaweb.repository.trigger.SpotPriceTriggerRepository;
 import com.javaweb.repository.UserRepository;
 import lombok.AllArgsConstructor;
@@ -14,22 +18,23 @@ import java.util.Optional;
 
 @Service
 @AllArgsConstructor
-public class SpotWebhookService {
+public class PriceDifferenceWebhookService {
 
     private final TelegramNotificationService telegramNotificationService;
-    private final SpotPriceTriggerRepository spotPriceTriggerRepository;
+    private final PriceDifferenceTriggerRepository priceDifferenceTriggerRepository;
     private final UserRepository userRepository;
 
-    public void processSpotNotification(String symbol, PriceDTO spotPriceDTO, String username) {
+    public void processPriceDifferenceNotification(String symbol, PriceDTO spotPriceDTO, PriceDTO futurePriceDTO, String username) {
         try {
             double spotPrice = Double.parseDouble(spotPriceDTO.getPrice());
+            double futurePrice = Double.parseDouble(futurePriceDTO.getPrice());
             String timestamp = spotPriceDTO.getEventTime();
 
-            SpotPriceTrigger trigger = spotPriceTriggerRepository.findBySymbolAndUsername(symbol, username);
+            PriceDifferenceTrigger trigger = priceDifferenceTriggerRepository.findBySymbolAndUsername(symbol, username);
             if (trigger != null) {
-                double threshold = trigger.getSpotPriceThreshold();
+                double threshold = trigger.getPriceDifferenceThreshold();
                 String condition = trigger.getCondition();
-                String triggerType = "Spot";
+                String triggerType = "Price Diff";
 
                 Optional<userData> userDataOptional = Optional.ofNullable(userRepository.findByUsername(username));
                 if (userDataOptional.isPresent()) {
@@ -45,7 +50,8 @@ public class SpotWebhookService {
                     Map<String, Object> payload = new HashMap<>();
                     payload.put("triggerType", triggerType);
                     payload.put("symbol", symbol);
-                    payload.put("price", spotPrice);
+                    payload.put("spotPrice", spotPrice);
+                    payload.put("futurePrice", futurePrice);
                     payload.put("threshold", threshold);
                     payload.put("condition", condition);
                     payload.put("vip_role", vip_role);
