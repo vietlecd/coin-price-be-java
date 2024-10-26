@@ -107,28 +107,30 @@ public class TriggerService {
                                 double threshold = trigger.getSpotPriceThreshold();
                                 String condition = trigger.getCondition();
 
-                                Optional<userData> userDataOptional = userRepository.findVipRoleByUsername(username);
-                                Integer vip_role = userDataOptional
-                                        .map(userData::getVip_role)
-                                        .orElseThrow(() -> new IllegalArgumentException("User data not found for username: " + username));
+                                Optional<userData> userDataOptional = Optional.ofNullable(userRepository.findByUsername(username));
+                                if (userDataOptional.isPresent()) {
+                                    userData user = userDataOptional.get();
+                                    Integer vip_role = user.getVip_role();
+                                    String chat_id = null;
+                                    Optional<String> optionalChatId = Optional.ofNullable(user.getTelegram_id());
 
-                                Integer chat_id = Optional.ofNullable(System.getenv("TELEGRAM_CHAT_ID"))
-                                        .map(Integer::parseInt)
-                                        .orElseThrow(() -> new IllegalArgumentException("TELEGRAM_CHAT_ID environment variable is not set."));
+                                    if (optionalChatId.isPresent()) {
+                                        chat_id = optionalChatId.get();
+                                    }
 
 
-                                TelegramNotificationDTO notificationDTO = TelegramNotificationHelper.createTelegramNotificationDTO(
-                                        symbol,
-                                        price,
-                                        threshold,
-                                        condition,
-                                        vip_role,
-                                        chat_id,
-                                        timestamp
-                                );
-
-                                telegramNotificationService.sendTriggerNotification(notificationDTO);
-                                System.out.println("Spot Trigger notification sent for symbol: " + symbol + " with threshold: " + threshold);
+                                    TelegramNotificationDTO notificationDTO = TelegramNotificationHelper.createTelegramNotificationDTO(
+                                            symbol,
+                                            price,
+                                            threshold,
+                                            condition,
+                                            vip_role,
+                                            chat_id,
+                                            timestamp
+                                    );
+                                    telegramNotificationService.sendTriggerNotification(notificationDTO);
+                                    System.out.println("Spot Trigger notification sent for symbol: " + symbol + " with threshold: " + threshold);
+                                }
                             } else {
                                 System.out.println("No SpotPriceTrigger found for symbol: " + symbol);
                             }

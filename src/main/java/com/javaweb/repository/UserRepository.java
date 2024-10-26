@@ -21,4 +21,7 @@ public interface UserRepository  extends MongoRepository<userData, String> {
     //Viet them cho phan in Vip_Role của TELE.
     @Query(value = "{ 'username': ?0 }", fields = "{ 'vip_role': 1 }")
     Optional<userData> findVipRoleByUsername(String username);
+
+    @Query(value = "{ 'username': ?0 }", fields = "{ 'tele_id': 1 }")
+    Optional<userData> findTelegramIdByUsername(String username);
 }

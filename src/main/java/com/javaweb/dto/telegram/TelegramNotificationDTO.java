@@ -10,11 +10,14 @@ import javax.persistence.criteria.CriteriaBuilder;
 @Setter
 @Builder
 public class TelegramNotificationDTO {
+    private String triggerType;
     private String symbol;
-    private double price;
+    private double spotPrice;
+    private double futurePrice;
+    private double fundingRate;
     private double threshold;
     private String condition;
     private Integer vip_role;
-    private Integer chatId;
+    private String chatId;
     private String timestamp;
 }
