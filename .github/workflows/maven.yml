@@ -48,7 +48,4 @@ jobs:
     - name: Remove Docker Image
       run: |
         sudo docker rmi lmao1415/dath_cnpm
-          
-      - name: Thông Báo khởi động sv
-        run: |
-          curl -X POST -H "Content-Type: application/json" -d '{"content": "```Server đã khởi động thành công!```"}' https://discord.com/api/webhooks/1297132713119191121/B72OrNxwgv1-l5svlDvzUzIWLhtnlmnb4xoPH9BqoX6vG655uPK-vKirbAvmGIjHgt3R
+        
