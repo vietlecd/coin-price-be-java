@@ -7,5 +7,6 @@ import java.util.List;
 import java.util.Map;
 
 public interface IIndicatorService {
-    Map<String, IndicatorDTO> getIndicatorData(List<String> symbols, List<String> indicators, int days);
+
+    Map<String, IndicatorDTO> getIndicatorData(List<String> symbols, List<String> indicators, int days, String username);
 }

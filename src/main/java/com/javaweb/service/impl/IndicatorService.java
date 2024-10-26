@@ -1,32 +1,33 @@
 package com.javaweb.service.impl;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.javaweb.converter.IndicatorDTOHelper;
-import com.javaweb.dto.FundingRateDTO;
 import com.javaweb.dto.IndicatorDTO;
-import com.javaweb.dto.PriceDTO;
+
 import com.javaweb.helpers.service.DateTimeHelper;
 import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Autowired;
 import com.javaweb.service.IIndicatorService;
 import com.javaweb.repository.IndicatorRepository;
-import org.springframework.web.client.RestTemplate;
+import com.javaweb.service.IUserIndicatorService;
 
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.SimpleBindings;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
 
 @Service
 public class IndicatorService implements IIndicatorService {
-    private final RestTemplate restTemplate = new RestTemplate();
     private final Map<String, IndicatorDTO> indicatorDataUsers = new ConcurrentHashMap<>();
     private final Map<String, IndicatorDTO> indicatorDataTriggers = new ConcurrentHashMap<>();
 
     private final IndicatorRepository indicatorRepository = new IndicatorRepository();
+    @Autowired
+    private IUserIndicatorService userIndicatorService;
     @Override
-    public Map<String, IndicatorDTO> getIndicatorData(List<String> symbols, List<String> indicators, int days) {
+    public Map<String, IndicatorDTO> getIndicatorData(List<String> symbols, List<String> indicators, int days, String username) {
         Map<String, IndicatorDTO> indicatorDataMap = new HashMap<>();
 
         for (String symbol : symbols) {
@@ -35,19 +36,26 @@ public class IndicatorService implements IIndicatorService {
             for (String indicator : indicators) {
                 switch (indicator) {
                     case "MA":
-                        values.put("MA", calculateMA(prices));
+                        values.put(indicator, calculateMA(prices));
                         break;
                     case "EMA":
-                        values.put("EMA", calculateEMA(prices));
+                        values.put(indicator, calculateEMA(prices));
                         break;
                     case "BOLL":
-                        values.put("BOLL", calculateBOLL(prices));
+                        values.put(indicator, calculateBOLL(prices));
                         break;
                     default:
-                        throw new RuntimeException("Indicator không được hỗ trợ: " + indicator);
+                        String code = userIndicatorService.getCode(username, indicator);
+                        if (code != null) {
+                            Object indicatorValues = calculateUserIndicator(prices, code, indicator);
+                            values.put(indicator, indicatorValues);
+                        } else {
+                            throw new RuntimeException("Indicator không được hỗ trợ: " + indicator);
+                        }
                 }
             }
             IndicatorDTO indicatorDTO = new IndicatorDTO.Builder()
+                    .symbol(symbol)
                     .values(values)
                     .eventTime(DateTimeHelper.formatEventTime(prices.keySet().stream().max(Long::compareTo).orElse(0L)))
                     .build();
@@ -105,4 +113,27 @@ public class IndicatorService implements IIndicatorService {
         return bands;
     }
 
+    private Object calculateUserIndicator(Map<Long, Double> prices, String groovyScript, String indicator) {
+        List<Double> priceList = new ArrayList<>(prices.values());
+        List<Long> timeList = new ArrayList<>(prices.keySet());
+        int size = prices.size();
+
+        ScriptEngineManager manager = new ScriptEngineManager();
+        ScriptEngine engine = manager.getEngineByName("groovy");
+
+        Map<String, Object> variables = new HashMap<>();
+        variables.put("prices", priceList);
+        variables.put("times", timeList);
+        variables.put("size", size);
+        variables.put(indicator, null);
+
+        SimpleBindings bindings = new SimpleBindings(variables);
+
+        try {
+            engine.eval(groovyScript, bindings);
+            return bindings.get(indicator);
+        } catch (Exception e) {
+            throw new RuntimeException("Lỗi khi thực thi script người dùng");
+        }
+    }
 }
