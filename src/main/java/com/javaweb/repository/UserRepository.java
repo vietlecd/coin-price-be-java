@@ -16,4 +16,8 @@ public interface UserRepository  extends MongoRepository<userData, String> {
 
     void deleteByUsername(String username);
     public long count();
+
+    //Viet them cho phan in Vip_Role của TELE.
+    @Query(value = "{ 'username': ?0 }", fields = "{ 'vip_role': 1 }")
+    Integer findVipRoleByUsername(String username);
 }

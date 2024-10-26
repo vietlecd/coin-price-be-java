@@ -70,7 +70,7 @@ public class WebSocketScheduler {
                 spotWebSocketService.connectToWebSocket(symbols, true);
                 futureWebSocketService.connectToWebSocket(symbols, true);
 
-                triggerService.handleAndSendAlertForSpotAndFuture(symbols, username);
+                triggerService.handleAndSendAlertForPriceDifference(symbols, username);
             }
         }
 

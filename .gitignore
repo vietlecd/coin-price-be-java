@@ -10,3 +10,4 @@ target
 *.iml
 *.ipr
 docker-compose.yaml
+/API Specification for Coin Price System v1.2.md
