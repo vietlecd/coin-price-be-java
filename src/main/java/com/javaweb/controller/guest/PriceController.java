@@ -9,6 +9,7 @@ import com.javaweb.service.impl.FuturePriceDataService;
 import com.javaweb.service.impl.MarketCapService;
 import com.javaweb.service.impl.SpotPriceDataService;
 import com.javaweb.service.stream.PriceStreamService;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -21,24 +22,15 @@ import java.util.Map;
 import java.util.concurrent.*;
 
 @RestController
+@AllArgsConstructor
 @RequestMapping("/api")
 public class PriceController {
-    private final ConcurrentHashMap<String, SseEmitter> sseEmitters = new ConcurrentHashMap<>();
-    @Autowired
     private FundingRateStreamService fundingRateStreamService;
-    @Autowired
     private PriceStreamService priceStreamService;
-
-    @Autowired
     private SpotPriceDataService spotPriceDataService;
-    @Autowired
     private FuturePriceDataService futurePriceDataService;
-    @Autowired
     private MarketCapService marketCapService;
-
-    @Autowired
     private SpotWebSocketService spotWebSocketService;
-    @Autowired
     private FutureWebSocketService futureWebSocketService;
 
     @GetMapping("/get-spot-price")

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.javaweb.config.WebSocketConfig;
 import com.javaweb.connect.IConnectToWebSocketService;
 import com.javaweb.service.impl.FundingRateDataService;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.TextMessage;
@@ -13,31 +14,33 @@ import org.springframework.web.socket.client.WebSocketClient;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 @Service
+@AllArgsConstructor
 public class FundingRateWebSocketService extends TextWebSocketHandler implements IConnectToWebSocketService {
-
-    @Autowired
+    private final Set<String> subscribedSymbols = ConcurrentHashMap.newKeySet();
     private FundingRateDataService fundingRateDataService;
-
-    @Autowired
     private final ObjectMapper objectMapper = new ObjectMapper();
-
-    @Autowired
     private WebSocketConfig webSocketConfig;
-
-    @Autowired
     private WebSocketClient webSocketClient;
 
-    private String buildFundingRateWebSocketUrl(List<String> streams) {
+    private String buildFundingRateWebSocketUrl(Set<String> streams) {
         String streamParam = streams.stream().map(s -> s.toLowerCase() + "@markPrice@1s").collect(Collectors.joining("/"));
         return "wss://fstream.binance.com/stream?streams=" + streamParam;
     }
-    public void connectToWebSocket(List<String> streams, boolean isTriggerRequest) {
-        String wsUrl = buildFundingRateWebSocketUrl(streams);
-        // Truyền cờ isTriggerRequest trực tiếp vào handler
-        webSocketConfig.connectToWebSocket(wsUrl, webSocketClient, new FungdingRateWebSocketHandler(isTriggerRequest));
+    public synchronized void connectToWebSocket(List<String> streams, boolean isTriggerRequest) {
+
+        boolean hasNewSymbols = subscribedSymbols.addAll(streams);
+
+        if (hasNewSymbols) {
+            String wsUrl = buildFundingRateWebSocketUrl(subscribedSymbols);
+            // Truyền cờ isTriggerRequest trực tiếp vào handler
+            webSocketConfig.connectToWebSocket(wsUrl, webSocketClient, new FungdingRateWebSocketHandler(isTriggerRequest));
+        }
+
     }
 
     private class FungdingRateWebSocketHandler extends TextWebSocketHandler {
