@@ -4,8 +4,8 @@ import com.javaweb.config.WebSocketConfig;
 import com.javaweb.dto.FundingIntervalDTO;
 import com.javaweb.dto.FundingRateAndIntervalDTO;
 import com.javaweb.dto.FundingRateDTO;
-import com.javaweb.connect.impl.FundingIntervalWebService;
-import com.javaweb.connect.impl.FundingRateWebSocketService;
+//import com.javaweb.connect.impl.FundingIntervalWebService;
+//import com.javaweb.connect.impl.FundingRateWebSocketService;
 import com.javaweb.service.impl.FundingRateDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,14 +20,14 @@ import static com.javaweb.converter.FundingRateAndIntervalDTOHelper.combineData;
 @Service
 public class FundingRateStreamService {
 
-    @Autowired
-    private FundingRateWebSocketService fundingRateWebSocketService;
+//    @Autowired
+//    private FundingRateWebSocketService fundingRateWebSocketService;
 
     @Autowired
     private FundingRateDataService fundingRateDataService;
 
-    @Autowired
-    private FundingIntervalWebService fundingIntervalWebService;
+//    @Autowired
+//    private FundingIntervalWebService fundingIntervalWebService;
 
     private final ScheduledExecutorService executor = Executors.newScheduledThreadPool(10);
     private final Map<String, ScheduledFuture<?>> scheduledTasks = new ConcurrentHashMap<>();
@@ -40,7 +40,7 @@ public class FundingRateStreamService {
         String key = "FundingRateAndInterval:" + symbols.hashCode();
 
         // Kết nối WebSocket
-        fundingRateWebSocketService.connectToWebSocket(symbols, false);
+//        fundingRateWebSocketService.connectToWebSocket(symbols, false);
 
         // Cập nhật định kỳ FundingInterval
         scheduleFundingIntervalDataUpdate(symbols);
@@ -48,7 +48,7 @@ public class FundingRateStreamService {
         Runnable sendTask = () -> {
             try {
                 Map<String, FundingRateDTO> fundingRateDataMap = fundingRateDataService.getFundingRateDataUsers();
-                List<Map<String, FundingIntervalDTO>> fundingIntervalDataList = fundingIntervalWebService.getLatestFundingIntervalData(symbols);
+//                List<Map<String, FundingIntervalDTO>> fundingIntervalDataList = fundingIntervalWebService.getLatestFundingIntervalData(symbols);
 
                 for (String symbol : symbols) {
                     FundingRateDTO fundingRateDTO = fundingRateDataMap.get("FundingRate Price: " + symbol);
@@ -56,12 +56,12 @@ public class FundingRateStreamService {
                     if (fundingRateDTO != null) {
                         FundingIntervalDTO fundingIntervalDTO = null;
 
-                        for (Map<String, FundingIntervalDTO> fundingIntervalData : fundingIntervalDataList) {
-                            fundingIntervalDTO = fundingIntervalData.get(symbol);
-                            if (fundingIntervalDTO != null) {
-                                break;
-                            }
-                        }
+//                        for (Map<String, FundingIntervalDTO> fundingIntervalData : fundingIntervalDataList) {
+//                            fundingIntervalDTO = fundingIntervalData.get(symbol);
+//                            if (fundingIntervalDTO != null) {
+//                                break;
+//                            }
+//                        }
 
                         FundingRateAndIntervalDTO combinedDTO = combineData(fundingRateDTO, fundingIntervalDTO);
 
@@ -115,7 +115,7 @@ public class FundingRateStreamService {
     public void scheduleFundingIntervalDataUpdate(List<String> symbols) {
         ScheduledExecutorService dataUpdater = Executors.newScheduledThreadPool(1);
         dataUpdater.scheduleAtFixedRate(() -> {
-            fundingIntervalWebService.getLatestFundingIntervalData(symbols);
+//            fundingIntervalWebService.getLatestFundingIntervalData(symbols);
             System.out.println("FundingInterval data updated for symbols: " + symbols);
         }, 0, 1, TimeUnit.HOURS);
     }

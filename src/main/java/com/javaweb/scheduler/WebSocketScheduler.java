@@ -1,9 +1,9 @@
 package com.javaweb.scheduler;
 
-import com.javaweb.connect.impl.FundingRateWebSocketService;
-import com.javaweb.connect.impl.FutureWebSocketService;
-import com.javaweb.connect.impl.IndicatorWebSocketService;
-import com.javaweb.connect.impl.SpotWebSocketService;
+//import com.javaweb.connect.impl.FundingRateWebSocketService;
+//import com.javaweb.connect.impl.FutureWebSocketService;
+//import com.javaweb.connect.impl.IndicatorWebSocketService;
+//import com.javaweb.connect.impl.SpotWebSocketService;
 import com.javaweb.service.trigger.TriggerService;
 import com.javaweb.service.trigger.TriggerSymbolService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,17 +20,17 @@ public class WebSocketScheduler {
     @Autowired
     private TriggerSymbolService triggerSymbolService;
 
-    @Autowired
-    private SpotWebSocketService spotWebSocketService;
+//    @Autowired
+//    private SpotWebSocketService spotWebSocketService;
 
-    @Autowired
-    private FutureWebSocketService futureWebSocketService;
+//    @Autowired
+//    private FutureWebSocketService futureWebSocketService;
 
-    @Autowired
-    private FundingRateWebSocketService fundingRateWebSocketService;
+//    @Autowired
+//    private FundingRateWebSocketService fundingRateWebSocketService;
 
-    @Autowired
-    private IndicatorWebSocketService indicatorWebSocketService;
+//    @Autowired
+//    private IndicatorWebSocketService indicatorWebSocketService;
 
     @Autowired
     private TriggerService triggerService;
@@ -50,7 +50,7 @@ public class WebSocketScheduler {
                 List<String> symbols = entry.getValue();
 
                 System.out.println("Checking Spot WebSocket connections for username: " + username + ", symbols: " + symbols);
-                spotWebSocketService.connectToWebSocket(symbols, true);
+//                spotWebSocketService.connectToWebSocket(symbols, true);
 
                 triggerService.handleAndSendAlertForSpot(symbols, username);
             }
@@ -62,7 +62,7 @@ public class WebSocketScheduler {
                 List<String> symbols = entry.getValue();
 
                 System.out.println("Checking Future WebSocket connections for username: " + username + ", symbols: " + symbols);
-                futureWebSocketService.connectToWebSocket(symbols, true);
+//                futureWebSocketService.connectToWebSocket(symbols, true);
 
                 triggerService.handleAndSendAlertForFuture(symbols, username);
             }
@@ -73,8 +73,8 @@ public class WebSocketScheduler {
                 String username = entry.getKey();
                 List<String> symbols = entry.getValue();
 
-                spotWebSocketService.connectToWebSocket(symbols, true);
-                futureWebSocketService.connectToWebSocket(symbols, true);
+//                spotWebSocketService.connectToWebSocket(symbols, true);
+//                futureWebSocketService.connectToWebSocket(symbols, true);
 
                 triggerService.handleAndSendAlertForSpotAndFuture(symbols, username);
             }
@@ -86,7 +86,7 @@ public class WebSocketScheduler {
                 List<String> symbols = entry.getValue();
 
                 //System.out.println("Checking Future WebSocket connections for username: " + username + ", symbols: " + symbols);
-                fundingRateWebSocketService.connectToWebSocket(symbols, true);
+//                fundingRateWebSocketService.connectToWebSocket(symbols, true);
 
                 triggerService.handleAndSendAlertForFundingRate(symbols, username);
             }
@@ -98,7 +98,7 @@ public class WebSocketScheduler {
                 List<String> symbols = entry.getValue();
 
                 //System.out.println("Checking Indicator WebSocket connections for username: " + username + ", symbols: " + symbols);
-                fundingRateWebSocketService.connectToWebSocket(symbols, true);
+//                fundingRateWebSocketService.connectToWebSocket(symbols, true);
 
                 triggerService.handleAndSendAlertForIndicator(symbols, username);
             }
