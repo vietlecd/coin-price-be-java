@@ -4,7 +4,7 @@ package com.javaweb.scheduler;
 //import com.javaweb.connect.impl.FutureWebSocketService;
 //import com.javaweb.connect.impl.IndicatorWebSocketService;
 //import com.javaweb.connect.impl.SpotWebSocketService;
-import com.javaweb.service.trigger.TriggerService;
+//import com.javaweb.service.trigger.TriggerService;
 import com.javaweb.service.trigger.TriggerSymbolService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -32,8 +32,8 @@ public class WebSocketScheduler {
 //    @Autowired
 //    private IndicatorWebSocketService indicatorWebSocketService;
 
-    @Autowired
-    private TriggerService triggerService;
+//    @Autowired
+//    private TriggerService triggerService;
 
     // Chạy mỗi 5 phút để kiểm tra và kết nối lại WebSocket nếu cần
     @Scheduled(fixedRate = 30000) // 30000 ms = 30 giay
@@ -52,7 +52,7 @@ public class WebSocketScheduler {
                 System.out.println("Checking Spot WebSocket connections for username: " + username + ", symbols: " + symbols);
 //                spotWebSocketService.connectToWebSocket(symbols, true);
 
-                triggerService.handleAndSendAlertForSpot(symbols, username);
+//                triggerService.handleAndSendAlertForSpot(symbols, username);
             }
         }
 
@@ -64,7 +64,7 @@ public class WebSocketScheduler {
                 System.out.println("Checking Future WebSocket connections for username: " + username + ", symbols: " + symbols);
 //                futureWebSocketService.connectToWebSocket(symbols, true);
 
-                triggerService.handleAndSendAlertForFuture(symbols, username);
+//                triggerService.handleAndSendAlertForFuture(symbols, username);
             }
         }
 
@@ -76,7 +76,7 @@ public class WebSocketScheduler {
 //                spotWebSocketService.connectToWebSocket(symbols, true);
 //                futureWebSocketService.connectToWebSocket(symbols, true);
 
-                triggerService.handleAndSendAlertForSpotAndFuture(symbols, username);
+//                triggerService.handleAndSendAlertForSpotAndFuture(symbols, username);
             }
         }
 
@@ -88,7 +88,7 @@ public class WebSocketScheduler {
                 //System.out.println("Checking Future WebSocket connections for username: " + username + ", symbols: " + symbols);
 //                fundingRateWebSocketService.connectToWebSocket(symbols, true);
 
-                triggerService.handleAndSendAlertForFundingRate(symbols, username);
+//                triggerService.handleAndSendAlertForFundingRate(symbols, username);
             }
         }
 
@@ -100,7 +100,7 @@ public class WebSocketScheduler {
                 //System.out.println("Checking Indicator WebSocket connections for username: " + username + ", symbols: " + symbols);
 //                fundingRateWebSocketService.connectToWebSocket(symbols, true);
 
-                triggerService.handleAndSendAlertForIndicator(symbols, username);
+//                triggerService.handleAndSendAlertForIndicator(symbols, username);
             }
         }
     }
