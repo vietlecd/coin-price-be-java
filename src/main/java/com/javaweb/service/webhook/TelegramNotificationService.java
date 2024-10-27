@@ -22,8 +22,19 @@ public class TelegramNotificationService {
         HttpEntity<Map<String, Object>> request = new HttpEntity<>(payload, headers);
 
         try {
+            // Log the payload before sending the request
+            System.out.println("Sending request to: " + APIUrl);
+            System.out.println("Headers: " + headers);
+            System.out.println("Payload: " + payload);
+
+            // Send the request
             ResponseEntity<String> response = restTemplate.postForEntity(APIUrl, request, String.class);
 
+            // Log the status code and response body
+            System.out.println("Status code: " + response.getStatusCode());
+            System.out.println("Response body: " + response.getBody());
+
+            // Check if the response was successful
             if (response.getStatusCode().is2xxSuccessful()) {
                 System.out.println("Notification sent successfully: " + response.getBody());
             } else {
@@ -31,7 +42,10 @@ public class TelegramNotificationService {
                 System.out.println("Response: " + response.getBody());
             }
         } catch (Exception e) {
+            // Log the exception message
+            System.out.println("Exception occurred while sending notification: " + e.getMessage());
             e.printStackTrace();
         }
+
     }
 }

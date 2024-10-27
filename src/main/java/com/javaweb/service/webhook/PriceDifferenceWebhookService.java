@@ -54,7 +54,6 @@ public class PriceDifferenceWebhookService {
                     payload.put("futurePrice", futurePrice);
                     payload.put("threshold", threshold);
                     payload.put("condition", condition);
-                    payload.put("vip_role", vip_role);
                     payload.put("chatID", chat_id);
                     payload.put("timestamp", timestamp);
 

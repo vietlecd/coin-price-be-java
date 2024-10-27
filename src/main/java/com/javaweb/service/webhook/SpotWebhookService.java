@@ -29,12 +29,11 @@ public class SpotWebhookService {
             if (trigger != null) {
                 double threshold = trigger.getSpotPriceThreshold();
                 String condition = trigger.getCondition();
-                String triggerType = "Spot";
+                String triggerType = "spot";
 
                 Optional<userData> userDataOptional = Optional.ofNullable(userRepository.findByUsername(username));
                 if (userDataOptional.isPresent()) {
                     userData user = userDataOptional.get();
-                    Integer vip_role = user.getVip_role();
 
                     String chat_id = null;
                     Optional<String> optionalChatId = Optional.ofNullable(user.getTelegram_id());
@@ -42,15 +41,17 @@ public class SpotWebhookService {
                         chat_id = optionalChatId.get();
                     }
 
+                    Map<String, Object> priceMap = new HashMap<>();
+                    priceMap.put("spot_price", spotPrice);
+
                     Map<String, Object> payload = new HashMap<>();
-                    payload.put("triggerType", triggerType);
-                    payload.put("symbol", symbol);
-                    payload.put("price", spotPrice);
+                    payload.put("symbol", "BTC");
+                    payload.put("price", priceMap);
                     payload.put("threshold", threshold);
                     payload.put("condition", condition);
-                    payload.put("vip_role", vip_role);
-                    payload.put("chatID", chat_id);
+                    payload.put("chatID", "5655972163");
                     payload.put("timestamp", timestamp);
+                    payload.put("triggerType", triggerType);
 
 
                     telegramNotificationService.sendNotification(payload);
