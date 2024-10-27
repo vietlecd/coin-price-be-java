@@ -31,7 +31,7 @@ info:
       - Version: `2.4.4`
       - Scope: `provided`
 servers:
-  - url: http://34.142.140.64
+  - url: http://104.214.171.0
 tags:
   - name: auth-controller
     description: Xác thực người dùng. Tạo tài khoản, đăng nhập, đăng ký, đăng xuất.
@@ -286,23 +286,27 @@ paths:
           content: 
             application/json:
               schema: 
-                message:
-                  type: string
-                  example: Đổi mật khẩu thành công, vui lòng đăng nhập lại.
-                status: 
-                  type: string
-                  example: 200
+                type: object
+                properties:  
+                  message:
+                    type: string
+                    example: Đổi mật khẩu thành công, vui lòng đăng nhập lại.
+                  status: 
+                    type: string
+                    example: 200
         "400":
           description: Sai mã otp
           content: 
             application/json:
               schema: 
-                message:
-                  type: string
-                  example:
-                status: 
-                  type: string
-                  example:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example:
+                  status: 
+                    type: string
+                    example:
         
 
     
