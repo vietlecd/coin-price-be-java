@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.javaweb.dto.FundingIntervalDTO;
-import com.javaweb.converter.FundingIntervalDTOHelper;
+//import com.javaweb.converter.FundingIntervalDTOHelper;
 import com.javaweb.service.IFundingIntervalDataService;
 import org.springframework.stereotype.Service;
 
@@ -31,11 +31,11 @@ public class FundingIntervalDataService implements IFundingIntervalDataService {
             String adjustedFundingRateFloor = fundingIntervalData.get("adjustedFundingRateFloor").asText();
             Long fundingIntervalHours = fundingIntervalData.get("fundingIntervalHours").asLong();
 
-            FundingIntervalDTO fundingIntervalDTO = FundingIntervalDTOHelper.createFundingRateDTO(symbol,adjustedFundingRateCap,adjustedFundingRateFloor,fundingIntervalHours);
+//            FundingIntervalDTO fundingIntervalDTO = FundingIntervalDTOHelper.createFundingRateDTO(symbol,adjustedFundingRateCap,adjustedFundingRateFloor,fundingIntervalHours);
 
             System.out.println("Storing data in cache for symbol: " + symbol);
-            fundingDataMap.put(symbol, fundingIntervalDTO);
-            fundingIntervalCache.put(symbol, fundingIntervalDTO); // Cache the result
+//            fundingDataMap.put(symbol, fundingIntervalDTO);
+//            fundingIntervalCache.put(symbol, fundingIntervalDTO); // Cache the result
         } else {
             System.out.println("No valid funding interval data found.");
         }

@@ -3,7 +3,7 @@ package com.javaweb.service.impl;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.javaweb.dto.KlineDTO;
 import com.javaweb.helpers.service.DateTimeHelper;
-import com.javaweb.converter.KlineDTOHelper;
+//import com.javaweb.converter.KlineDTOHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
@@ -39,12 +39,12 @@ public class KlineDataService extends TextWebSocketHandler {
         String klineCloseTime = DateTimeHelper.formatEventTime(klineCloseTimeLong);
 
         // Tạo KlineDTO sử dụng Builder pattern
-        KlineDTO klineDTO = KlineDTOHelper.createKlineDTO(
-                symbol, klineStartTime, klineCloseTime, openPrice, closePrice, highPrice, lowPrice,
-                numberOfTrades, baseAssetVolume, takerBuyVolume, takerBuyBaseVolume, volume, eventTime
-        );
-
-        klineDataMap.put("Kline Price: " + symbol, klineDTO);
+//        KlineDTO klineDTO = KlineDTOHelper.createKlineDTO(
+//                symbol, klineStartTime, klineCloseTime, openPrice, closePrice, highPrice, lowPrice,
+//                numberOfTrades, baseAssetVolume, takerBuyVolume, takerBuyBaseVolume, volume, eventTime
+//        );
+//
+//        klineDataMap.put("Kline Price: " + symbol, klineDTO);
     }
 
     public Map<String, KlineDTO> getPriceDataMap() {

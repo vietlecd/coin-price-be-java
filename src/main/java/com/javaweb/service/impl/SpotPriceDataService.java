@@ -3,7 +3,7 @@ package com.javaweb.service.impl;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.javaweb.dto.PriceDTO;
 import com.javaweb.helpers.service.DateTimeHelper;
-import com.javaweb.converter.PriceDTOHelper;
+//import com.javaweb.converter.PriceDTOHelper;
 import com.javaweb.service.IPriceDataService;
 import org.springframework.stereotype.Service;
 
@@ -23,14 +23,14 @@ public class SpotPriceDataService implements IPriceDataService {
         String symbol = data.get("s").asText();
         String price = data.get("c").asText();
 
-        PriceDTO priceDTO = PriceDTOHelper.createPriceDTO(symbol, price, eventTime);
+//        PriceDTO priceDTO = PriceDTOHelper.createPriceDTO(symbol, price, eventTime);
 
-        if (!isTriggered) {
-            spotPriceDataUsers.put("Spot Price: " + symbol, priceDTO);
-        }
-        else {
-            spotPriceDataTriggers.put("Spot Price: " + symbol, priceDTO);
-        }
+//        if (!isTriggered) {
+//            spotPriceDataUsers.put("Spot Price: " + symbol, priceDTO);
+//        }
+//        else {
+//            spotPriceDataTriggers.put("Spot Price: " + symbol, priceDTO);
+//        }
 
     }
 

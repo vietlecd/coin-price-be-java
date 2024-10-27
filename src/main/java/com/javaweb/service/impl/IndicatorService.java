@@ -1,7 +1,7 @@
 package com.javaweb.service.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.javaweb.converter.IndicatorDTOHelper;
+//import com.javaweb.converter.IndicatorDTOHelper;
 import com.javaweb.dto.FundingRateDTO;
 import com.javaweb.dto.IndicatorDTO;
 import com.javaweb.dto.PriceDTO;
@@ -138,14 +138,14 @@ public class IndicatorService implements IIndicatorService {
 
         String eventTime = DateTimeHelper.formatEventTime(eventTimeLong);
 
-        IndicatorDTO indicatorDTO = IndicatorDTOHelper.createIndicatorDTO(symbol, values, eventTime);
+//        IndicatorDTO indicatorDTO = IndicatorDTOHelper.createIndicatorDTO(symbol, values, eventTime);
 
-        if (!isTriggered) {
-            indicatorDataUsers.put("Indicator: " + symbol, indicatorDTO);
-        }
-        else {
-            indicatorDataTriggers.put("Indicator: " + symbol, indicatorDTO);
-        }
+//        if (!isTriggered) {
+//            indicatorDataUsers.put("Indicator: " + symbol, indicatorDTO);
+//        }
+//        else {
+//            indicatorDataTriggers.put("Indicator: " + symbol, indicatorDTO);
+//        }
     }
 
     @Override

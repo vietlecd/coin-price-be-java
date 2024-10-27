@@ -1,6 +1,6 @@
 package com.javaweb.service.stream;
 
-import com.javaweb.config.WebSocketConfig;
+//import com.javaweb.config.WebSocketConfig;
 import com.javaweb.dto.FundingIntervalDTO;
 import com.javaweb.dto.FundingRateAndIntervalDTO;
 import com.javaweb.dto.FundingRateDTO;
@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
 
-import static com.javaweb.converter.FundingRateAndIntervalDTOHelper.combineData;
+//import static com.javaweb.converter.FundingRateAndIntervalDTOHelper.combineData;
 
 @Service
 public class FundingRateStreamService {
@@ -63,9 +63,9 @@ public class FundingRateStreamService {
 //                            }
 //                        }
 
-                        FundingRateAndIntervalDTO combinedDTO = combineData(fundingRateDTO, fundingIntervalDTO);
+//                        FundingRateAndIntervalDTO combinedDTO = combineData(fundingRateDTO, fundingIntervalDTO);
 
-                        sseEmitter.send(combinedDTO);
+//                        sseEmitter.send(combinedDTO);
                     }
                 }
             } catch (Exception e) {

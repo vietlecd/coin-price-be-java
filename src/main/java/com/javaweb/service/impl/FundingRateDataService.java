@@ -3,7 +3,7 @@ package com.javaweb.service.impl;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.javaweb.dto.FundingRateDTO;
 import com.javaweb.helpers.service.DateTimeHelper;
-import com.javaweb.converter.FundingRateDTOHelper;
+//import com.javaweb.converter.FundingRateDTOHelper;
 import com.javaweb.service.IFundingRateDataService;
 import org.springframework.stereotype.Service;
 
@@ -34,14 +34,14 @@ public class FundingRateDataService implements IFundingRateDataService {
         );
 
 
-        FundingRateDTO fundingRateDTO = FundingRateDTOHelper.createFundingRateDTO(symbol, fundingRate, fundingCountdown, eventTime);
+//        FundingRateDTO fundingRateDTO = FundingRateDTOHelper.createFundingRateDTO(symbol, fundingRate, fundingCountdown, eventTime);
 
-        if (!isTriggered) {
-            fundingRateDataUsers.put("FundingRate Price: " + symbol, fundingRateDTO);
-        }
-        else {
-            fundingRateDataTriggers.put("FundingRate Price: " + symbol, fundingRateDTO);
-        }
+//        if (!isTriggered) {
+//            fundingRateDataUsers.put("FundingRate Price: " + symbol, fundingRateDTO);
+//        }
+//        else {
+//            fundingRateDataTriggers.put("FundingRate Price: " + symbol, fundingRateDTO);
+//        }
 
 
     }
