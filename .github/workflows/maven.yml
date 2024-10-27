@@ -53,20 +53,6 @@ jobs:
       run: |
         sshpass -p ${{ secrets.VPS_PASSWORD }} ssh -o StrictHostKeyChecking=no root@${{ secrets.VPS_IP }} "
           cd server
-          git pull
-          > .env
-          touch .env
-
-          echo 'MONGO_DB_URI=${{ secrets.MONGO_DB_URI }}' >> .env 
-          echo 'MONGO_DB_NAME=${{ secrets.MONGO_DB_NAME }}' >> .env 
-          echo 'JWT_SECRET=${{ secrets.JWT_SECRET }}' >> .env 
-          echo 'TELEGRAM_WEBHOOK_URL=${{ secrets.TELEGRAM_WEBHOOK_URL }}' >> .env 
-          echo 'TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }}' >> .env 
-          echo 'TELEGRAM_CHAT_ID=${{ secrets.TELEGRAM_CHAT_ID }}' >> .env 
-          echo 'email=${{ secrets.EMAIL }}' >> .env 
-          echo 'password_for_email=${{ secrets.password_for_email }}' >> .env 
-          echo 'adminToken=${{ secrets.ADMINTOKEN }}' >> .env 
-
           
           echo 'y' | sudo docker container prune
           sudo docker rmi $(docker images -a -q) 2>dev>null || true  
