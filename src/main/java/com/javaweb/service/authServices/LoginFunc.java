@@ -39,6 +39,6 @@ public class LoginFunc {
 //        cookie.setPath("/");
 //        cookie.setMaxAge(60 * 60 * 13);
 
-        res.setHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+        res.setHeader(HttpHeaders.SET_COOKIE, cookieHeader);
     }
 }
