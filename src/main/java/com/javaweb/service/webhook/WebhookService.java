@@ -1,4 +1,4 @@
-package com.javaweb.service.webhook;
-
-public class WebhookService {
-}
+//package com.javaweb.service.webhook;
+//
+//public class WebhookService {
+//}
