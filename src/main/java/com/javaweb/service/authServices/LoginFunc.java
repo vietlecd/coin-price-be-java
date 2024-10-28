@@ -29,6 +29,7 @@ public class LoginFunc {
                 .httpOnly(true)
                 .secure(false)
                 .maxAge(60*60*13)
+                .path("/")
                 .build();
 
         String cookieHeader = cookie.toString() + "; SameSite=None";
@@ -38,6 +39,6 @@ public class LoginFunc {
 //        cookie.setPath("/");
 //        cookie.setMaxAge(60 * 60 * 13);
 
-        res.setHeader(HttpHeaders.SET_COOKIE, cookieHeader);
+        res.setHeader(HttpHeaders.SET_COOKIE, cookie.toString());
     }
 }
