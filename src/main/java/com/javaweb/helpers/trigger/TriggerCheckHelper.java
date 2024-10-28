@@ -202,10 +202,6 @@ public class TriggerCheckHelper {
 
     private double calculateMA(Map<Long, Double> prices) {
         if (prices.isEmpty()) return 0;
-        System.out.println("The current MA value is: " + prices.values().stream()
-                .mapToDouble(Double::doubleValue)
-                .average()
-                .orElse(0));
         return prices.values().stream()
                 .mapToDouble(Double::doubleValue)
                 .average()
@@ -222,8 +218,6 @@ public class TriggerCheckHelper {
             double price = priceList.get(i);
             ema = price * alpha + ema * (1 - alpha);
         }
-
-        System.out.println("The current EMA value is: " + ema);
 
         return ema;
     }
@@ -248,8 +242,6 @@ public class TriggerCheckHelper {
         bands.put("MiddleBand", ma);
         bands.put("UpperBand", upperBand);
         bands.put("LowerBand", lowerBand);
-
-        System.out.println("The current BOLL value is: UpperBand: " + upperBand + ", lowerBand: " + lowerBand);
 
         return bands;
     }
