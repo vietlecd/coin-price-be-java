@@ -27,7 +27,7 @@ public class LoginFunc {
 
         ResponseCookie cookie = ResponseCookie.from("token", token)
                 .httpOnly(true)
-                .secure(false)
+                .secure(true)
                 .maxAge(60*60*13)
                 .path("/")
                 .build();
