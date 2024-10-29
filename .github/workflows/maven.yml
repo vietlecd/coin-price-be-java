@@ -6,7 +6,7 @@ on:
     paths-ignore:
       - README.md
       - docs/**
-      - .github/workflows/**
+
 
 jobs:
   notify:
@@ -46,36 +46,20 @@ jobs:
         sudo docker push lmao1415/dath_cnpm
   
     - name: Remove Docker Image
-      run: sudo docker rmi lmao1415/dath_cnpm
-  
-  deploy:
-    environment:
-      name: dev
-      url: nope
-    runs-on: self-hosted
-    needs: build
-    steps:
-      - name: Deploy to VPS
-        env:
-          VPS_USER: root
-          VPS_IP: ${{ secrets.VPS_IP }}
-          VPS_PASSWORD: ${{ secrets.VPS_PASSWORD }} 
-        run: |
-          sudo apt-get install -y sshpass
-          
-          sshpass -p $VPS_PASSWORD ssh -o StrictHostKeyChecking=no $VPS_USER@$VPS_IP "
-          cd server/
+      run: |
+        sudo docker rmi lmao1415/dath_cnpm
+
+    - name: Deploy Trên server
+      run: |
+        sshpass -p ${{ secrets.VPS_PASSWORD }} ssh -o StrictHostKeyChecking=no root@${{ secrets.VPS_IP }} "
+          cd server
           
           echo 'y' | sudo docker container prune
           sudo docker rmi $(docker images -a -q) 2>dev>null || true  
           sudo docker compose down
           sudo docker compose pull
-          
-          # Tạo mới hoặc kết nối tới một phiên tmux
-          tmux kill-session -t spring 2>/dev/null || true &&
+
+          tmux kill-session -t spring 2>/dev/null || true 
           tmux new-session -d -s spring 'sudo docker compose up'
-          "
-          
-      - name: Thông Báo khởi động sv
-        run: |
-          curl -X POST -H "Content-Type: application/json" -d '{"content": "```Server đã khởi động thành công!```"}' https://discord.com/api/webhooks/1297132713119191121/B72OrNxwgv1-l5svlDvzUzIWLhtnlmnb4xoPH9BqoX6vG655uPK-vKirbAvmGIjHgt3R
+        "
+        

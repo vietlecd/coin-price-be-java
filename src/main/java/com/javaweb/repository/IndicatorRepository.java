@@ -20,7 +20,8 @@ public class IndicatorRepository {
         this.restTemplate = new RestTemplate();
     }
     public Map<Long, Double> getHistoricalPrices(String symbol, int days) {
-        Map<Long, Double> cachedPrices = cache.getIfPresent(symbol);
+        String cacheKey = symbol + ":" + days;
+        Map<Long, Double> cachedPrices = cache.getIfPresent(cacheKey);
         if (cachedPrices != null) {
             return cachedPrices;
         }
@@ -44,7 +45,7 @@ public class IndicatorRepository {
             throw new RuntimeException("Không tìm thấy dữ liệu giá cho symbol: " + symbol, e);
         }
 
-        cache.put(symbol, prices);
+        cache.put(cacheKey, prices);
 
         return prices;
     }
