@@ -56,7 +56,7 @@ public class FutureWebhookService {
                     System.out.println("Future Trigger notification sent for symbol: " + symbol + " with threshold: " + threshold);
                 }
             } else {
-                System.out.println("No SpotPriceTrigger found for symbol: " + symbol);
+                System.out.println("No FuturePriceTrigger found for symbol: " + symbol);
             }
         } catch (NumberFormatException e) {
             e.printStackTrace();
