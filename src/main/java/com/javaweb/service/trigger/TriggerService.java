@@ -12,6 +12,8 @@ import com.javaweb.service.impl.FuturePriceDataService;
 import com.javaweb.service.impl.IndicatorService;
 import com.javaweb.service.impl.SpotPriceDataService;
 import com.javaweb.service.webhook.TelegramNotificationService;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -28,24 +30,16 @@ import static java.lang.Long.MAX_VALUE;
 import static java.lang.Math.abs;
 
 @Service
+@AllArgsConstructor
 public class TriggerService {
-    @Autowired
     private SnoozeCheckHelper snoozeCheckHelper;
-
-    @Autowired
     private TriggerCheckHelper triggerCheckHelper;
-
-    @Autowired
     private FundingRateDataService fundingRateDataService;
-
-    @Autowired
     private SpotPriceDataService spotPriceDataService;
-
-    @Autowired
     private FuturePriceDataService futurePriceDataService;
-
-    @Autowired
     private TelegramNotificationService telegramNotificationService;
+    private IndicatorService indicatorService;
+
 
     public void handleAndSendAlertForFundingRate(List<String> symbols, String username) {
         Map<String, FundingRateDTO> fundingRateDataMap = fundingRateDataService.getFundingRateDataTriggers();

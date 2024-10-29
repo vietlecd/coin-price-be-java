@@ -1,5 +1,7 @@
 package com.javaweb.service.impl;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.javaweb.converter.IndicatorDTOHelper;
 import com.javaweb.dto.IndicatorDTO;
 
 import com.javaweb.helpers.service.DateTimeHelper;
@@ -64,6 +66,7 @@ public class IndicatorService implements IIndicatorService {
 
         return indicatorDataMap;
     }
+
 
     private double calculateMA(Map<Long, Double> prices) {
         if (prices.isEmpty()) return 0;

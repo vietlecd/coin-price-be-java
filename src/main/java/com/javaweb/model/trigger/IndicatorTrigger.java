@@ -10,9 +10,6 @@ import org.springframework.scheduling.Trigger;
 @Document(collection = "indicator_trigger")
 public class IndicatorTrigger extends TriggerCondition {
     private String indicator;
-<<<<<<< HEAD
-=======
     private double value;
->>>>>>> indicator_trigger
     private int period;
 }
