@@ -116,8 +116,7 @@ public class TriggerService {
     }
 
     public void handleAndSendAlertForIndicator(List<String> symbols, String username) {
-        Map<String, IndicatorDTO> indicatorDataMap = indicatorService.getIndicatorDataTriggers();
-        List<String> firedSymbols = triggerCheckHelper.checkIndicatorSymbolsAndTriggerAlert(symbols, indicatorDataMap, username);
+        List<String> firedSymbols = triggerCheckHelper.checkIndicatorSymbolsAndTriggerAlert(symbols, username);
         boolean snoozeActive = snoozeCheckHelper.checkSymbolAndSnooze(symbols,"Indicator",username);
         if (!firedSymbols.isEmpty()) {
             for (String symbol : firedSymbols) {

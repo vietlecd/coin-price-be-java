@@ -138,7 +138,6 @@ public class IndicatorService implements IIndicatorService {
         } catch (Exception e) {
             throw new RuntimeException("Lỗi khi thực thi script người dùng");
         }
-        return prices;
     }
 
     @Override
