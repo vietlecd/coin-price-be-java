@@ -38,7 +38,6 @@ public class TriggerService {
     private SpotPriceDataService spotPriceDataService;
     private FuturePriceDataService futurePriceDataService;
     private TelegramNotificationService telegramNotificationService;
-    private IndicatorService indicatorService;
 
 
     public void handleAndSendAlertForFundingRate(List<String> symbols, String username) {
