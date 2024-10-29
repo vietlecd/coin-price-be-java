@@ -38,6 +38,7 @@ public class WebSocketScheduler {
         Map<String, List<String>> usernamesWithSymbolsForSpotAndFuture = triggerSymbolService.getUsernamesWithSymbolsSpotAndFuture();
         Map<String, List<String>> usernamesWithSymbolsForFundingRate = triggerSymbolService.getUsernamesWithSymbolsFundingRate();
 
+
         if (!usernamesWithSymbolsForSpot.isEmpty()) {
             for (Map.Entry<String, List<String>> entry : usernamesWithSymbolsForSpot.entrySet()) {
                 String username = entry.getKey();
@@ -83,18 +84,6 @@ public class WebSocketScheduler {
                 fundingRateWebSocketService.connectToWebSocket(symbols, true);
 
                 triggerService.handleAndSendAlertForFundingRate(symbols, username);
-            }
-        }
-
-        if (!usernamesWithSymbolsForIndicator.isEmpty()) {
-            for (Map.Entry<String, List<String>> entry : usernamesWithSymbolsForIndicator.entrySet()) {
-                String username = entry.getKey();
-                List<String> symbols = entry.getValue();
-
-                //System.out.println("Checking Indicator WebSocket connections for username: " + username + ", symbols: " + symbols);
-                //fundingRateWebSocketService.connectToWebSocket(symbols, true);
-
-                triggerService.handleAndSendAlertForIndicator(symbols, username);
             }
         }
     }
