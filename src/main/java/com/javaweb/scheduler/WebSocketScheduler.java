@@ -98,7 +98,7 @@ public class WebSocketScheduler {
                 List<String> symbols = entry.getValue();
 
                 //System.out.println("Checking Indicator WebSocket connections for username: " + username + ", symbols: " + symbols);
-                fundingRateWebSocketService.connectToWebSocket(symbols, true);
+                //fundingRateWebSocketService.connectToWebSocket(symbols, true);
 
                 triggerService.handleAndSendAlertForIndicator(symbols, username);
             }
