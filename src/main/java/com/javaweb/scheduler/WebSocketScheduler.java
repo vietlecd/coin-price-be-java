@@ -31,7 +31,7 @@ public class WebSocketScheduler {
     private TriggerService triggerService;
 
     // Chạy mỗi 1 phút để kiểm tra và kết nối lại WebSocket nếu cần
-    @Scheduled(fixedRate = 60000) // 60000 ms = 1 phut
+    @Scheduled(fixedRate = 10000) // 60000 ms = 1 phut
     public void checkAndConnectToWebSocket() {
         Map<String, List<String>> usernamesWithSymbolsForSpot = triggerSymbolService.getUsernamesWithSymbolsSpot();
         Map<String, List<String>> usernamesWithSymbolsForFuture = triggerSymbolService.getUsernamesWithSymbolsFuture();
@@ -71,7 +71,7 @@ public class WebSocketScheduler {
                 spotWebSocketService.connectToWebSocket(symbols, true);
                 futureWebSocketService.connectToWebSocket(symbols, true);
 
-                triggerService.handleAndSendAlertForSpotAndFuture(symbols, username);
+                triggerService.handleAndSendAlertForPriceDifference(symbols, username);
             }
         }
 

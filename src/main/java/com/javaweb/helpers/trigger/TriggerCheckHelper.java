@@ -1,17 +1,23 @@
 package com.javaweb.helpers.trigger;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.javaweb.config.WebSocketConfig;
+
 import com.javaweb.dto.FundingRateDTO;
-import com.javaweb.dto.IndicatorDTO;
 import com.javaweb.dto.PriceDTO;
 import com.javaweb.model.trigger.*;
-import com.javaweb.repository.*;
+import com.javaweb.model.trigger.FundingRateTrigger;
+import com.javaweb.model.trigger.FuturePriceTrigger;
+import com.javaweb.model.trigger.PriceDifferenceTrigger;
+import com.javaweb.model.trigger.SpotPriceTrigger;
+import com.javaweb.repository.trigger.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
+
 import java.util.*;
+
+
 
 @Component
 public class TriggerCheckHelper {

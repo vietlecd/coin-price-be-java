@@ -3,7 +3,7 @@ package com.javaweb.service.trigger.CRUD;
 import com.javaweb.dto.trigger.SpotPriceTriggerDTO;
 import com.javaweb.helpers.trigger.TriggerMapHelper;
 import com.javaweb.model.trigger.SpotPriceTrigger;
-import com.javaweb.repository.SpotPriceTriggerRepository;
+import com.javaweb.repository.trigger.SpotPriceTriggerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
