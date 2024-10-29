@@ -133,20 +133,4 @@ public class TriggerService {
         }
     }
 
-    public void handleAndSendAlertForIndicator(List<String> symbols, String username) {
-        List<String> firedSymbols = triggerCheckHelper.checkIndicatorSymbolsAndTriggerAlert(symbols, username);
-        boolean snoozeActive = snoozeCheckHelper.checkSymbolAndSnooze(symbols,"Indicator",username);
-        if (!firedSymbols.isEmpty()) {
-            for (String symbol : firedSymbols) {
-                if (snoozeActive) {
-                System.out.println("Indicator is active, not sending alert for symbol: " + symbol);
-                } else {
-                // Gửi thông báo qua Telegram
-                telegramNotificationService.sendTriggerNotification("Indicator Trigger fired for symbol: " + symbol + " with username: " + username);
-                System.out.println("Indicator Trigger fired for symbol: " + symbol);
-                }
-
-            }
-        }
-    }
 }

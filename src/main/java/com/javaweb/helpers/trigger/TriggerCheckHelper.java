@@ -114,26 +114,18 @@ public class TriggerCheckHelper {
         return firedSymbols;
     }
 
-<<<<<<< HEAD
-    public List<String> checkIndicatorSymbolsAndTriggerAlert(List<String> symbols, Map<String, ?> indicatorDataMap, String username) {
-        List<String> firedSymbols = new ArrayList<>();
 
-
-=======
     public List<String> checkIndicatorSymbolsAndTriggerAlert(List<String> symbols, String username) {
         List<String> firedSymbols = new ArrayList<>();
 
->>>>>>> e8bd72fff411a7fa069ea04e5d5de2e2c01296d0
         for (String symbol : symbols) {
             boolean conditionMet = false;
 
             IndicatorTrigger indicatorTrigger = indicatorTriggerRepository.findBySymbolAndUsername(symbol, username);
             // Kiểm tra điều kiện trigger
             conditionMet = checkIndicatorTrigger(symbol, indicatorTrigger, username);
-<<<<<<< HEAD
-=======
             System.out.println("Condition met for symbol: " + symbol + ", indicator: " + indicatorTrigger.getIndicator() + ", username: " + username);
->>>>>>> e8bd72fff411a7fa069ea04e5d5de2e2c01296d0
+
 
             // Nếu điều kiện được thỏa mãn thì in ra log và đánh dấu kết quả
             if (conditionMet) {
@@ -173,18 +165,6 @@ public class TriggerCheckHelper {
         return priceDTO != null ? priceDTO.getPrice() : null;
     }
 
-//    private String getCurrentIndicatorValue(String symbol, Map<String, ?> indicatorDataMap) {
-//        IndicatorDTO indicatorDTO = null;
-//
-//        String spotKey = "Indicator: " + symbol;
-//        if (indicatorDataMap.containsKey(spotKey)) {
-//            indicatorDTO = (IndicatorDTO) indicatorDataMap.get(spotKey);
-//        } else {
-//            System.out.println("Key not found: " + spotKey);
-//        }
-//
-//        return indicatorDTO != null ? indicatorDTO.getValues().get(symbol).toString() : null;
-//    }
 
     private Map<Long, Double> getHistoricalPrices(String symbol, int days) {
         String COINGECKO_API_URL = "https://api.coingecko.com/api/v3";
@@ -270,79 +250,6 @@ public class TriggerCheckHelper {
         return fundingRateDTO != null ? fundingRateDTO.getFundingRate() : null;
     }
 
-    private Map<Long, Double> getHistoricalPrices(String symbol, int days) {
-        String COINGECKO_API_URL = "https://api.coingecko.com/api/v3";
-        String url = COINGECKO_API_URL + "/coins/" + symbol + "/market_chart?vs_currency=usd&days=" + days;
-        Map<Long, Double> prices = new HashMap<>();
-        RestTemplate restTemplate = new RestTemplate();
-
-        try {
-            JsonNode response = restTemplate.getForObject(url, JsonNode.class);
-            if (response != null && response.has("prices")) {
-                JsonNode pricesNode = response.get("prices");
-
-                for (JsonNode priceNode : pricesNode) {
-                    prices.put(priceNode.get(0).asLong(), priceNode.get(1).asDouble());
-                }
-            }
-            else {
-                throw new RuntimeException("Dữ liệu 'prices' không tồn tại cho symbol: " + symbol);
-            }
-
-        } catch (Exception e) {
-            throw new RuntimeException("Không tìm thấy dữ liệu giá cho symbol: " + symbol, e);
-        }
-        return prices;
-    }
-
-    private double calculateMA(Map<Long, Double> prices) {
-        if (prices.isEmpty()) return 0;
-        return prices.values().stream()
-                .mapToDouble(Double::doubleValue)
-                .average()
-                .orElse(0);
-    }
-    private double calculateEMA(Map<Long, Double> prices) {
-        if (prices.isEmpty()) return 0;
-
-        List<Double> priceList = new ArrayList<>(prices.values());
-        double alpha = 2.0 / (prices.size() + 1);
-        double ema = priceList.get(0);
-
-        for (int i = 1; i < priceList.size(); i++) {
-            double price = priceList.get(i);
-            ema = price * alpha + ema * (1 - alpha);
-        }
-
-        return ema;
-    }
-    private Map<String, Double> calculateBOLL(Map<Long, Double> prices) {
-        Map<String, Double> bands = new HashMap<>();
-        if (prices.isEmpty()) {
-            bands.put("MiddleBand", 0.0);
-            bands.put("UpperBand", 0.0);
-            bands.put("LowerBand", 0.0);
-            return bands;
-        }
-
-        double ma = calculateMA(prices);
-
-        double standardDeviation = Math.sqrt(prices.values().stream()
-                .mapToDouble(price -> Math.pow(price - ma, 2))
-                .sum() / prices.size());
-
-        double upperBand = ma + 2 * standardDeviation;
-        double lowerBand = ma - 2 * standardDeviation;
-
-        bands.put("MiddleBand", ma);
-        bands.put("UpperBand", upperBand);
-        bands.put("LowerBand", lowerBand);
-
-        return bands;
-    }
-
-    // Phương thức kiểm tra trigger cho Spot, Future.....
-
     private boolean checkSpotTrigger(String symbol, String currentPrice, String username) {
         SpotPriceTrigger spotTrigger = spotPriceTriggerRepository.findBySymbolAndUsername(symbol, username);
         if (spotTrigger != null) {
@@ -372,10 +279,7 @@ public class TriggerCheckHelper {
         if (indicatorTrigger != null) {
             Map<Long, Double> historicalPrices = getHistoricalPrices(symbol, indicatorTrigger.getPeriod());
             // Lấy giá trị Indicator hiện tại đồng thời kiểm tra indicator condition
-<<<<<<< HEAD
-=======
 
->>>>>>> e8bd72fff411a7fa069ea04e5d5de2e2c01296d0
             switch (indicatorTrigger.getIndicator()) {
                 case "MA":
                     return comparisonHelper.checkMAAndEMACondition(indicatorTrigger, calculateMA(historicalPrices));
