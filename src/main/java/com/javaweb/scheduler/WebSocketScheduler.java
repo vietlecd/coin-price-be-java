@@ -85,5 +85,17 @@ public class WebSocketScheduler {
                 triggerService.handleAndSendAlertForFundingRate(symbols, username);
             }
         }
+
+        if (!usernamesWithSymbolsForIndicator.isEmpty()) {
+            for (Map.Entry<String, List<String>> entry : usernamesWithSymbolsForIndicator.entrySet()) {
+                String username = entry.getKey();
+                List<String> symbols = entry.getValue();
+
+                //System.out.println("Checking Indicator WebSocket connections for username: " + username + ", symbols: " + symbols);
+                //fundingRateWebSocketService.connectToWebSocket(symbols, true);
+
+                triggerService.handleAndSendAlertForIndicator(symbols, username);
+            }
+        }
     }
 }

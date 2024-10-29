@@ -1,23 +1,17 @@
 package com.javaweb.helpers.trigger;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.javaweb.config.WebSocketConfig;
 import com.javaweb.dto.FundingRateDTO;
+import com.javaweb.dto.IndicatorDTO;
 import com.javaweb.dto.PriceDTO;
-import com.javaweb.model.trigger.FundingRateTrigger;
-import com.javaweb.model.trigger.FuturePriceTrigger;
-import com.javaweb.model.trigger.PriceDifferenceTrigger;
-import com.javaweb.model.trigger.SpotPriceTrigger;
-import com.javaweb.repository.FundingRateTriggerRepository;
-import com.javaweb.repository.FuturePriceTriggerRepository;
-import com.javaweb.repository.PriceDifferenceTriggerRepository;
-import com.javaweb.repository.SpotPriceTriggerRepository;
+import com.javaweb.model.trigger.*;
+import com.javaweb.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Component
 public class TriggerCheckHelper {
@@ -29,6 +23,8 @@ public class TriggerCheckHelper {
     private SpotPriceTriggerRepository spotPriceTriggerRepository;
     @Autowired
     private FundingRateTriggerRepository fundingRateTriggerRepository;
+    @Autowired
+    private IndicatorTriggerRepository indicatorTriggerRepository;
     @Autowired
     private ComparisonHelper comparisonHelper;
 
@@ -118,6 +114,26 @@ public class TriggerCheckHelper {
         return firedSymbols;
     }
 
+    public List<String> checkIndicatorSymbolsAndTriggerAlert(List<String> symbols, Map<String, ?> indicatorDataMap, String username) {
+        List<String> firedSymbols = new ArrayList<>();
+
+
+        for (String symbol : symbols) {
+            boolean conditionMet = false;
+
+            IndicatorTrigger indicatorTrigger = indicatorTriggerRepository.findBySymbolAndUsername(symbol, username);
+            // Kiểm tra điều kiện trigger
+            conditionMet = checkIndicatorTrigger(symbol, indicatorTrigger, username);
+
+            // Nếu điều kiện được thỏa mãn thì in ra log và đánh dấu kết quả
+            if (conditionMet) {
+                firedSymbols.add(symbol);
+            }
+        }
+
+        return firedSymbols;
+    }
+
     private String getCurrentPrice(String symbol, Map<String, ?> priceDataMap, String type) {
         PriceDTO priceDTO = null;
 
@@ -145,6 +161,90 @@ public class TriggerCheckHelper {
         }
 
         return priceDTO != null ? priceDTO.getPrice() : null;
+    }
+
+//    private String getCurrentIndicatorValue(String symbol, Map<String, ?> indicatorDataMap) {
+//        IndicatorDTO indicatorDTO = null;
+//
+//        String spotKey = "Indicator: " + symbol;
+//        if (indicatorDataMap.containsKey(spotKey)) {
+//            indicatorDTO = (IndicatorDTO) indicatorDataMap.get(spotKey);
+//        } else {
+//            System.out.println("Key not found: " + spotKey);
+//        }
+//
+//        return indicatorDTO != null ? indicatorDTO.getValues().get(symbol).toString() : null;
+//    }
+
+    private Map<Long, Double> getHistoricalPrices(String symbol, int days) {
+        String COINGECKO_API_URL = "https://api.coingecko.com/api/v3";
+        String url = COINGECKO_API_URL + "/coins/" + symbol + "/market_chart?vs_currency=usd&days=" + days;
+        Map<Long, Double> prices = new HashMap<>();
+        RestTemplate restTemplate = new RestTemplate();
+
+        try {
+            JsonNode response = restTemplate.getForObject(url, JsonNode.class);
+            if (response != null && response.has("prices")) {
+                JsonNode pricesNode = response.get("prices");
+
+                for (JsonNode priceNode : pricesNode) {
+                    prices.put(priceNode.get(0).asLong(), priceNode.get(1).asDouble());
+                }
+            }
+            else {
+                throw new RuntimeException("Dữ liệu 'prices' không tồn tại cho symbol: " + symbol);
+            }
+
+        } catch (Exception e) {
+            throw new RuntimeException("Không tìm thấy dữ liệu giá cho symbol: " + symbol, e);
+        }
+        return prices;
+    }
+
+    private double calculateMA(Map<Long, Double> prices) {
+        if (prices.isEmpty()) return 0;
+        return prices.values().stream()
+                .mapToDouble(Double::doubleValue)
+                .average()
+                .orElse(0);
+    }
+    private double calculateEMA(Map<Long, Double> prices) {
+        if (prices.isEmpty()) return 0;
+
+        List<Double> priceList = new ArrayList<>(prices.values());
+        double alpha = 2.0 / (prices.size() + 1);
+        double ema = priceList.get(0);
+
+        for (int i = 1; i < priceList.size(); i++) {
+            double price = priceList.get(i);
+            ema = price * alpha + ema * (1 - alpha);
+        }
+
+        return ema;
+    }
+    private Map<String, Double> calculateBOLL(Map<Long, Double> prices) {
+        Map<String, Double> bands = new HashMap<>();
+        if (prices.isEmpty()) {
+            bands.put("MiddleBand", 0.0);
+            bands.put("UpperBand", 0.0);
+            bands.put("LowerBand", 0.0);
+            return bands;
+        }
+
+        double ma = calculateMA(prices);
+
+        double standardDeviation = Math.sqrt(prices.values().stream()
+                .mapToDouble(price -> Math.pow(price - ma, 2))
+                .sum() / prices.size());
+
+        double upperBand = ma + 2 * standardDeviation;
+        double lowerBand = ma - 2 * standardDeviation;
+
+        bands.put("MiddleBand", ma);
+        bands.put("UpperBand", upperBand);
+        bands.put("LowerBand", lowerBand);
+
+        return bands;
     }
 
     private String getCurrentFundingRate(String symbol, Map<String, ?> priceDataMap) {
@@ -183,6 +283,23 @@ public class TriggerCheckHelper {
         FundingRateTrigger fundingRateTrigger = fundingRateTriggerRepository.findBySymbolAndUsername(symbol, username);
         if (fundingRateTrigger != null) {
             return comparisonHelper.checkFundingRateCondition(fundingRateTrigger, currentFundingRate);
+        }
+        return false;
+    }
+
+    private boolean checkIndicatorTrigger(String symbol, IndicatorTrigger indicatorTrigger, String username) {
+        if (indicatorTrigger != null) {
+            Map<Long, Double> historicalPrices = getHistoricalPrices(symbol, indicatorTrigger.getPeriod());
+            // Lấy giá trị Indicator hiện tại đồng thời kiểm tra indicator condition
+            switch (indicatorTrigger.getIndicator()) {
+                case "MA":
+                    return comparisonHelper.checkMAAndEMACondition(indicatorTrigger, calculateMA(historicalPrices));
+                case "EMA":
+                    return comparisonHelper.checkMAAndEMACondition(indicatorTrigger, calculateEMA(historicalPrices));
+                case "BOLL":
+                    return comparisonHelper.checkBOLLCondition(indicatorTrigger, calculateBOLL(historicalPrices));
+                default:
+            }
         }
         return false;
     }
