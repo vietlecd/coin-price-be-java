@@ -3,7 +3,7 @@ package com.javaweb.service.trigger.CRUD;
 import com.javaweb.dto.trigger.FuturePriceTriggerDTO;
 import com.javaweb.helpers.trigger.TriggerMapHelper;
 import com.javaweb.model.trigger.FuturePriceTrigger;
-import com.javaweb.repository.FuturePriceTriggerRepository;
+import com.javaweb.repository.trigger.FuturePriceTriggerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

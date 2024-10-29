@@ -10,6 +10,9 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 import javax.annotation.PreDestroy;
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import static org.apache.tomcat.jni.Socket.close;
 import static org.apache.tomcat.jni.Socket.shutdown;
@@ -18,6 +21,7 @@ import static org.apache.tomcat.jni.Socket.shutdown;
 public class WebSocketConfig {
 
     private WebSocketSession webSocketSession;
+    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
     @Bean
     public WebSocketClient webSocketClient() {
@@ -35,6 +39,7 @@ public class WebSocketConfig {
         try {
             this.webSocketSession = webSocketClient.doHandshake(handler, webSocketUrl).get();
             System.out.println("Connected to WebSocket at: " + webSocketUrl);
+
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
@@ -46,6 +51,7 @@ public class WebSocketConfig {
             try {
                 this.webSocketSession.close();
                 System.out.println("WebSocket session closed.");
+
             } catch (IOException e) {
                 e.printStackTrace();
             }

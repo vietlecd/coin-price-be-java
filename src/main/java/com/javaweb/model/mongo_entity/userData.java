@@ -9,6 +9,7 @@ import java.security.SecureRandom;
 import java.text.NumberFormat;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Data
 @Document(collection = "userData")
@@ -21,8 +22,10 @@ public class userData {
     private List<String> ip_list;
     private Integer coin;
     private Otp otp;
+    private String telegram_id;
 
     //Overide lên hàm Setter trong lombok
+
     public void setPassword(String password) throws Exception {
         String usernameRegex = "^[a-zA-Z0-9_]{8,15}$";
         if (!(password != null && password.matches(usernameRegex))) {
