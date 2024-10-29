@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -22,19 +23,19 @@ public class FundingIntervalWebService implements IFundingIntervalWebService {
     private static final String FUNDINGINTERVAL_API_URL = "https://fapi.binance.com/fapi/v1/fundingInfo?symbol=";
 
     @Override
-    public List<Map<String, FundingIntervalDTO>> getLatestFundingIntervalData(List<String> symbols) {
+    public Map<String, FundingIntervalDTO> getLatestFundingIntervalData(List<String> symbols) {
         return handleFundingIntervalWeb(symbols);
     }
 
     @Override
-    public List<Map<String, FundingIntervalDTO>> handleFundingIntervalWeb(List<String> symbols) {
-        List<Map<String, FundingIntervalDTO>> fundingIntervalDataList = new ArrayList<>();
+    public Map<String, FundingIntervalDTO> handleFundingIntervalWeb(List<String> symbols) {
+        Map<String, FundingIntervalDTO> fundingIntervalDataList = new HashMap<>();
 
         for (String symbol : symbols) {
             Map<String, FundingIntervalDTO> cachedData = fundingIntervalDataService.processFundingIntervalDataFromCache(symbol);
 
             if (cachedData != null && !cachedData.isEmpty()) {
-                fundingIntervalDataList.add(cachedData);
+                fundingIntervalDataList.putAll(cachedData);
             } else {
                 String url = FUNDINGINTERVAL_API_URL + symbol;
                 JsonNode response = restTemplate.getForObject(url, JsonNode.class);
@@ -45,7 +46,7 @@ public class FundingIntervalWebService implements IFundingIntervalWebService {
                             System.out.println("Received data from API for symbol: " + symbol);
 
                             Map<String, FundingIntervalDTO> processedData = fundingIntervalDataService.processFundingIntervalData(fundingInfo);
-                            fundingIntervalDataList.add(processedData);
+                            fundingIntervalDataList.putAll(processedData);
                         }
                     }
                 } else {

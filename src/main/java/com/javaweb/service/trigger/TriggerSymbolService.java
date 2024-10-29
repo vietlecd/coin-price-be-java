@@ -66,13 +66,4 @@ public class TriggerSymbolService {
                 ));
     }
 
-    public Map<String, List<String>> getUsernamesWithSymbolsIndicator() {
-        List<IndicatorTrigger> triggers = indicatorTriggerRepository.findAllUsernamesWithSymbols();
-
-        return triggers.stream()
-                .collect(Collectors.groupingBy(
-                        IndicatorTrigger::getUsername,
-                        Collectors.mapping(IndicatorTrigger::getSymbol, Collectors.toList())
-                ));
-    }
 }

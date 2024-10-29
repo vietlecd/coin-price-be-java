@@ -12,8 +12,6 @@ import com.javaweb.service.trigger.CRUD.FuturePriceTriggerService;
 import com.javaweb.service.trigger.CRUD.PriceDifferenceTriggerService;
 import com.javaweb.service.trigger.CRUD.SpotPriceTriggerService;
 import com.javaweb.service.trigger.GetTriggerService;
-import com.javaweb.service.trigger.*;
-import com.javaweb.connect.impl.ListingWebSocketService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -45,12 +43,6 @@ public class TriggerConditionController {
     @Autowired
     private FundingRateTriggerService fundingRateTriggerService; // Assuming this service exists
 
-    @Autowired
-    private FundingRateIntervalService fundingRateIntervalService;
-
-    @Autowired
-    private ListingWebSocketService listingWebSocketService;
-
     @PostMapping("/create")
     public ResponseEntity<?> createTriggerCondition(@RequestParam("triggerType") String triggerType, @RequestBody Map<String, Object> dtoMap, HttpServletRequest request) {
         try {
@@ -74,14 +66,14 @@ public class TriggerConditionController {
                     alertId = fundingRateTriggerService.createTrigger(fundingDTO, username);
                     //fundingRateTriggerService.createTrigger(fundingDTO); // Ensure this method exists in the FundingRateTriggerService
                     break;
-                case "new-symbol-listing":
-                    ListingDTO listingDTO = objectMapper.convertValue(dtoMap, ListingDTO.class);
-                    listingWebSocketService.startWebSocketClient();  // Start WebSocket for new listing trigger
-                    break;
-                case "funding-rate-interval-changed":
-                    FundingIntervalDTO fundingIntervalDTO = objectMapper.convertValue(dtoMap, FundingIntervalDTO.class);
-                    fundingRateIntervalService.createFundingIntervalTrigger(fundingIntervalDTO); // Call the correct method
-                    break;
+//                case "new-symbol-listing":
+//                    ListingDTO listingDTO = objectMapper.convertValue(dtoMap, ListingDTO.class);
+//                    listingWebSocketService.startWebSocketClient();  // Start WebSocket for new listing trigger
+//                    break;
+//                case "funding-rate-interval-changed":
+//                    FundingIntervalDTO fundingIntervalDTO = objectMapper.convertValue(dtoMap, FundingIntervalDTO.class);
+//                    fundingRateIntervalService.createFundingIntervalTrigger(fundingIntervalDTO); // Call the correct method
+//                    break;
                 default:
                     return ResponseEntity.badRequest().body("Invalid trigger type");
             }
@@ -126,12 +118,12 @@ public class TriggerConditionController {
                 case "funding-rate":
                     fundingRateTriggerService.deleteTrigger(symbol, username);
                     break;
-                case "funding-rate-interval":
-                    fundingRateIntervalService.deleteFundingRateInterval(symbol);
-                    break;
-                case "new-symbol-listing":
-                    listingWebSocketService.stopTokenCheck();
-                    break;
+//                case "funding-rate-interval":
+//                    fundingRateIntervalService.deleteFundingRateInterval(symbol);
+//                    break;
+//                case "new-symbol-listing":
+//                    listingWebSocketService.stopTokenCheck();
+//                    break;
             }
         } catch (Exception e) {
             return ResponseEntity.status(500).body("Error processing trigger: " + e.getMessage());
