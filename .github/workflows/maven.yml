@@ -48,4 +48,18 @@ jobs:
     - name: Remove Docker Image
       run: |
         sudo docker rmi lmao1415/dath_cnpm
+
+    - name: Deploy Trên server
+      run: |
+        sshpass -p ${{ secrets.VPS_PASSWORD }} ssh -o StrictHostKeyChecking=no root@${{ secrets.VPS_IP }} "
+          cd server
+          
+          echo 'y' | sudo docker container prune
+          sudo docker rmi $(docker images -a -q) 2>dev>null || true  
+          sudo docker compose down
+          sudo docker compose pull
+
+          tmux kill-session -t spring 2>/dev/null || true 
+          tmux new-session -d -s spring 'sudo docker compose up'
+        "
         
