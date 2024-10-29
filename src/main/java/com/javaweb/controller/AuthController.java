@@ -42,9 +42,7 @@ public class AuthController {
             if (token == null) {
                 throw new Exception("Không tìm thấy token!");
             }
-            LoginRequest loginRequest = CreateToken.decodeToken(token);
-
-            String username = loginRequest.getUsername();
+            String username = CreateToken.verifyToken(token);
 
             userData userData = userRepository.findByUsername(username);
             List<String> ip_list = userData.getIp_list();
