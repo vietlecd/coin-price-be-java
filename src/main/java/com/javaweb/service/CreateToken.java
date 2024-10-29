@@ -53,4 +53,19 @@ public class CreateToken {
             throw new JOSEException("Sai Token");
         }
     }
+
+    public static String verifyToken(String token) throws Exception {
+        SignedJWT signedJWT = SignedJWT.parse(token);
+
+        JWSVerifier verifier = new MACVerifier(SECRET.getBytes(StandardCharsets.UTF_8));
+
+        if (signedJWT.verify(verifier)) {
+            JWTClaimsSet claims = signedJWT.getJWTClaimsSet();
+
+            return claims.getSubject();
+        } else {
+            throw new JOSEException("Sai Token");
+        }
+
+    }
 }

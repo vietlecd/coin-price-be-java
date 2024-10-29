@@ -26,10 +26,10 @@ public class LoginFunc {
         String token = CreateToken.createToken(username);
 
         ResponseCookie cookie = ResponseCookie.from("token", token)
+                .path("/")
                 .httpOnly(true)
                 .secure(true)
                 .maxAge(60 * 60 * 13)
-                .path("/")
                 .build();
 
         String cookieHeader = cookie.toString() + "; SameSite=None";
