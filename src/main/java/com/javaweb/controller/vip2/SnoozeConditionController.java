@@ -58,10 +58,7 @@ public class SnoozeConditionController {
                     FundingRateSnoozeCondition fundingRateSnoozeCondition = snoozeMapHelper.mapToFundingRateSnoozeCondition(snoozeConditionRequest, username);
                     fundingRateSnoozeConditionService.createSnoozeCondition(fundingRateSnoozeCondition, username);
                     break;
-                case "indicator":
-                    IndicatorSnoozeCondition indicatorSnoozeCondition = snoozeMapHelper.mapToIndicatorSnoozeCondition(snoozeConditionRequest, username);
-                    indicatorSnoozeConditionService.createSnoozeCondition(indicatorSnoozeCondition, username);
-                    break;
+
                 case "interval":
                     IntervalSnoozeCondition intervalSnoozeCondition = snoozeMapHelper.mapToIntervalSnoozeCondition(snoozeConditionRequest, username);
                     intervalSnoozeConditionService.createSnoozeCondition(intervalSnoozeCondition, username);
@@ -94,9 +91,7 @@ public class SnoozeConditionController {
                 case "funding-rate":
                     fundingRateSnoozeConditionService.deleteSnoozeCondition(symbol, username);
                     break;
-                case "indicator":
-                    indicatorSnoozeConditionService.deleteSnoozeCondition(symbol,username);
-                    break;
+
                     default:
                     return ResponseEntity.badRequest().body("Invalid snooze condition type");
             }
