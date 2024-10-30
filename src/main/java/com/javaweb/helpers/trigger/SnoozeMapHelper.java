@@ -139,6 +139,35 @@ public class SnoozeMapHelper {
         return indicatorSnoozeCondition;
     }
 
+    public IntervalSnoozeCondition mapToIntervalSnoozeCondition(Map<String, Object> snoozeConditionRequest, String username) {
+        // Perform the mapping of the request body to IntervalSnoozeCondition
+        IntervalSnoozeCondition intervalSnoozeCondition = new IntervalSnoozeCondition(
+                (String) snoozeConditionRequest.get("symbol"),
+                (String) snoozeConditionRequest.get("conditionType"),
+                LocalDateTime.parse((String) snoozeConditionRequest.get("startTime")),
+                LocalDateTime.parse((String) snoozeConditionRequest.get("endTime")),
+                (String) snoozeConditionRequest.get("specificTime")
+        );
+
+        // Set the username (usernameId) for the IntervalSnoozeCondition object
+        if (snoozeConditionRequest.get("repeatCount") != null) {
+            intervalSnoozeCondition.setRepeatCount((Integer) snoozeConditionRequest.get("repeatCount"));
+        } else {
+            intervalSnoozeCondition.setRepeatCount(0); // default value if not provided
+        }
+
+        if (snoozeConditionRequest.get("maxRepeatCount") != null) {
+            intervalSnoozeCondition.setMaxRepeatCount((Integer) snoozeConditionRequest.get("maxRepeatCount"));
+        } else {
+            intervalSnoozeCondition.setMaxRepeatCount(1); // default value if not provided
+        }
+
+        // Print out the object after mapping for debugging purposes
+        System.out.println("IntervalSnoozeCondition after mapping: " + intervalSnoozeCondition);
+        intervalSnoozeCondition.setUsername(username);
+        System.out.println("IntervalSnoozeCondition after mapping: " + intervalSnoozeCondition);
+        return intervalSnoozeCondition;
+    }
 
 
 }

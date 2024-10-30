@@ -32,6 +32,8 @@ public class SnoozeConditionController {
     private SnoozeMapHelper snoozeMapHelper;
     @Autowired
     private GetUsernameHelper getUsernameHelper;
+    @Autowired
+    private IntervalSnoozeConditionService intervalSnoozeConditionService;
 
     @PostMapping("/create/snooze")
     public ResponseEntity<?> createSnoozeCondition(@RequestParam("snoozeType") String snoozeType,
@@ -60,9 +62,13 @@ public class SnoozeConditionController {
                     IndicatorSnoozeCondition indicatorSnoozeCondition = snoozeMapHelper.mapToIndicatorSnoozeCondition(snoozeConditionRequest, username);
                     indicatorSnoozeConditionService.createSnoozeCondition(indicatorSnoozeCondition, username);
                     break;
+                case "interval":
+                    IntervalSnoozeCondition intervalSnoozeCondition = snoozeMapHelper.mapToIntervalSnoozeCondition(snoozeConditionRequest, username);
+                    intervalSnoozeConditionService.createSnoozeCondition(intervalSnoozeCondition, username);
+                    break;
 
                 default:
-                    return ResponseEntity.badRequest().body("Invalid trigger type");
+                    return ResponseEntity.badRequest().body("Invalid snooze type");
             }
         } catch (Exception e) {
             return ResponseEntity.status(500).body("Error processing trigger: " + e.getMessage());
