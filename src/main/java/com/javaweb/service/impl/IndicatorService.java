@@ -2,6 +2,7 @@ package com.javaweb.service.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.javaweb.converter.IndicatorDTOHelper;
+
 import com.javaweb.dto.IndicatorDTO;
 
 import com.javaweb.helpers.service.DateTimeHelper;
@@ -18,7 +19,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.*;
 
 @Service
 public class IndicatorService implements IIndicatorService {
@@ -29,7 +30,7 @@ public class IndicatorService implements IIndicatorService {
     @Autowired
     private IUserIndicatorService userIndicatorService;
     @Override
-    public Map<String, IndicatorDTO> getIndicatorData(List<String> symbols, List<String> indicators, int days, String username) {
+    public Map<String, IndicatorDTO> getIndicatorData(List<String> symbols, List<String> indicators, int days, String username) throws TimeoutException {
         Map<String, IndicatorDTO> indicatorDataMap = new HashMap<>();
 
         for (String symbol : symbols) {
@@ -49,10 +50,14 @@ public class IndicatorService implements IIndicatorService {
                     default:
                         String code = userIndicatorService.getCode(username, indicator);
                         if (code != null) {
-                            Object indicatorValues = calculateUserIndicator(prices, code, indicator);
-                            values.put(indicator, indicatorValues);
+                            try {
+                                Object indicatorValues = calculateUserIndicator(prices, code, indicator, 5, TimeUnit.SECONDS);
+                                values.put(indicator, indicatorValues);
+                            } catch (Exception e) {
+                                throw e;
+                            }
                         } else {
-                            throw new RuntimeException("Indicator không được hỗ trợ: " + indicator);
+                            throw new IllegalArgumentException("Indicator không được hỗ trợ: " + indicator);
                         }
                 }
             }
@@ -66,7 +71,6 @@ public class IndicatorService implements IIndicatorService {
 
         return indicatorDataMap;
     }
-
 
     private double calculateMA(Map<Long, Double> prices) {
         if (prices.isEmpty()) return 0;
@@ -116,7 +120,7 @@ public class IndicatorService implements IIndicatorService {
         return bands;
     }
 
-    private Object calculateUserIndicator(Map<Long, Double> prices, String groovyScript, String indicator) {
+    private Object calculateUserIndicator(Map<Long, Double> prices, String groovyScript, String indicator, long timeout, TimeUnit timeUnit) throws TimeoutException {
         List<Double> priceList = new ArrayList<>(prices.values());
         List<Long> timeList = new ArrayList<>(prices.keySet());
         int size = prices.size();
@@ -132,39 +136,56 @@ public class IndicatorService implements IIndicatorService {
 
         SimpleBindings bindings = new SimpleBindings(variables);
 
-        try {
+        Callable<Object> task = () -> {
             engine.eval(groovyScript, bindings);
             return bindings.get(indicator);
+        };
+
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Future<Object> future = executor.submit(task);
+
+        try {
+            return future.get(timeout, timeUnit);
+        } catch (TimeoutException e) {
+            future.cancel(true);
+            throw new TimeoutException("Thời gian thực thi script đã vượt quá giới hạn cho indicator: " + indicator);
         } catch (Exception e) {
-            throw new RuntimeException("Lỗi khi thực thi script người dùng");
+            throw new RuntimeException("Lỗi khi thực thi script người dùng cho indicator: " + indicator);
+        } finally {
+            executor.shutdown();
         }
     }
 
     @Override
-    public void handleIndicatorWebSocketMessage(String symbol, JsonNode data,  boolean isTriggered) {
-        JsonNode data1 = data.get(symbol);
-
-        Map<String, Object> values = new HashMap<>();
-        JsonNode data2 = data1.get("values");
-        values.put("MA", data2.get("MA").asDouble());
-        values.put("EMA", data2.get("EMA").asDouble());
-
-        long eventTimeLong = data1.get("eventTime").asLong();
+    public void handleFundingRateWebSocketMessage(JsonNode data,  boolean isTriggered) {
+        long eventTimeLong = data.get("E").asLong();
+        long nextFundingTime = data.get("T").asLong();
 
         String eventTime = DateTimeHelper.formatEventTime(eventTimeLong);
+
+        String symbol = data.get("s").asText();
+        JsonNode data1 = data.get("v");
+        Map<String, Object> values = new HashMap<>();
+        values.put(data1.get("S").asText(), data1.get("D").asDouble());
+
+        long countdownInSeconds = (nextFundingTime - eventTimeLong) / 1000;
+
+        String fundingCountdown = String.format("%02d:%02d:%02d",
+                TimeUnit.SECONDS.toHours(countdownInSeconds),
+                TimeUnit.SECONDS.toMinutes(countdownInSeconds) % 60,
+                countdownInSeconds % 60
+        );
+
 
         IndicatorDTO indicatorDTO = IndicatorDTOHelper.createIndicatorDTO(symbol, values, eventTime);
 
         if (!isTriggered) {
-            indicatorDataUsers.put("Indicator: " + symbol, indicatorDTO);
+            indicatorDataUsers.put("FundingRate Price: " + symbol, indicatorDTO);
         }
         else {
-            indicatorDataTriggers.put("Indicator: " + symbol, indicatorDTO);
+            indicatorDataTriggers.put("FundingRate Price: " + symbol, indicatorDTO);
         }
     }
-
-    @Override
-    public Map<String, IndicatorDTO> getIndicatorDataUsers() { return indicatorDataUsers; }
 
     @Override
     public Map<String, IndicatorDTO> getIndicatorDataTriggers(){
