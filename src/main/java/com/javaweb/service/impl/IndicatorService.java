@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.javaweb.service.IIndicatorService;
 import com.javaweb.repository.IndicatorRepository;
 import com.javaweb.service.IUserIndicatorService;
-
+ 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.SimpleBindings;
