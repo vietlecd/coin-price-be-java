@@ -168,6 +168,36 @@ public class SnoozeMapHelper {
         System.out.println("IntervalSnoozeCondition after mapping: " + intervalSnoozeCondition);
         return intervalSnoozeCondition;
     }
+    public ListingSnoozeCondition mapToListingSnoozeCondition(Map<String, Object> snoozeConditionRequest, String username) {
+        // Perform the mapping of the request body to ListingSnoozeCondition
+        ListingSnoozeCondition listingSnoozeCondition = new ListingSnoozeCondition(
+
+                (String) snoozeConditionRequest.get("symbol"),
+                (String) snoozeConditionRequest.get("conditionType"),
+                LocalDateTime.parse((String) snoozeConditionRequest.get("startTime")),
+                LocalDateTime.parse((String) snoozeConditionRequest.get("endTime")),
+                (String) snoozeConditionRequest.get("specificTime")
+        );
+
+        // Set the username (usernameId) for the ListingSnoozeCondition object
+        if (snoozeConditionRequest.get("repeatCount") != null) {
+            listingSnoozeCondition.setRepeatCount((Integer) snoozeConditionRequest.get("repeatCount"));
+        } else {
+            listingSnoozeCondition.setRepeatCount(0); // default value if not provided
+        }
+
+        if (snoozeConditionRequest.get("maxRepeatCount") != null) {
+            listingSnoozeCondition.setMaxRepeatCount((Integer) snoozeConditionRequest.get("maxRepeatCount"));
+        } else {
+            listingSnoozeCondition.setMaxRepeatCount(1); // default value if not provided
+        }
+
+        // Print out the object after mapping for debugging purposes
+        System.out.println("ListingSnoozeCondition after mapping: " + listingSnoozeCondition);
+        listingSnoozeCondition.setUsername(username);
+        System.out.println("ListingSnoozeCondition after mapping: " + listingSnoozeCondition);
+        return listingSnoozeCondition;
+    }
 
 
 }

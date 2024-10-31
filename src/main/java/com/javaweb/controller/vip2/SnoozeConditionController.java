@@ -4,6 +4,7 @@ import com.javaweb.dto.snooze.*;
 import com.javaweb.helpers.controller.GetUsernameHelper;
 import com.javaweb.helpers.trigger.SnoozeMapHelper;
 import com.javaweb.service.snooze.*;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,6 +14,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("api/vip2")
+@AllArgsConstructor
 public class SnoozeConditionController {
 
     @Autowired
@@ -35,6 +37,7 @@ public class SnoozeConditionController {
     @Autowired
     private IntervalSnoozeConditionService intervalSnoozeConditionService;
 
+    private ListingSnoozeConditionService listingSnoozeConditionService;
     @PostMapping("/create/snooze")
     public ResponseEntity<?> createSnoozeCondition(@RequestParam("snoozeType") String snoozeType,
                                                    @RequestBody Map<String, Object> snoozeConditionRequest, HttpServletRequest request) {
@@ -63,6 +66,12 @@ public class SnoozeConditionController {
                     IntervalSnoozeCondition intervalSnoozeCondition = snoozeMapHelper.mapToIntervalSnoozeCondition(snoozeConditionRequest, username);
                     intervalSnoozeConditionService.createSnoozeCondition(intervalSnoozeCondition, username);
                     break;
+                case "listing":
+                    ListingSnoozeCondition listingSnoozeCondition = snoozeMapHelper.mapToListingSnoozeCondition(snoozeConditionRequest, username);
+                    listingSnoozeConditionService.createSnoozeCondition(listingSnoozeCondition, username);
+                    break;
+
+
 
                 default:
                     return ResponseEntity.badRequest().body("Invalid snooze type");
@@ -91,7 +100,9 @@ public class SnoozeConditionController {
                 case "funding-rate":
                     fundingRateSnoozeConditionService.deleteSnoozeCondition(symbol, username);
                     break;
-
+                case "listing":
+                    listingSnoozeConditionService.deleteSnoozeCondition(symbol,username);
+                    break;
                     default:
                     return ResponseEntity.badRequest().body("Invalid snooze condition type");
             }
