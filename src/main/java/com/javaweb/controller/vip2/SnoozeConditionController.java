@@ -32,6 +32,8 @@ public class SnoozeConditionController {
     private SnoozeMapHelper snoozeMapHelper;
     @Autowired
     private GetUsernameHelper getUsernameHelper;
+    @Autowired
+    private IntervalSnoozeConditionService intervalSnoozeConditionService;
 
     @PostMapping("/create/snooze")
     public ResponseEntity<?> createSnoozeCondition(@RequestParam("snoozeType") String snoozeType,
@@ -56,13 +58,14 @@ public class SnoozeConditionController {
                     FundingRateSnoozeCondition fundingRateSnoozeCondition = snoozeMapHelper.mapToFundingRateSnoozeCondition(snoozeConditionRequest, username);
                     fundingRateSnoozeConditionService.createSnoozeCondition(fundingRateSnoozeCondition, username);
                     break;
-                case "indicator":
-                    IndicatorSnoozeCondition indicatorSnoozeCondition = snoozeMapHelper.mapToIndicatorSnoozeCondition(snoozeConditionRequest, username);
-                    indicatorSnoozeConditionService.createSnoozeCondition(indicatorSnoozeCondition, username);
+
+                case "interval":
+                    IntervalSnoozeCondition intervalSnoozeCondition = snoozeMapHelper.mapToIntervalSnoozeCondition(snoozeConditionRequest, username);
+                    intervalSnoozeConditionService.createSnoozeCondition(intervalSnoozeCondition, username);
                     break;
 
                 default:
-                    return ResponseEntity.badRequest().body("Invalid trigger type");
+                    return ResponseEntity.badRequest().body("Invalid snooze type");
             }
         } catch (Exception e) {
             return ResponseEntity.status(500).body("Error processing trigger: " + e.getMessage());
@@ -88,9 +91,7 @@ public class SnoozeConditionController {
                 case "funding-rate":
                     fundingRateSnoozeConditionService.deleteSnoozeCondition(symbol, username);
                     break;
-                case "indicator":
-                    indicatorSnoozeConditionService.deleteSnoozeCondition(symbol,username);
-                    break;
+
                     default:
                     return ResponseEntity.badRequest().body("Invalid snooze condition type");
             }

@@ -48,23 +48,14 @@ public class FundingRateStreamService {
         Runnable sendTask = () -> {
             try {
                 Map<String, FundingRateDTO> fundingRateDataMap = fundingRateDataService.getFundingRateDataUsers();
-                List<Map<String, FundingIntervalDTO>> fundingIntervalDataList = fundingIntervalWebService.getLatestFundingIntervalData(symbols);
+                Map<String, FundingIntervalDTO> fundingIntervalDataMap = fundingIntervalWebService.getLatestFundingIntervalData(symbols);
 
                 for (String symbol : symbols) {
                     FundingRateDTO fundingRateDTO = fundingRateDataMap.get("FundingRate Price: " + symbol);
+                    FundingIntervalDTO fundingIntervalDTO = fundingIntervalDataMap.get(symbol);
 
-                    if (fundingRateDTO != null) {
-                        FundingIntervalDTO fundingIntervalDTO = null;
-
-                        for (Map<String, FundingIntervalDTO> fundingIntervalData : fundingIntervalDataList) {
-                            fundingIntervalDTO = fundingIntervalData.get(symbol);
-                            if (fundingIntervalDTO != null) {
-                                break;
-                            }
-                        }
-
+                    if (fundingRateDTO != null && fundingIntervalDTO != null) {
                         FundingRateAndIntervalDTO combinedDTO = combineData(fundingRateDTO, fundingIntervalDTO);
-
                         sseEmitter.send(combinedDTO);
                     }
                 }

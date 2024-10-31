@@ -42,16 +42,13 @@ public class AuthController {
             if (token == null) {
                 throw new Exception("Không tìm thấy token!");
             }
-            LoginRequest loginRequest = CreateToken.decodeToken(token);
-
-            String username = loginRequest.getUsername();
-            String password = loginRequest.getPassword();
+            String username = CreateToken.verifyToken(token);
 
             userData userData = userRepository.findByUsername(username);
             List<String> ip_list = userData.getIp_list();
 
             if (ip_list.contains(LoginFunc.getClientIp(request))) {
-                LoginFunc.setCookie(username, userData.getPassword(), response);
+                LoginFunc.setCookie(username, response);
             } else {
                 throw new Exception("Yêu cầu refresh token không hợp lệ vì tài khoản chưa được đăng nhập trên thiết bị này!, ip thiết bị:" + LoginFunc.getClientIp(request));
             }
@@ -92,7 +89,7 @@ public class AuthController {
             }
 
             if(user.getPassword().equals(password)) {
-                LoginFunc.setCookie(user.getUsername(), password, response);
+                LoginFunc.setCookie(user.getUsername(), response);
 
                 if (!user.getIp_list().contains(LoginFunc.getClientIp(request))) {
                     user.addIp(LoginFunc.getClientIp(request));
@@ -133,7 +130,7 @@ public class AuthController {
                 throw new Exception("Không tìm thấy username này!");
 
             if (user.getPassword().equals(password)) {
-                LoginFunc.setCookie(username, password, res);
+                LoginFunc.setCookie(username, res);
 
                 if (!user.getIp_list().contains(LoginFunc.getClientIp(request))) {
                     user.addIp(LoginFunc.getClientIp(request));
@@ -180,7 +177,7 @@ public class AuthController {
             );
             RegisterFunc.checkUserAndEmail(user, userRepository);
 
-            LoginFunc.setCookie(user.getUsername(), user.getPassword(), res);
+            LoginFunc.setCookie(user.getUsername(), res);
             userRepository.save(user);
             return new ResponseEntity<>(
                     new Responses(

@@ -1,6 +1,6 @@
 package com.javaweb.service.trigger;
 
-import com.javaweb.repository.*;
+import com.javaweb.repository.trigger.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.javaweb.model.trigger.*;

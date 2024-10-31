@@ -58,7 +58,7 @@ public class IndicatorWebSocketService extends TextWebSocketHandler implements I
             String payload = message.getPayload();
             JsonNode data = objectMapper.readTree(payload).get("data");
 
-            indicatorService.handleFundingRateWebSocketMessage(data, isTriggerRequest);
+            indicatorService.handleIndicatorWebSocketMessage("bitcoin" , data, isTriggerRequest); // demo
         }
     }
 }

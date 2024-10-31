@@ -2,7 +2,6 @@ package com.javaweb.service.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.javaweb.converter.IndicatorDTOHelper;
-
 import com.javaweb.dto.IndicatorDTO;
 
 import com.javaweb.helpers.service.DateTimeHelper;
@@ -71,6 +70,7 @@ public class IndicatorService implements IIndicatorService {
 
         return indicatorDataMap;
     }
+
 
     private double calculateMA(Map<Long, Double> prices) {
         if (prices.isEmpty()) return 0;
@@ -157,35 +157,30 @@ public class IndicatorService implements IIndicatorService {
     }
 
     @Override
-    public void handleFundingRateWebSocketMessage(JsonNode data,  boolean isTriggered) {
-        long eventTimeLong = data.get("E").asLong();
-        long nextFundingTime = data.get("T").asLong();
+    public void handleIndicatorWebSocketMessage(String symbol, JsonNode data,  boolean isTriggered) {
+        JsonNode data1 = data.get(symbol);
+
+        Map<String, Object> values = new HashMap<>();
+        JsonNode data2 = data1.get("values");
+        values.put("MA", data2.get("MA").asDouble());
+        values.put("EMA", data2.get("EMA").asDouble());
+
+        long eventTimeLong = data1.get("eventTime").asLong();
 
         String eventTime = DateTimeHelper.formatEventTime(eventTimeLong);
-
-        String symbol = data.get("s").asText();
-        JsonNode data1 = data.get("v");
-        Map<String, Object> values = new HashMap<>();
-        values.put(data1.get("S").asText(), data1.get("D").asDouble());
-
-        long countdownInSeconds = (nextFundingTime - eventTimeLong) / 1000;
-
-        String fundingCountdown = String.format("%02d:%02d:%02d",
-                TimeUnit.SECONDS.toHours(countdownInSeconds),
-                TimeUnit.SECONDS.toMinutes(countdownInSeconds) % 60,
-                countdownInSeconds % 60
-        );
-
 
         IndicatorDTO indicatorDTO = IndicatorDTOHelper.createIndicatorDTO(symbol, values, eventTime);
 
         if (!isTriggered) {
-            indicatorDataUsers.put("FundingRate Price: " + symbol, indicatorDTO);
+            indicatorDataUsers.put("Indicator: " + symbol, indicatorDTO);
         }
         else {
-            indicatorDataTriggers.put("FundingRate Price: " + symbol, indicatorDTO);
+            indicatorDataTriggers.put("Indicator: " + symbol, indicatorDTO);
         }
     }
+
+    @Override
+    public Map<String, IndicatorDTO> getIndicatorDataUsers() { return indicatorDataUsers; }
 
     @Override
     public Map<String, IndicatorDTO> getIndicatorDataTriggers(){

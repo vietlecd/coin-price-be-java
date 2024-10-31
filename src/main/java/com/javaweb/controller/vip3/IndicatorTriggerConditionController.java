@@ -1,13 +1,10 @@
 package com.javaweb.controller.vip3;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.javaweb.dto.trigger.*;
+import com.javaweb.dto.trigger.IndicatorTriggerDTO;
 import com.javaweb.helpers.controller.GetUsernameHelper;
-import com.javaweb.service.trigger.*;
-import com.javaweb.service.trigger.CRUD.FundingRateTriggerService;
-import com.javaweb.service.trigger.CRUD.FuturePriceTriggerService;
 import com.javaweb.service.trigger.CRUD.IndicatorTriggerService;
-import com.javaweb.service.trigger.CRUD.PriceDifferenceTriggerService;
+import com.javaweb.service.trigger.GetTriggerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
