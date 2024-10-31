@@ -10,5 +10,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document(collection = "spot_price_trigger")
 public class SpotPriceTrigger extends TriggerCondition {
     private double spotPriceThreshold;
+    private String triggerType = "spot";
 
 }

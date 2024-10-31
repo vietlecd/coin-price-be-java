@@ -11,4 +11,5 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class FundingRateTrigger extends TriggerCondition {
     private double fundingRateThreshold;
     private boolean fundingRateInterval;
+    private String triggerType = "funding-rate";
 }
