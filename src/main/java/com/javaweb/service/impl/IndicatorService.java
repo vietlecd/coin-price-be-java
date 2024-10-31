@@ -1,8 +1,11 @@
 package com.javaweb.service.impl;
 
+<<<<<<< HEAD
 import com.fasterxml.jackson.databind.JsonNode;
 import com.javaweb.converter.IndicatorDTOHelper;
 
+=======
+>>>>>>> parent of 206a011 (Merge pull request #45 from dath-241/developer)
 import com.javaweb.dto.IndicatorDTO;
 
 import com.javaweb.helpers.service.DateTimeHelper;
@@ -155,6 +158,7 @@ public class IndicatorService implements IIndicatorService {
             executor.shutdown();
         }
     }
+<<<<<<< HEAD
 
     @Override
     public void handleFundingRateWebSocketMessage(JsonNode data,  boolean isTriggered) {
@@ -191,4 +195,6 @@ public class IndicatorService implements IIndicatorService {
     public Map<String, IndicatorDTO> getIndicatorDataTriggers(){
         return indicatorDataTriggers;
     }
+=======
+>>>>>>> parent of 206a011 (Merge pull request #45 from dath-241/developer)
 }

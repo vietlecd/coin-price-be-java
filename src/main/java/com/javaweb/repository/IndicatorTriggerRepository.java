@@ -1,4 +1,4 @@
-package com.javaweb.repository.trigger;
+package com.javaweb.repository;
 
 import com.javaweb.model.trigger.FundingRateTrigger;
 import com.javaweb.model.trigger.IndicatorTrigger;

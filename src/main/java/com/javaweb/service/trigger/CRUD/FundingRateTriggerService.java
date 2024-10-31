@@ -3,7 +3,7 @@ package com.javaweb.service.trigger.CRUD;
 import com.javaweb.dto.trigger.FundingRateTriggerDTO;
 import com.javaweb.helpers.trigger.TriggerMapHelper;
 import com.javaweb.model.trigger.FundingRateTrigger;
-import com.javaweb.repository.trigger.FundingRateTriggerRepository;
+import com.javaweb.repository.FundingRateTriggerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
