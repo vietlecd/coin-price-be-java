@@ -3,14 +3,13 @@ package com.javaweb.service.impl;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.javaweb.converter.IndicatorDTOHelper;
 import com.javaweb.dto.IndicatorDTO;
-
 import com.javaweb.helpers.service.DateTimeHelper;
-import org.springframework.stereotype.Service;
-import org.springframework.beans.factory.annotation.Autowired;
-import com.javaweb.service.IIndicatorService;
 import com.javaweb.repository.IndicatorRepository;
+import com.javaweb.service.IIndicatorService;
 import com.javaweb.service.IUserIndicatorService;
- 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.SimpleBindings;

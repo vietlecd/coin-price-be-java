@@ -1,9 +1,9 @@
 package com.javaweb.controller.vip3;
 
-import com.javaweb.dto.snooze.*;
+import com.javaweb.dto.snooze.IndicatorSnoozeCondition;
 import com.javaweb.helpers.controller.GetUsernameHelper;
 import com.javaweb.helpers.trigger.SnoozeMapHelper;
-import com.javaweb.service.snooze.*;
+import com.javaweb.service.snooze.IndicatorSnoozeConditionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

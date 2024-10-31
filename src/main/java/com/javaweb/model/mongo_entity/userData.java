@@ -1,15 +1,12 @@
 package com.javaweb.model.mongo_entity;
 
-import lombok.*;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.index.Indexed;
+import lombok.Data;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.security.SecureRandom;
 import java.text.NumberFormat;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Data
 @Document(collection = "userData")

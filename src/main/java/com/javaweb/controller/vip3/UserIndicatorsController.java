@@ -25,25 +25,22 @@ public class UserIndicatorsController {
         String username = (String) request.getAttribute("username");
 
         Optional<userIndicator> existingIndicator = userIndicatorService.findByUsernameAndName(username, userIndicatorRequest.getName());
-        try {
-            if (existingIndicator.isPresent()) {
-                userIndicator userIndicator = existingIndicator.get();
-                userIndicator.setCode(userIndicatorRequest.getCode());
-                userIndicatorService.addIndicator(userIndicator);
 
-                return ResponseEntity.ok("Indicator " + userIndicatorRequest.getName() + " đã được cập nhật thành công!");
-            } else {
-                userIndicator userIndicator = new userIndicator();
-                userIndicator.setUsername(username);
-                userIndicator.setName(userIndicatorRequest.getName());
-                userIndicator.setCode(userIndicatorRequest.getCode());
+        if (existingIndicator.isPresent()) {
+            userIndicator userIndicator = existingIndicator.get();
+            userIndicator.setCode(userIndicatorRequest.getCode());
+            userIndicatorService.addIndicator(userIndicator);
 
-                userIndicatorService.addIndicator(userIndicator);
+            return ResponseEntity.ok("Indicator " + userIndicatorRequest.getName() + " đã được cập nhật thành công!");
+        } else {
+            userIndicator userIndicator = new userIndicator();
+            userIndicator.setUsername(username);
+            userIndicator.setName(userIndicatorRequest.getName());
+            userIndicator.setCode(userIndicatorRequest.getCode());
 
-                return ResponseEntity.ok("Đã thêm indicator " + userIndicatorRequest.getName() + " thành công!");
-            }
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            userIndicatorService.addIndicator(userIndicator);
+
+            return ResponseEntity.ok("Đã thêm indicator " + userIndicatorRequest.getName() + " thành công!");
         }
     }
 }

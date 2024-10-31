@@ -14,7 +14,7 @@ public class IndicatorTriggerDTO {
     private final int period;
     private final String notification_method;
 
-    private IndicatorTriggerDTO(IndicatorTriggerDTO.Builder builder) {
+    private IndicatorTriggerDTO(Builder builder) {
         this.symbol = builder.symbol;
         this.indicator = builder.indicator;
         this.value = builder.value;

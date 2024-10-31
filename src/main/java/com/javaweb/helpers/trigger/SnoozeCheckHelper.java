@@ -1,15 +1,14 @@
 
 package com.javaweb.helpers.trigger;
-import java.time.LocalDateTime;
-import java.util.List;
-
-import java.util.Optional;
 
 import com.javaweb.dto.snooze.*;
 import com.javaweb.repository.*;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 
 @Component
 public class SnoozeCheckHelper {

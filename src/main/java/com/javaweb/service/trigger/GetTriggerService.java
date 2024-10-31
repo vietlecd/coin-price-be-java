@@ -1,15 +1,7 @@
 package com.javaweb.service.trigger;
 
-import com.javaweb.model.trigger.FundingRateTrigger;
-import com.javaweb.model.trigger.FuturePriceTrigger;
-import com.javaweb.model.trigger.PriceDifferenceTrigger;
-import com.javaweb.model.trigger.SpotPriceTrigger;
-import com.javaweb.repository.trigger.FundingRateTriggerRepository;
-import com.javaweb.repository.trigger.FuturePriceTriggerRepository;
-import com.javaweb.repository.trigger.PriceDifferenceTriggerRepository;
-import com.javaweb.repository.trigger.SpotPriceTriggerRepository;
 import com.javaweb.model.trigger.*;
-import com.javaweb.repository.trigger.IndicatorTriggerRepository;
+import com.javaweb.repository.trigger.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

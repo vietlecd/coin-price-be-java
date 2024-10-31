@@ -2,24 +2,19 @@ package com.javaweb.service.trigger;
 
 import com.javaweb.dto.FundingRateDTO;
 import com.javaweb.dto.PriceDTO;
-
 import com.javaweb.helpers.trigger.SnoozeCheckHelper;
-
 import com.javaweb.helpers.trigger.TriggerCheckHelper;
-import com.javaweb.repository.trigger.SpotPriceTriggerRepository;
 import com.javaweb.repository.UserRepository;
+import com.javaweb.repository.trigger.SpotPriceTriggerRepository;
 import com.javaweb.service.impl.FundingRateDataService;
 import com.javaweb.service.impl.FuturePriceDataService;
 import com.javaweb.service.impl.SpotPriceDataService;
-import com.javaweb.service.webhook.TelegramNotificationService;
-import lombok.AllArgsConstructor;
 import com.javaweb.service.webhook.*;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
-
-import static java.lang.Math.abs;
 
 @Service
 @AllArgsConstructor
