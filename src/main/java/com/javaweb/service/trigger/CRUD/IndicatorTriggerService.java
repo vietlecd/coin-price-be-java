@@ -3,7 +3,7 @@ package com.javaweb.service.trigger.CRUD;
 import com.javaweb.dto.trigger.IndicatorTriggerDTO;
 import com.javaweb.helpers.trigger.TriggerMapHelper;
 import com.javaweb.model.trigger.IndicatorTrigger;
-import com.javaweb.repository.trigger.IndicatorTriggerRepository;
+import com.javaweb.repository.IndicatorTriggerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
