@@ -53,7 +53,7 @@ public class FundingRateWebhookService {
                     payload.put("chatID", chat_id);
                     payload.put("timestamp", timestamp);
 
-                    telegramNotificationService.sendNotification(payload);
+                    //telegramNotificationService.sendNotification(payload);
                     System.out.println("FundingRate Trigger notification sent for symbol: " + symbol + " with threshold: " + threshold);
                 }
             } else {
