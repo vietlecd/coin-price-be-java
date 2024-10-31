@@ -54,7 +54,7 @@ public class PriceDifferenceWebhookService {
                     payload.put("timestamp", timestamp);
 
 
-                    telegramNotificationService.sendNotification(payload);
+                    //telegramNotificationService.sendNotification(payload);
                     System.out.println("Spot Trigger notification sent for symbol: " + symbol + " with threshold: " + threshold);
                 }
             } else {

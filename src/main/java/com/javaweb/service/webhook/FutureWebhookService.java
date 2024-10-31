@@ -52,7 +52,7 @@ public class FutureWebhookService {
                     payload.put("chatID", chat_id);
                     payload.put("timestamp", timestamp);
 
-                    telegramNotificationService.sendNotification(payload);
+                    //telegramNotificationService.sendNotification(payload);
                     System.out.println("Future Trigger notification sent for symbol: " + symbol + " with threshold: " + threshold);
                 }
             } else {
