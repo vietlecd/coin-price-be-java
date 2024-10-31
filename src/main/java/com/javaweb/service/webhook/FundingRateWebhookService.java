@@ -1,10 +1,10 @@
 package com.javaweb.service.webhook;
 
-import com.javaweb.dto.PriceDTO;
+import com.javaweb.dto.FundingRateDTO;
 import com.javaweb.model.mongo_entity.userData;
-import com.javaweb.model.trigger.FuturePriceTrigger;
+import com.javaweb.model.trigger.FundingRateTrigger;
 import com.javaweb.repository.UserRepository;
-import com.javaweb.repository.trigger.FuturePriceTriggerRepository;
+import com.javaweb.repository.trigger.FundingRateTriggerRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -14,22 +14,22 @@ import java.util.Optional;
 
 @Service
 @AllArgsConstructor
-public class FutureWebhookService {
+public class FundingRateWebhookService {
 
     private final TelegramNotificationService telegramNotificationService;
-    private final FuturePriceTriggerRepository futurePriceTriggerRepository;
+    private final FundingRateTriggerRepository fundingRateTriggerRepository;
     private final UserRepository userRepository;
 
-    public void processFutureNotification(String symbol, PriceDTO futurePriceDTO, String username) {
+    public void processFundingRateNotification(String symbol, FundingRateDTO fundingRateDTO, String username) {
         try {
-            double futurePrice = Double.parseDouble(futurePriceDTO.getPrice());
-            String timestamp = futurePriceDTO.getEventTime();
+            double fundingRate = Double.parseDouble(fundingRateDTO.getFundingRate());
+            String timestamp = fundingRateDTO.getEventTime();
 
-            FuturePriceTrigger trigger = futurePriceTriggerRepository.findBySymbolAndUsername(symbol, username);
+            FundingRateTrigger trigger = fundingRateTriggerRepository.findBySymbolAndUsername(symbol, username);
             if (trigger != null) {
-                double threshold = trigger.getFuturePriceThreshold();
+                double threshold = trigger.getFundingRateThreshold();
                 String condition = trigger.getCondition();
-                String triggerType = "Future";
+                String triggerType = "FundingRate";
 
                 Optional<userData> userDataOptional = Optional.ofNullable(userRepository.findByUsername(username));
                 if (userDataOptional.isPresent()) {
@@ -45,7 +45,7 @@ public class FutureWebhookService {
                     Map<String, Object> payload = new HashMap<>();
                     payload.put("triggerType", triggerType);
                     payload.put("symbol", symbol);
-                    payload.put("price", futurePrice);
+                    payload.put("fundingRate", fundingRate);
                     payload.put("threshold", threshold);
                     payload.put("condition", condition);
                     payload.put("vip_role", vip_role);
@@ -53,10 +53,10 @@ public class FutureWebhookService {
                     payload.put("timestamp", timestamp);
 
                     telegramNotificationService.sendNotification(payload);
-                    System.out.println("Future Trigger notification sent for symbol: " + symbol + " with threshold: " + threshold);
+                    System.out.println("FundingRate Trigger notification sent for symbol: " + symbol + " with threshold: " + threshold);
                 }
             } else {
-                System.out.println("No FuturePriceTrigger found for symbol: " + symbol);
+                System.out.println("No SpotPriceTrigger found for symbol: " + symbol);
             }
         } catch (NumberFormatException e) {
             e.printStackTrace();

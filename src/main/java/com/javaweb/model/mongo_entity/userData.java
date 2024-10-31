@@ -1,8 +1,6 @@
 package com.javaweb.model.mongo_entity;
 
-import lombok.*;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.index.Indexed;
+import lombok.Data;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.security.SecureRandom;
@@ -21,8 +19,10 @@ public class userData {
     private List<String> ip_list;
     private Integer coin;
     private Otp otp;
+    private String telegram_id;
 
     //Overide lên hàm Setter trong lombok
+
     public void setPassword(String password) throws Exception {
         String usernameRegex = "^[a-zA-Z0-9_]{8,15}$";
         if (!(password != null && password.matches(usernameRegex))) {

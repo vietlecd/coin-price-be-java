@@ -1,15 +1,14 @@
 
 package com.javaweb.helpers.trigger;
-import java.time.LocalDateTime;
-import java.util.List;
-
-import java.util.Optional;
 
 import com.javaweb.dto.snooze.*;
 import com.javaweb.repository.*;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 
 @Component
 public class SnoozeCheckHelper {
@@ -27,6 +26,9 @@ public class SnoozeCheckHelper {
     @Autowired
     private SpotSnoozeCondition spotSnoozeCondition;
     @Autowired
+    private IndicatorSnoozeCondition indicatorSnoozeCondition;
+    @Autowired
+
     private IndicatorSnoozeConditionRepository indicatorSnoozeConditionRepository;
     public boolean checkSymbolAndSnooze(List<String> symbols, String type,String username) {
         boolean anyConditionMet = false; // Khởi tạo trạng thái ban đầu là không có điều kiện nào thỏa mãn

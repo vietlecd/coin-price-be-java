@@ -1,6 +1,5 @@
-package com.javaweb.repository;
+package com.javaweb.repository.trigger;
 
-import com.javaweb.model.trigger.FundingRateTrigger;
 import com.javaweb.model.trigger.IndicatorTrigger;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;

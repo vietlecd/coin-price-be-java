@@ -1,9 +1,9 @@
 package com.javaweb.service.trigger;
 
-import com.javaweb.repository.*;
+import com.javaweb.model.trigger.*;
+import com.javaweb.repository.trigger.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.javaweb.model.trigger.*;
 
 import java.util.List;
 import java.util.Map;
@@ -66,4 +66,13 @@ public class TriggerSymbolService {
                 ));
     }
 
+    public Map<String, List<String>> getUsernamesWithSymbolsIndicator() {
+        List<IndicatorTrigger> triggers = indicatorTriggerRepository.findAllUsernamesWithSymbols();
+
+        return triggers.stream()
+                .collect(Collectors.groupingBy(
+                        IndicatorTrigger::getUsername,
+                        Collectors.mapping(IndicatorTrigger::getSymbol, Collectors.toList())
+                ));
+    }
 }

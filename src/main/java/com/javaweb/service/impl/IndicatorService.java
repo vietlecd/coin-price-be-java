@@ -1,19 +1,14 @@
 package com.javaweb.service.impl;
 
-<<<<<<< HEAD
 import com.fasterxml.jackson.databind.JsonNode;
 import com.javaweb.converter.IndicatorDTOHelper;
-
-=======
->>>>>>> parent of 206a011 (Merge pull request #45 from dath-241/developer)
 import com.javaweb.dto.IndicatorDTO;
-
 import com.javaweb.helpers.service.DateTimeHelper;
-import org.springframework.stereotype.Service;
-import org.springframework.beans.factory.annotation.Autowired;
-import com.javaweb.service.IIndicatorService;
 import com.javaweb.repository.IndicatorRepository;
+import com.javaweb.service.IIndicatorService;
 import com.javaweb.service.IUserIndicatorService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -22,7 +17,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class IndicatorService implements IIndicatorService {
@@ -33,7 +28,7 @@ public class IndicatorService implements IIndicatorService {
     @Autowired
     private IUserIndicatorService userIndicatorService;
     @Override
-    public Map<String, IndicatorDTO> getIndicatorData(List<String> symbols, List<String> indicators, int days, String username) throws TimeoutException {
+    public Map<String, IndicatorDTO> getIndicatorData(List<String> symbols, List<String> indicators, int days, String username) {
         Map<String, IndicatorDTO> indicatorDataMap = new HashMap<>();
 
         for (String symbol : symbols) {
@@ -53,14 +48,10 @@ public class IndicatorService implements IIndicatorService {
                     default:
                         String code = userIndicatorService.getCode(username, indicator);
                         if (code != null) {
-                            try {
-                                Object indicatorValues = calculateUserIndicator(prices, code, indicator, 5, TimeUnit.SECONDS);
-                                values.put(indicator, indicatorValues);
-                            } catch (Exception e) {
-                                throw e;
-                            }
+                            Object indicatorValues = calculateUserIndicator(prices, code, indicator);
+                            values.put(indicator, indicatorValues);
                         } else {
-                            throw new IllegalArgumentException("Indicator không được hỗ trợ: " + indicator);
+                            throw new RuntimeException("Indicator không được hỗ trợ: " + indicator);
                         }
                 }
             }
@@ -74,6 +65,7 @@ public class IndicatorService implements IIndicatorService {
 
         return indicatorDataMap;
     }
+
 
     private double calculateMA(Map<Long, Double> prices) {
         if (prices.isEmpty()) return 0;
@@ -123,7 +115,7 @@ public class IndicatorService implements IIndicatorService {
         return bands;
     }
 
-    private Object calculateUserIndicator(Map<Long, Double> prices, String groovyScript, String indicator, long timeout, TimeUnit timeUnit) throws TimeoutException {
+    private Object calculateUserIndicator(Map<Long, Double> prices, String groovyScript, String indicator) {
         List<Double> priceList = new ArrayList<>(prices.values());
         List<Long> timeList = new ArrayList<>(prices.keySet());
         int size = prices.size();
@@ -139,62 +131,42 @@ public class IndicatorService implements IIndicatorService {
 
         SimpleBindings bindings = new SimpleBindings(variables);
 
-        Callable<Object> task = () -> {
+        try {
             engine.eval(groovyScript, bindings);
             return bindings.get(indicator);
-        };
-
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        Future<Object> future = executor.submit(task);
-
-        try {
-            return future.get(timeout, timeUnit);
-        } catch (TimeoutException e) {
-            future.cancel(true);
-            throw new TimeoutException("Thời gian thực thi script đã vượt quá giới hạn cho indicator: " + indicator);
         } catch (Exception e) {
-            throw new RuntimeException("Lỗi khi thực thi script người dùng cho indicator: " + indicator);
-        } finally {
-            executor.shutdown();
+            throw new RuntimeException("Lỗi khi thực thi script người dùng");
         }
     }
-<<<<<<< HEAD
 
     @Override
-    public void handleFundingRateWebSocketMessage(JsonNode data,  boolean isTriggered) {
-        long eventTimeLong = data.get("E").asLong();
-        long nextFundingTime = data.get("T").asLong();
+    public void handleIndicatorWebSocketMessage(String symbol, JsonNode data,  boolean isTriggered) {
+        JsonNode data1 = data.get(symbol);
+
+        Map<String, Object> values = new HashMap<>();
+        JsonNode data2 = data1.get("values");
+        values.put("MA", data2.get("MA").asDouble());
+        values.put("EMA", data2.get("EMA").asDouble());
+
+        long eventTimeLong = data1.get("eventTime").asLong();
 
         String eventTime = DateTimeHelper.formatEventTime(eventTimeLong);
-
-        String symbol = data.get("s").asText();
-        JsonNode data1 = data.get("v");
-        Map<String, Object> values = new HashMap<>();
-        values.put(data1.get("S").asText(), data1.get("D").asDouble());
-
-        long countdownInSeconds = (nextFundingTime - eventTimeLong) / 1000;
-
-        String fundingCountdown = String.format("%02d:%02d:%02d",
-                TimeUnit.SECONDS.toHours(countdownInSeconds),
-                TimeUnit.SECONDS.toMinutes(countdownInSeconds) % 60,
-                countdownInSeconds % 60
-        );
-
 
         IndicatorDTO indicatorDTO = IndicatorDTOHelper.createIndicatorDTO(symbol, values, eventTime);
 
         if (!isTriggered) {
-            indicatorDataUsers.put("FundingRate Price: " + symbol, indicatorDTO);
+            indicatorDataUsers.put("Indicator: " + symbol, indicatorDTO);
         }
         else {
-            indicatorDataTriggers.put("FundingRate Price: " + symbol, indicatorDTO);
+            indicatorDataTriggers.put("Indicator: " + symbol, indicatorDTO);
         }
     }
+
+    @Override
+    public Map<String, IndicatorDTO> getIndicatorDataUsers() { return indicatorDataUsers; }
 
     @Override
     public Map<String, IndicatorDTO> getIndicatorDataTriggers(){
         return indicatorDataTriggers;
     }
-=======
->>>>>>> parent of 206a011 (Merge pull request #45 from dath-241/developer)
 }
