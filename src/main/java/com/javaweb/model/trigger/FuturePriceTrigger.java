@@ -10,4 +10,5 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document(collection = "future_price_trigger")
 public class FuturePriceTrigger extends TriggerCondition {
     private double futurePriceThreshold;
+    private String trigger_type = "future";
 }

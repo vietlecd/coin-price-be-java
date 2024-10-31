@@ -11,4 +11,5 @@ public class IndicatorTrigger extends TriggerCondition {
     private String indicator;
     private double value;
     private int period;
+    private String triggerType = "indicator";
 }
