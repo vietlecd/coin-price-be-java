@@ -3,8 +3,8 @@ package com.javaweb.service.webhook;
 import com.javaweb.dto.PriceDTO;
 import com.javaweb.model.mongo_entity.userData;
 import com.javaweb.model.trigger.FuturePriceTrigger;
-import com.javaweb.repository.trigger.FuturePriceTriggerRepository;
 import com.javaweb.repository.UserRepository;
+import com.javaweb.repository.trigger.FuturePriceTriggerRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 

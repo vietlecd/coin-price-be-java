@@ -3,13 +3,12 @@ package com.javaweb.service.impl;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.javaweb.converter.IndicatorDTOHelper;
 import com.javaweb.dto.IndicatorDTO;
-
 import com.javaweb.helpers.service.DateTimeHelper;
-import org.springframework.stereotype.Service;
-import org.springframework.beans.factory.annotation.Autowired;
-import com.javaweb.service.IIndicatorService;
 import com.javaweb.repository.IndicatorRepository;
+import com.javaweb.service.IIndicatorService;
 import com.javaweb.service.IUserIndicatorService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -18,7 +17,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.*;
 
 @Service
 public class IndicatorService implements IIndicatorService {
@@ -29,7 +28,7 @@ public class IndicatorService implements IIndicatorService {
     @Autowired
     private IUserIndicatorService userIndicatorService;
     @Override
-    public Map<String, IndicatorDTO> getIndicatorData(List<String> symbols, List<String> indicators, int days, String username) {
+    public Map<String, IndicatorDTO> getIndicatorData(List<String> symbols, List<String> indicators, int days, String username) throws TimeoutException {
         Map<String, IndicatorDTO> indicatorDataMap = new HashMap<>();
 
         for (String symbol : symbols) {
@@ -49,10 +48,14 @@ public class IndicatorService implements IIndicatorService {
                     default:
                         String code = userIndicatorService.getCode(username, indicator);
                         if (code != null) {
-                            Object indicatorValues = calculateUserIndicator(prices, code, indicator);
-                            values.put(indicator, indicatorValues);
+                            try {
+                                Object indicatorValues = calculateUserIndicator(prices, code, indicator, 5, TimeUnit.SECONDS);
+                                values.put(indicator, indicatorValues);
+                            } catch (Exception e) {
+                                throw e;
+                            }
                         } else {
-                            throw new RuntimeException("Indicator không được hỗ trợ: " + indicator);
+                            throw new IllegalArgumentException("Indicator không được hỗ trợ: " + indicator);
                         }
                 }
             }
@@ -116,7 +119,7 @@ public class IndicatorService implements IIndicatorService {
         return bands;
     }
 
-    private Object calculateUserIndicator(Map<Long, Double> prices, String groovyScript, String indicator) {
+    private Object calculateUserIndicator(Map<Long, Double> prices, String groovyScript, String indicator, long timeout, TimeUnit timeUnit) throws TimeoutException {
         List<Double> priceList = new ArrayList<>(prices.values());
         List<Long> timeList = new ArrayList<>(prices.keySet());
         int size = prices.size();
@@ -132,11 +135,23 @@ public class IndicatorService implements IIndicatorService {
 
         SimpleBindings bindings = new SimpleBindings(variables);
 
-        try {
+        Callable<Object> task = () -> {
             engine.eval(groovyScript, bindings);
             return bindings.get(indicator);
+        };
+
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Future<Object> future = executor.submit(task);
+
+        try {
+            return future.get(timeout, timeUnit);
+        } catch (TimeoutException e) {
+            future.cancel(true);
+            throw new TimeoutException("Thời gian thực thi script đã vượt quá giới hạn cho indicator: " + indicator);
         } catch (Exception e) {
-            throw new RuntimeException("Lỗi khi thực thi script người dùng");
+            throw new RuntimeException("Lỗi khi thực thi script người dùng cho indicator: " + indicator);
+        } finally {
+            executor.shutdown();
         }
     }
 
