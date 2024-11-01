@@ -17,26 +17,13 @@ import java.util.Map;
 @AllArgsConstructor
 public class SnoozeConditionController {
 
-    @Autowired
+
     private SpotSnoozeConditionService spotSnoozeConditionService;
-
-    @Autowired
     private FutureSnoozeConditionService futureSnoozeConditionService;
-
-    @Autowired
     private PriceDifferenceSnoozeConditionService priceDifferenceSnoozeConditionService;
-
-    @Autowired
     private FundingRateSnoozeConditionService fundingRateSnoozeConditionService;
-    @Autowired
-    private IndicatorSnoozeConditionService indicatorSnoozeConditionService;
-    @Autowired
     private SnoozeMapHelper snoozeMapHelper;
-    @Autowired
-    private GetUsernameHelper getUsernameHelper;
-    @Autowired
     private IntervalSnoozeConditionService intervalSnoozeConditionService;
-
     private ListingSnoozeConditionService listingSnoozeConditionService;
     @PostMapping("/create/snooze")
     public ResponseEntity<?> createSnoozeCondition(@RequestParam("snoozeType") String snoozeType,
