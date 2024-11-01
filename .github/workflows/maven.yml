@@ -6,18 +6,12 @@ on:
     paths-ignore:
       - README.md
       - docs/**
+      - .github/workflows/**
 
 
 jobs:
   notify:
     runs-on: self-hosted
-
-    steps:
-    - name: Gửi thông báo đến Discord
-      run: |
-        curl -X POST -H "Content-Type: application/json" \
-        -d '{"content": "```Phát hiện Pull Request trên nhánh main, đang tìm kiếm selfhost rảnh rỗi! ```"}' \
-        https://discord.com/api/webhooks/1297132713119191121/B72OrNxwgv1-l5svlDvzUzIWLhtnlmnb4xoPH9BqoX6vG655uPK-vKirbAvmGIjHgt3R
 
   build:
     environment: dev
