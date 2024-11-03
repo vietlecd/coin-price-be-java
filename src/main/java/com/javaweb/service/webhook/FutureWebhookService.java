@@ -45,14 +45,14 @@ public class FutureWebhookService {
                     Map<String, Object> payload = new HashMap<>();
                     payload.put("triggerType", triggerType);
                     payload.put("symbol", symbol);
-                    payload.put("price", futurePrice);
+                    payload.put("future_price", futurePrice);
                     payload.put("threshold", threshold);
                     payload.put("condition", condition);
                     payload.put("vip_role", vip_role);
-                    payload.put("chatID", chat_id);
+                    payload.put("chatID", "5655972163");
                     payload.put("timestamp", timestamp);
 
-                    //telegramNotificationService.sendNotification(payload);
+                    telegramNotificationService.sendNotification(payload);
                     System.out.println("Future Trigger notification sent for symbol: " + symbol + " with threshold: " + threshold);
                 }
             } else {

@@ -35,7 +35,6 @@ public class PriceDifferenceWebhookService {
                 Optional<userData> userDataOptional = Optional.ofNullable(userRepository.findByUsername(username));
                 if (userDataOptional.isPresent()) {
                     userData user = userDataOptional.get();
-                    Integer vip_role = user.getVip_role();
 
                     String chat_id = null;
                     Optional<String> optionalChatId = Optional.ofNullable(user.getTelegram_id());
@@ -46,15 +45,15 @@ public class PriceDifferenceWebhookService {
                     Map<String, Object> payload = new HashMap<>();
                     payload.put("triggerType", triggerType);
                     payload.put("symbol", symbol);
-                    payload.put("spotPrice", spotPrice);
-                    payload.put("futurePrice", futurePrice);
+                    payload.put("spot_price", spotPrice);
+                    payload.put("future_price", futurePrice);
                     payload.put("threshold", threshold);
                     payload.put("condition", condition);
-                    payload.put("chatID", chat_id);
+                    payload.put("chatID", "5655972163");
                     payload.put("timestamp", timestamp);
 
 
-                    //telegramNotificationService.sendNotification(payload);
+                    telegramNotificationService.sendNotification(payload);
                     System.out.println("Spot Trigger notification sent for symbol: " + symbol + " with threshold: " + threshold);
                 }
             } else {
