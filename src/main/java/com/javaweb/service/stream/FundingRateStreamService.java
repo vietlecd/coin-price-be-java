@@ -8,7 +8,9 @@ import com.javaweb.connect.impl.FundingIntervalWebService;
 import com.javaweb.connect.impl.FundingRateWebSocketService;
 import com.javaweb.service.impl.FundingRateDataService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.List;
@@ -42,14 +44,16 @@ public class FundingRateStreamService {
         // Kết nối WebSocket
         fundingRateWebSocketService.connectToWebSocket(symbols, false);
 
+        Map<String, FundingRateDTO> fundingRateDataMap = fundingRateDataService.getFundingRateDataUsers();
+        Map<String, FundingIntervalDTO> fundingIntervalDataMap = fundingIntervalWebService.getLatestFundingIntervalData(symbols);
+
+        validateSymbolsExist(symbols, fundingRateDataMap, fundingIntervalDataMap);
+
         // Cập nhật định kỳ FundingInterval
         scheduleFundingIntervalDataUpdate(symbols);
 
         Runnable sendTask = () -> {
             try {
-                Map<String, FundingRateDTO> fundingRateDataMap = fundingRateDataService.getFundingRateDataUsers();
-                Map<String, FundingIntervalDTO> fundingIntervalDataMap = fundingIntervalWebService.getLatestFundingIntervalData(symbols);
-
                 for (String symbol : symbols) {
                     FundingRateDTO fundingRateDTO = fundingRateDataMap.get("FundingRate Price: " + symbol);
                     FundingIntervalDTO fundingIntervalDTO = fundingIntervalDataMap.get(symbol);
@@ -125,5 +129,16 @@ public class FundingRateStreamService {
             }
         }
         emitters.clear();
+    }
+
+    private void validateSymbolsExist(List<String> symbols, Map<String, FundingRateDTO> fundingRateDataMap, Map<String, FundingIntervalDTO> fundingIntervalDataMap) {
+        for (String symbol : symbols) {
+            if (!fundingRateDataMap.containsKey("FundingRate Price: " + symbol)) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Funding rate data for symbol " + symbol + " not found");
+            }
+            if (!fundingIntervalDataMap.containsKey(symbol)) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Funding interval data for symbol " + symbol + " not found");
+            }
+        }
     }
 }

@@ -33,7 +33,7 @@ public class FundingIntervalDataService implements IFundingIntervalDataService {
 
             FundingIntervalDTO fundingIntervalDTO = FundingIntervalDTOHelper.createFundingRateDTO(symbol,adjustedFundingRateCap,adjustedFundingRateFloor,fundingIntervalHours);
 
-            System.out.println("Storing data in cache for symbol: " + symbol);
+            //System.out.println("Storing data in cache for symbol: " + symbol);
             fundingDataMap.put(symbol, fundingIntervalDTO);
             fundingIntervalCache.put(symbol, fundingIntervalDTO); // Cache the result
         } else {
@@ -46,15 +46,15 @@ public class FundingIntervalDataService implements IFundingIntervalDataService {
     // Method to check cache before calling API
     @Override
     public Map<String, FundingIntervalDTO> processFundingIntervalDataFromCache(String symbol) {
-        System.out.println("Checking cache for symbol: " + symbol);
+        //System.out.println("Checking cache for symbol: " + symbol);
         FundingIntervalDTO cachedData = fundingIntervalCache.getIfPresent(symbol);
         if (cachedData != null) {
-            System.out.println("Cache hit for symbol: " + symbol);
+            //System.out.println("Cache hit for symbol: " + symbol);
             Map<String, FundingIntervalDTO> fundingDataMap = new HashMap<>();
             fundingDataMap.put(symbol, cachedData);
             return fundingDataMap;
         }
-        System.out.println("Cache miss for symbol: " + symbol);
+        //System.out.println("Cache miss for symbol: " + symbol);
         return null; // Return null if no data in cache
     }
 }

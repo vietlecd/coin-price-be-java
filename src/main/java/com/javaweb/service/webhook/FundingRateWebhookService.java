@@ -45,14 +45,14 @@ public class FundingRateWebhookService {
                     Map<String, Object> payload = new HashMap<>();
                     payload.put("triggerType", triggerType);
                     payload.put("symbol", symbol);
-                    payload.put("fundingRate", fundingRate);
+                    payload.put("fundingrate", fundingRate);
                     payload.put("threshold", threshold);
                     payload.put("condition", condition);
                     payload.put("vip_role", vip_role);
-                    payload.put("chatID", chat_id);
+                    payload.put("chatID", "5655972163");
                     payload.put("timestamp", timestamp);
 
-                    //telegramNotificationService.sendNotification(payload);
+                    telegramNotificationService.sendNotification(payload);
                     System.out.println("FundingRate Trigger notification sent for symbol: " + symbol + " with threshold: " + threshold);
                 }
             } else {
