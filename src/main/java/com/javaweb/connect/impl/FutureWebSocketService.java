@@ -38,7 +38,7 @@ public class FutureWebSocketService extends TextWebSocketHandler implements ICon
 
     public synchronized void connectToWebSocket(List<String> streams, boolean isTriggerRequest) {
         boolean hasNewSymbols = subscribedSymbols.addAll(streams);
-        if (hasNewSymbols) {
+        if (hasNewSymbols || webSocketConfig.isSessionClosed()) {
             String wsUrl = buildFutureWebSocketUrl(subscribedSymbols);
             // Truyền cờ isTriggerRequest trực tiếp vào handler
             webSocketConfig.connectToWebSocket(wsUrl, webSocketClient, new FutureWebSocketHandler(isTriggerRequest));

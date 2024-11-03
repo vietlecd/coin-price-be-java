@@ -36,7 +36,7 @@ public class SpotWebSocketService extends TextWebSocketHandler implements IConne
 
         boolean hasNewSymbols = subscribedSymbols.addAll(streams);
 
-        if (hasNewSymbols) {
+        if (hasNewSymbols || webSocketConfig.isSessionClosed()) {
             String wsUrl = buildSpotWebSocketUrl(subscribedSymbols);
             // Truyền cờ isTriggerRequest trực tiếp vào handler
             webSocketConfig.connectToWebSocket(wsUrl, webSocketClient, new SpotWebSocketHandler(isTriggerRequest));

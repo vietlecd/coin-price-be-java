@@ -35,7 +35,7 @@ public class FundingRateWebSocketService extends TextWebSocketHandler implements
 
         boolean hasNewSymbols = subscribedSymbols.addAll(streams);
 
-        if (hasNewSymbols) {
+        if (hasNewSymbols || webSocketConfig.isSessionClosed()) {
             String wsUrl = buildFundingRateWebSocketUrl(subscribedSymbols);
             // Truyền cờ isTriggerRequest trực tiếp vào handler
             webSocketConfig.connectToWebSocket(wsUrl, webSocketClient, new FungdingRateWebSocketHandler(isTriggerRequest));

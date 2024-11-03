@@ -40,7 +40,7 @@ public class KlineWebSocketService extends TextWebSocketHandler{
     public synchronized void connectToWebSocket(List<String> streams) {
         boolean hasNewSymbols = subscribedSymbols.addAll(streams);
 
-        if (hasNewSymbols) {
+        if (hasNewSymbols || webSocketConfig.isSessionClosed()) {
             String wsUrl = buildKlineWebSocketUrl(subscribedSymbols);
             webSocketConfig.connectToWebSocket(wsUrl, webSocketClient, this);
         }
