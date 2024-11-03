@@ -7,9 +7,7 @@ import com.javaweb.connect.IConnectToWebSocketService;
 import com.javaweb.service.impl.KlineDataService;
 import com.javaweb.service.impl.SpotPriceDataService;
 import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Required;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -22,13 +20,13 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class KlineWebSocketService extends TextWebSocketHandler{
     private final Set<String> subscribedSymbols = ConcurrentHashMap.newKeySet();
-    private final KlineDataService klineDataService;
+    private KlineDataService klineDataService;
     private final ObjectMapper objectMapper = new ObjectMapper();
-    private final WebSocketConfig webSocketConfig;
-    private final WebSocketClient webSocketClient;
+    private WebSocketConfig webSocketConfig;
+    private WebSocketClient webSocketClient;
 
 
 
@@ -39,21 +37,12 @@ public class KlineWebSocketService extends TextWebSocketHandler{
         return "wss://stream.binance.com/stream?streams=" + streamParam;
     }
 
-    private boolean isConnecting = false;
     public synchronized void connectToWebSocket(List<String> streams) {
         boolean hasNewSymbols = subscribedSymbols.addAll(streams);
-        boolean shouldReconnect = hasNewSymbols || webSocketConfig.isSessionClosed();
 
-        if (!isConnecting && shouldReconnect) {
-            isConnecting = true;
-            try {
-                String wsUrl = buildKlineWebSocketUrl(subscribedSymbols);
-                webSocketConfig.closeWebSocketSession();
-                webSocketConfig.connectToWebSocket(wsUrl, webSocketClient, this);
-            } finally {
-                isConnecting = false;
-            }
-
+        if (hasNewSymbols || webSocketConfig.isSessionClosed()) {
+            String wsUrl = buildKlineWebSocketUrl(subscribedSymbols);
+            webSocketConfig.connectToWebSocket(wsUrl, webSocketClient, this);
         }
 
     }
