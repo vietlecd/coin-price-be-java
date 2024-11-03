@@ -6,7 +6,9 @@ import com.javaweb.config.WebSocketConfig;
 import com.javaweb.connect.IConnectToWebSocketService;
 import com.javaweb.service.impl.FuturePriceDataService;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -19,13 +21,13 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class FutureWebSocketService extends TextWebSocketHandler implements IConnectToWebSocketService {
     private final Set<String> subscribedSymbols = ConcurrentHashMap.newKeySet();
-    private FuturePriceDataService futurePriceDataService;
+    private final FuturePriceDataService futurePriceDataService;
     private final ObjectMapper objectMapper = new ObjectMapper();
-    private WebSocketConfig webSocketConfig;
-    private WebSocketClient webSocketClient;
+    private final WebSocketConfig webSocketConfig;
+    private final WebSocketClient webSocketClient;
 
 
 
@@ -36,12 +38,24 @@ public class FutureWebSocketService extends TextWebSocketHandler implements ICon
         return "wss://stream.binance.com/stream?streams=" + streamParam;
     }
 
+    private boolean isConnecting = false;
+
     public synchronized void connectToWebSocket(List<String> streams, boolean isTriggerRequest) {
         boolean hasNewSymbols = subscribedSymbols.addAll(streams);
-        if (hasNewSymbols) {
-            String wsUrl = buildFutureWebSocketUrl(subscribedSymbols);
-            // Truyền cờ isTriggerRequest trực tiếp vào handler
-            webSocketConfig.connectToWebSocket(wsUrl, webSocketClient, new FutureWebSocketHandler(isTriggerRequest));
+        boolean shouldReconnect = hasNewSymbols || webSocketConfig.isSessionClosed();
+
+        if (shouldReconnect && !isConnecting) {
+            isConnecting = true;
+
+            try {
+                String wsUrl = buildFutureWebSocketUrl(subscribedSymbols);
+                // Truyền cờ isTriggerRequest trực tiếp vào handler
+                webSocketConfig.closeWebSocketSession();
+                webSocketConfig.connectToWebSocket(wsUrl, webSocketClient, new FutureWebSocketHandler(isTriggerRequest));
+            } finally {
+                isConnecting = false;
+            }
+
         }
     }
 

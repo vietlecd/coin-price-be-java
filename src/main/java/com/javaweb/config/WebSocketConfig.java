@@ -10,6 +10,9 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 import javax.annotation.PreDestroy;
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import static org.apache.tomcat.jni.Socket.close;
 import static org.apache.tomcat.jni.Socket.shutdown;
@@ -18,7 +21,6 @@ import static org.apache.tomcat.jni.Socket.shutdown;
 public class WebSocketConfig {
 
     private WebSocketSession webSocketSession;
-
     @Bean
     public WebSocketClient webSocketClient() {
         return new StandardWebSocketClient();
@@ -40,6 +42,7 @@ public class WebSocketConfig {
         }
     }
 
+
     //Cập nhat phan tắt web socket tránh sự cố
     public void closeWebSocketSession() {
         if (this.webSocketSession != null && this.webSocketSession.isOpen()) {
@@ -54,5 +57,9 @@ public class WebSocketConfig {
     @PreDestroy
     public void onDestroy() {
         closeWebSocketSession();
+    }
+
+    public boolean isSessionClosed() {
+        return webSocketSession == null || !webSocketSession.isOpen();
     }
 }
