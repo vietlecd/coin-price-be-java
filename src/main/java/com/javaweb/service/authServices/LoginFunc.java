@@ -32,7 +32,7 @@ public class LoginFunc {
                 .maxAge(60 * 60 * 13)
                 .build();
 
-        String cookieHeader = cookie.toString() + "; SameSite=None";
+        String cookieHeader = cookie.toString() + "; SameSite=Lax";
 //        Cookie cookie = new Cookie("token", token);
 //        cookie.setHttpOnly(true);
 //        cookie.setSecure(false);
