@@ -11,7 +11,9 @@ import com.javaweb.service.impl.SpotPriceDataService;
 import com.javaweb.service.stream.PriceStreamService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import javax.servlet.http.HttpServletRequest;
@@ -20,6 +22,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
+
+import static com.javaweb.helpers.controller.SymbolValidate.validateSymbolsExist;
 
 @RestController
 @AllArgsConstructor
@@ -39,6 +43,7 @@ public class PriceController {
         spotWebSocketService.connectToWebSocket(symbols, false);
 
         Map<String, PriceDTO> priceDataMap = spotPriceDataService.getPriceDataUsers();
+        validateSymbolsExist(symbols, priceDataMap, "Spot");
 
         for (String symbol : symbols) {
             priceStreamService.createPriceSseEmitter(emitter, "Spot", symbol, priceDataMap);
@@ -53,6 +58,8 @@ public class PriceController {
         futureWebSocketService.connectToWebSocket(symbols, false);
 
         Map<String, PriceDTO> priceDataMap = futurePriceDataService.getPriceDataUsers();
+        validateSymbolsExist(symbols, priceDataMap, "Future");
+
         for (String symbol : symbols) {
             priceStreamService.createPriceSseEmitter(emitter, "Future", symbol, priceDataMap);
         }
@@ -73,7 +80,10 @@ public class PriceController {
         // Lặp qua từng symbol trong danh sách và lấy kết quả từ service
         for (String symbol : symbols) {
             MarketCapResponse response = marketCapService.getMarketCapBySymbol(symbol);
-            marketCapResponses.add(response);  // Thêm kết quả vào danh sách
+            if (response == null) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Market cap data for symbol " + symbol + " not found");
+            }
+            marketCapResponses.add(response);
         }
 
         return marketCapResponses;

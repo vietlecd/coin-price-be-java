@@ -37,16 +37,11 @@ public class SpotWebhookService {
 
                     String chat_id = null;
                     Optional<String> optionalChatId = Optional.ofNullable(user.getTelegram_id());
-                    if (optionalChatId.isPresent()) {
-                        chat_id = optionalChatId.get();
-                    }
 
-                    Map<String, Object> priceMap = new HashMap<>();
-                    priceMap.put("spot_price", spotPrice);
 
                     Map<String, Object> payload = new HashMap<>();
                     payload.put("symbol", "BTC");
-                    payload.put("price", priceMap);
+                    payload.put("spot_price", spotPrice);
                     payload.put("threshold", threshold);
                     payload.put("condition", condition);
                     payload.put("chatID", "5655972163");

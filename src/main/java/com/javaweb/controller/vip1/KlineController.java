@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
 
+import static com.javaweb.helpers.controller.SymbolValidate.validateSymbolsExist;
+
 @RestController
 @AllArgsConstructor
 @RequestMapping("/api/vip1")
@@ -28,6 +30,7 @@ public class KlineController {
         klineWebSocketService.connectToWebSocket(symbols);
 
         Map<String, KlineDTO> klineDataMap = klineDataService.getPriceDataMap();
+        validateSymbolsExist(symbols, klineDataMap, "Kline");
 
         for (String symbol : symbols) {
             priceStreamService.createKlineSseEmitter(emitter, "Kline", symbol, klineDataMap);
