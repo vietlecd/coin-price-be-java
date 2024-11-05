@@ -4,6 +4,7 @@ import com.javaweb.dto.trigger.IndicatorTriggerDTO;
 import com.javaweb.helpers.trigger.TriggerMapHelper;
 import com.javaweb.model.trigger.IndicatorTrigger;
 import com.javaweb.repository.trigger.IndicatorTriggerRepository;
+import com.javaweb.utils.TriggerNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -33,7 +34,7 @@ public class IndicatorTriggerService {
         if (trigger != null) {
             indicatorTriggerRepository.delete(trigger);
         } else {
-            throw new RuntimeException("Trigger not found for symbol: " + symbol);
+            throw new TriggerNotFoundException("Trigger not found for symbol: " + symbol);
         }
     }
 }

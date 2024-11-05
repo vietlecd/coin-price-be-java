@@ -4,6 +4,7 @@ import com.javaweb.dto.trigger.PriceDifferenceTriggerDTO;
 import com.javaweb.helpers.trigger.TriggerMapHelper;
 import com.javaweb.model.trigger.PriceDifferenceTrigger;
 import com.javaweb.repository.trigger.PriceDifferenceTriggerRepository;
+import com.javaweb.utils.TriggerNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -36,7 +37,7 @@ public class PriceDifferenceTriggerService {
         if (trigger != null) {
             priceDifferenceTriggerRepository.delete(trigger);
         } else {
-            throw new RuntimeException("Trigger not found for symbol: " + symbol);
+            throw new TriggerNotFoundException("Trigger not found for symbol: " + symbol);
         }
     }
 }
