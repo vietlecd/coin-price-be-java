@@ -4,6 +4,7 @@ import com.javaweb.dto.trigger.SpotPriceTriggerDTO;
 import com.javaweb.helpers.trigger.TriggerMapHelper;
 import com.javaweb.model.trigger.SpotPriceTrigger;
 import com.javaweb.repository.trigger.SpotPriceTriggerRepository;
+import com.javaweb.utils.TriggerNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -36,7 +37,7 @@ public class SpotPriceTriggerService {
         if (trigger != null) {
             spotPriceTriggerRepository.delete(trigger);
         } else {
-            throw new RuntimeException("Trigger not found for symbol: " + symbol);
+            throw new TriggerNotFoundException("Trigger not found for symbol: " + symbol);
         }
     }
 }

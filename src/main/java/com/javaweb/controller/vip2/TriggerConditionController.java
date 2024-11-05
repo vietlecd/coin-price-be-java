@@ -12,7 +12,9 @@ import com.javaweb.service.trigger.CRUD.FuturePriceTriggerService;
 import com.javaweb.service.trigger.CRUD.PriceDifferenceTriggerService;
 import com.javaweb.service.trigger.CRUD.SpotPriceTriggerService;
 import com.javaweb.service.trigger.GetTriggerService;
+import com.javaweb.utils.TriggerNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -125,8 +127,8 @@ public class TriggerConditionController {
 //                    listingWebSocketService.stopTokenCheck();
 //                    break;
             }
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body("Error processing trigger: " + e.getMessage());
+        } catch (TriggerNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error processing trigger: " + e.getMessage());
         }
         return ResponseEntity.ok("Trigger condition delete successfully."); // Ensure return here
     }

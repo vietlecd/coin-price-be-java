@@ -4,6 +4,7 @@ import com.javaweb.dto.trigger.FundingRateTriggerDTO;
 import com.javaweb.helpers.trigger.TriggerMapHelper;
 import com.javaweb.model.trigger.FundingRateTrigger;
 import com.javaweb.repository.trigger.FundingRateTriggerRepository;
+import com.javaweb.utils.TriggerNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -34,7 +35,7 @@ public class FundingRateTriggerService {
         if (trigger != null) {
             fundingRateTriggerRepository.delete(trigger);
         } else {
-            throw new RuntimeException("Trigger not found for symbol: " + symbol);
+            throw new TriggerNotFoundException("Trigger not found for symbol: " + symbol);
         }
     }
 }
