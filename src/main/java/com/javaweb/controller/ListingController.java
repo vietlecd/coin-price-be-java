@@ -1,22 +1,12 @@
-package com.javaweb.controller.vip2;
+package com.javaweb.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.javaweb.dto.FundingIntervalDTO;
-import com.javaweb.dto.trigger.FundingRateTriggerDTO;
-import com.javaweb.dto.trigger.FuturePriceTriggerDTO;
-import com.javaweb.dto.trigger.ListingDTO;
-import com.javaweb.dto.trigger.PriceDifferenceTriggerDTO;
-import com.javaweb.dto.trigger.SpotPriceTriggerDTO;
-import com.javaweb.service.trigger.CRUD.FundingRateTriggerService;
-import com.javaweb.service.trigger.CRUD.FuturePriceTriggerService;
-import com.javaweb.service.trigger.CRUD.PriceDifferenceTriggerService;
-import com.javaweb.service.trigger.CRUD.SpotPriceTriggerService;
+import com.javaweb.dto.trigger.*;
+import com.javaweb.service.trigger.CRUD.*;
 import com.javaweb.service.trigger.GetTriggerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import com.javaweb.service.trigger.CRUD.ListingTriggerService;
-
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
@@ -24,8 +14,8 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/vip2")
-public class TriggerConditionController {
+@RequestMapping("/api")
+public class ListingController {
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -70,9 +60,21 @@ public class TriggerConditionController {
                     FundingRateTriggerDTO fundingDTO = objectMapper.convertValue(dtoMap, FundingRateTriggerDTO.class);
                     alertId = fundingRateTriggerService.createTrigger(fundingDTO, username);
                     break;
-                case "listing": // Xử lý trigger cho Listing
-                    ListingDTO listingDTO = objectMapper.convertValue(dtoMap, ListingDTO.class);
-                    alertId = listingTriggerService.createTrigger(listingDTO, username); // Gọi phương thức tạo trigger cho Listing
+                case "listing":
+                    List<String> newSymbols = listingTriggerService.fetchNewListings();
+
+                    if (newSymbols.isEmpty()) {
+                        return ResponseEntity.badRequest().body("No new listings found");
+                    }
+
+                    for (String symbol : newSymbols) {
+                        ListingDTO listingDTO = new ListingDTO.Builder()
+                                .setSymbol(symbol)
+                                .setNotificationMethod((String) dtoMap.get("notificationMethod")) // Notification method from body
+                                .build();
+
+                        alertId = listingTriggerService.createTrigger(listingDTO, username); // Tạo trigger
+                    }
                     break;
                 default:
                     return ResponseEntity.badRequest().body("Invalid trigger type");
@@ -117,8 +119,8 @@ public class TriggerConditionController {
                 case "funding-rate":
                     fundingRateTriggerService.deleteTrigger(symbol, username);
                     break;
-                case "listing": // Xử lý xóa trigger cho Listing
-                    listingTriggerService.deleteTrigger(symbol, username); // Gọi phương thức xóa trigger cho Listing
+                case "listing":
+                    listingTriggerService.deleteTrigger(symbol, username);
                     break;
                 default:
                     return ResponseEntity.badRequest().body("Invalid trigger type");
