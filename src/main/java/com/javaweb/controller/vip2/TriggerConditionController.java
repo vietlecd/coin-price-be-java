@@ -70,9 +70,21 @@ public class TriggerConditionController {
                     FundingRateTriggerDTO fundingDTO = objectMapper.convertValue(dtoMap, FundingRateTriggerDTO.class);
                     alertId = fundingRateTriggerService.createTrigger(fundingDTO, username);
                     break;
-                case "listing": // Xử lý trigger cho Listing
-                    ListingDTO listingDTO = objectMapper.convertValue(dtoMap, ListingDTO.class);
-                    alertId = listingTriggerService.createTrigger(listingDTO, username); // Gọi phương thức tạo trigger cho Listing
+                case "listing":
+                    List<String> newSymbols = listingTriggerService.fetchNewListings();
+
+                    if (newSymbols.isEmpty()) {
+                        return ResponseEntity.badRequest().body("No new listings found");
+                    }
+
+                    for (String symbol : newSymbols) {
+                        ListingDTO listingDTO = new ListingDTO.Builder()
+                                .setSymbol(symbol)
+                                .setNotificationMethod((String) dtoMap.get("notificationMethod")) // Notification method from body
+                                .build();
+
+                        alertId = listingTriggerService.createTrigger(listingDTO, username); // Tạo trigger
+                    }
                     break;
                 default:
                     return ResponseEntity.badRequest().body("Invalid trigger type");
