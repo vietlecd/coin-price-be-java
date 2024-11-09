@@ -21,7 +21,7 @@ public class ListingScheduler {
     @Autowired
     private TelegramNotificationService telegramNotificationService;
 
-    @Scheduled(cron = "0 * * * * ?")
+    @Scheduled(cron = "0 0 8 * * ?")
     public void checkForNewListings() {
 
         if (!listingService.isNotificationAllowed()) {
