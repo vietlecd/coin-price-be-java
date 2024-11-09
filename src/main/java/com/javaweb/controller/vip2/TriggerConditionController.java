@@ -12,11 +12,11 @@ import com.javaweb.service.trigger.CRUD.FuturePriceTriggerService;
 import com.javaweb.service.trigger.CRUD.PriceDifferenceTriggerService;
 import com.javaweb.service.trigger.CRUD.SpotPriceTriggerService;
 import com.javaweb.service.trigger.GetTriggerService;
-import com.javaweb.utils.TriggerNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.javaweb.service.trigger.CRUD.ListingTriggerService;
+
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
@@ -43,7 +43,10 @@ public class TriggerConditionController {
     private PriceDifferenceTriggerService priceDifferenceTriggerService;
 
     @Autowired
-    private FundingRateTriggerService fundingRateTriggerService; // Assuming this service exists
+    private FundingRateTriggerService fundingRateTriggerService;
+
+    @Autowired
+    private ListingTriggerService listingTriggerService; // Service cho Listing
 
     @PostMapping("/create")
     public ResponseEntity<?> createTriggerCondition(@RequestParam("triggerType") String triggerType, @RequestBody Map<String, Object> dtoMap, HttpServletRequest request) {
@@ -66,16 +69,23 @@ public class TriggerConditionController {
                 case "funding-rate":
                     FundingRateTriggerDTO fundingDTO = objectMapper.convertValue(dtoMap, FundingRateTriggerDTO.class);
                     alertId = fundingRateTriggerService.createTrigger(fundingDTO, username);
-                    //fundingRateTriggerService.createTrigger(fundingDTO); // Ensure this method exists in the FundingRateTriggerService
                     break;
-//                case "new-symbol-listing":
-//                    ListingDTO listingDTO = objectMapper.convertValue(dtoMap, ListingDTO.class);
-//                    listingWebSocketService.startWebSocketClient();  // Start WebSocket for new listing trigger
-//                    break;
-//                case "funding-rate-interval-changed":
-//                    FundingIntervalDTO fundingIntervalDTO = objectMapper.convertValue(dtoMap, FundingIntervalDTO.class);
-//                    fundingRateIntervalService.createFundingIntervalTrigger(fundingIntervalDTO); // Call the correct method
-//                    break;
+                case "listing":
+                    List<String> newSymbols = listingTriggerService.fetchNewListings();
+
+                    if (newSymbols.isEmpty()) {
+                        return ResponseEntity.badRequest().body("No new listings found");
+                    }
+
+                    for (String symbol : newSymbols) {
+                        ListingDTO listingDTO = new ListingDTO.Builder()
+                                .setSymbol(symbol)
+                                .setNotificationMethod((String) dtoMap.get("notificationMethod")) // Notification method from body
+                                .build();
+
+                        alertId = listingTriggerService.createTrigger(listingDTO, username); // Tạo trigger
+                    }
+                    break;
                 default:
                     return ResponseEntity.badRequest().body("Invalid trigger type");
             }
@@ -91,7 +101,6 @@ public class TriggerConditionController {
             errorResponse.put("error", e.getMessage());
 
             return ResponseEntity.status(500).body(errorResponse);
-
         }
     }
 
@@ -120,16 +129,15 @@ public class TriggerConditionController {
                 case "funding-rate":
                     fundingRateTriggerService.deleteTrigger(symbol, username);
                     break;
-//                case "funding-rate-interval":
-//                    fundingRateIntervalService.deleteFundingRateInterval(symbol);
-//                    break;
-//                case "new-symbol-listing":
-//                    listingWebSocketService.stopTokenCheck();
-//                    break;
+                case "listing": // Xử lý xóa trigger cho Listing
+                    listingTriggerService.deleteTrigger(symbol, username); // Gọi phương thức xóa trigger cho Listing
+                    break;
+                default:
+                    return ResponseEntity.badRequest().body("Invalid trigger type");
             }
-        } catch (TriggerNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error processing trigger: " + e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error processing trigger: " + e.getMessage());
         }
-        return ResponseEntity.ok("Trigger condition delete successfully."); // Ensure return here
+        return ResponseEntity.ok("Trigger condition deleted successfully."); // Đảm bảo trả về ở đây
     }
 }
