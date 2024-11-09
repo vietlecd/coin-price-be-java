@@ -71,20 +71,8 @@ public class TriggerConditionController {
                     alertId = fundingRateTriggerService.createTrigger(fundingDTO, username);
                     break;
                 case "listing":
-                    List<String> newSymbols = listingTriggerService.fetchNewListings();
-
-                    if (newSymbols.isEmpty()) {
-                        return ResponseEntity.badRequest().body("No new listings found");
-                    }
-
-                    for (String symbol : newSymbols) {
-                        ListingDTO listingDTO = new ListingDTO.Builder()
-                                .setSymbol(symbol)
-                                .setNotificationMethod((String) dtoMap.get("notificationMethod")) // Notification method from body
-                                .build();
-
-                        alertId = listingTriggerService.createTrigger(listingDTO, username); // Tạo trigger
-                    }
+                    ListingDTO listingDTO = objectMapper.convertValue(dtoMap, ListingDTO.class);
+                    alertId = listingTriggerService.createTrigger(listingDTO, username);
                     break;
                 default:
                     return ResponseEntity.badRequest().body("Invalid trigger type");
@@ -129,15 +117,12 @@ public class TriggerConditionController {
                 case "funding-rate":
                     fundingRateTriggerService.deleteTrigger(symbol, username);
                     break;
-                case "listing": // Xử lý xóa trigger cho Listing
-                    listingTriggerService.deleteTrigger(symbol, username); // Gọi phương thức xóa trigger cho Listing
-                    break;
                 default:
                     return ResponseEntity.badRequest().body("Invalid trigger type");
             }
         } catch (Exception e) {
             return ResponseEntity.status(500).body("Error processing trigger: " + e.getMessage());
         }
-        return ResponseEntity.ok("Trigger condition deleted successfully."); // Đảm bảo trả về ở đây
+        return ResponseEntity.ok("Trigger condition deleted successfully.");
     }
 }

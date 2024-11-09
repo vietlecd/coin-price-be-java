@@ -1,9 +1,9 @@
 package com.javaweb.scheduler;
 
 import com.javaweb.dto.trigger.ListingDTO;
-import com.javaweb.repository.ListingRepository;
-import com.javaweb.service.webhook.TelegramNotificationService;
+import com.javaweb.model.mongo_entity.ListingEntity;
 import com.javaweb.service.trigger.CRUD.ListingTriggerService;
+import com.javaweb.service.webhook.TelegramNotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -16,66 +16,39 @@ import java.util.Map;
 public class ListingScheduler {
 
     @Autowired
-    private ListingRepository listingRepository;
+    private ListingTriggerService listingService;
 
     @Autowired
     private TelegramNotificationService telegramNotificationService;
 
-    @Autowired
-    private ListingTriggerService listingTriggerService;
-
-    private boolean hasNotifiedToday = false;
-
-
-    @Scheduled(cron = "0 0 8 * * ?")
+    @Scheduled(cron = "0 * * * * ?")
     public void checkForNewListings() {
-        if (hasNotifiedToday) {
-            System.out.println("Thông báo đã được gửi hôm nay.");
+
+        if (!listingService.isNotificationAllowed()) {
+            System.out.println("Thông báo hiện đang bị tắt.");
             return;
         }
 
+        List<String> newSymbols = listingService.fetchNewListings();
 
-        List<String> newSymbols = listingTriggerService.fetchNewListings();
-
-        if (newSymbols.isEmpty()) {
-            System.out.println("Không có symbol mới để thông báo.");
-            return;
-        }
-
-
-        StringBuilder messageBuilder = new StringBuilder("Phát hiện các symbol mới: ");
         for (String symbol : newSymbols) {
-            ListingDTO existingTrigger = listingRepository.findBySymbol(symbol);
-            if (existingTrigger == null) {
 
-                ListingDTO newTrigger = new ListingDTO.Builder()
-                        .setSymbol(symbol)
-                        .setNotificationMethod("telegram")
-                        .setShouldNotify(true)
-                        .build();
+            if (!listingService.existsBySymbol(symbol)) {
 
-                listingRepository.save(newTrigger);
-                messageBuilder.append(symbol).append(" ");
+                ListingEntity listingEntity = new ListingEntity(symbol, "telegram", false); // Không kích hoạt trigger
+                listingService.saveListing(listingEntity);
+
+                Map<String, Object> payload = new HashMap<>();
+                payload.put("message", "New symbol detected: " + symbol);
+                telegramNotificationService.sendNotification(payload);
+                System.out.println("New symbol saved: " + symbol + ". Notification sent via Telegram.");
+            } else {
+                System.out.println("Symbol already exists: " + symbol);
             }
         }
 
-        if (messageBuilder.length() > 0) {
-
-            Map<String, Object> payload = new HashMap<>();
-            payload.put("message", messageBuilder.toString().trim());
-            telegramNotificationService.sendNotification(payload);
-
-
-            hasNotifiedToday = true;
-            System.out.println("Đã gửi thông báo cho các symbol mới.");
+        if (newSymbols.isEmpty()) {
+            System.out.println("No new trading pairs found.");
         }
     }
-
-    // Cron job để reset lại flag khi bắt đầu một ngày mới
-    @Scheduled(cron = "0 0 0 * * ?")
-    public void resetNotificationFlag() {
-        hasNotifiedToday = false;
-        System.out.println("Flag thông báo đã được reset cho ngày mới.");
-    }
 }
-

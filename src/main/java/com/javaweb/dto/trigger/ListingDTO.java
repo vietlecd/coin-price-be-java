@@ -1,43 +1,25 @@
 package com.javaweb.dto.trigger;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+import lombok.Getter;
+
+@Getter
+@JsonDeserialize(builder = ListingDTO.Builder.class)
 public class ListingDTO {
-    private String symbol;
-    private String notificationMethod;
-    private boolean shouldNotify;
 
+    private final String symbol; // Trường symbol
+    private final String notificationMethod;
 
-    public ListingDTO() {}
-
-    // Getters and Setters
-    public String getSymbol() {
-        return symbol;
+    private ListingDTO(Builder builder) {
+        this.symbol = builder.symbol;
+        this.notificationMethod = builder.notificationMethod;
     }
 
-    public void setSymbol(String symbol) {
-        this.symbol = symbol;
-    }
-
-    public String getNotificationMethod() {
-        return notificationMethod;
-    }
-
-    public void setNotificationMethod(String notificationMethod) {
-        this.notificationMethod = notificationMethod;
-    }
-
-    public boolean isShouldNotify() {
-        return shouldNotify;
-    }
-
-    public void setShouldNotify(boolean shouldNotify) {
-        this.shouldNotify = shouldNotify;
-    }
-
-
+    @JsonPOJOBuilder(withPrefix = "set")
     public static class Builder {
         private String symbol;
         private String notificationMethod;
-        private boolean shouldNotify;
 
         public Builder setSymbol(String symbol) {
             this.symbol = symbol;
@@ -49,17 +31,8 @@ public class ListingDTO {
             return this;
         }
 
-        public Builder setShouldNotify(boolean shouldNotify) {
-            this.shouldNotify = shouldNotify;
-            return this;
-        }
-
         public ListingDTO build() {
-            ListingDTO listingDTO = new ListingDTO();
-            listingDTO.setSymbol(this.symbol);
-            listingDTO.setNotificationMethod(this.notificationMethod);
-            listingDTO.setShouldNotify(this.shouldNotify);
-            return listingDTO;
+            return new ListingDTO(this);
         }
     }
 }
