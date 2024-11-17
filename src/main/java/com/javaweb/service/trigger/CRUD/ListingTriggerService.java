@@ -1,8 +1,8 @@
 package com.javaweb.service.trigger.CRUD;
 
 import com.javaweb.dto.trigger.ListingDTO;
+import com.javaweb.model.mongo_entity.ListingEntity;
 import com.javaweb.repository.ListingRepository;
-import com.javaweb.utils.TriggerNotFoundException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -22,12 +22,14 @@ public class ListingTriggerService {
     @Autowired
     private ListingRepository listingRepository;
 
+    private boolean allowNotification = false;
     public List<String> fetchNewListings() {
         List<String> newSymbols = new ArrayList<>();
         try {
             Document doc = Jsoup.connect(URL).get();
             Elements scripts = doc.getElementsByTag("script");
 
+            // Tìm kiếm trong script chứa thông tin về USDⓈ-Margined
             for (Element script : scripts) {
                 String scriptContent = script.html();
                 if (scriptContent.contains("USDⓈ-Margined")) {
@@ -45,38 +47,55 @@ public class ListingTriggerService {
         return newSymbols;
     }
 
-    public String createTrigger(ListingDTO dto, String username) {
 
-        ListingDTO existingTrigger = listingRepository.findBySymbol(dto.getSymbol());
-
-        if (existingTrigger != null) {
-
-            return "Trigger already exists for this symbol";
-        }
-
-
-        ListingDTO newTrigger = new ListingDTO.Builder()
-                .setSymbol(dto.getSymbol())
-                .setNotificationMethod(dto.getNotificationMethod())
-                .setShouldNotify(true)
-                .build();
-
-        listingRepository.save(newTrigger);
-        return "Trigger created";
+    public boolean existsBySymbol(String symbol) {
+        return listingRepository.existsBySymbol(symbol);
     }
 
-    public void deleteTrigger(String symbol, String username) {
-        ListingDTO trigger = listingRepository.findBySymbol(symbol);
 
-        if (trigger != null) {
+    public String createTrigger(ListingDTO listingDTO, String username) {
+        ListingEntity listingEntity = new ListingEntity(listingDTO.getSymbol(), listingDTO.getNotificationMethod(), true);
+        listingRepository.save(listingEntity);
 
-            trigger.setShouldNotify(false);
-            listingRepository.save(trigger);
-
-
-            listingRepository.deleteBySymbol(symbol);
-        } else {
-            throw new TriggerNotFoundException("Trigger not found for symbol: " + symbol);
+        allowNotification = true;
+        return "Trigger created";
+    }
+    public void disableNotifications() {
+        this.allowNotification = false;
+    }
+    public void deleteTrigger(String notificationMethod, String username) {
+        if (listingRepository.existsByNotificationMethod(notificationMethod)) {
+            listingRepository.deleteByNotificationMethod(notificationMethod);
         }
+        allowNotification = false;
+    }
+
+
+
+    public void deactivateTrigger(String symbol) {
+        ListingEntity listing = listingRepository.findBySymbol(symbol);
+        if (listing != null) {
+            listing.setActive(false);
+            listingRepository.save(listing);
+        } else {
+            throw new RuntimeException("Trigger not found for symbol " + symbol);
+        }
+    }
+
+
+    public ListingEntity findListingBySymbol(String symbol) {
+        return listingRepository.findById(symbol).orElse(null);
+    }
+
+    public void saveListing(ListingEntity listingEntity) {
+        listingRepository.save(listingEntity);
+    }
+
+    public ListingEntity findBySymbol(String symbol) {
+        return listingRepository.findBySymbol(symbol);
+    }
+
+    public boolean isNotificationAllowed() {
+        return allowNotification;
     }
 }
