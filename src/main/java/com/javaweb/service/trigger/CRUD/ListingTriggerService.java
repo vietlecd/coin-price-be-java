@@ -1,8 +1,8 @@
 package com.javaweb.service.trigger.CRUD;
 
 import com.javaweb.dto.trigger.ListingDTO;
-import com.javaweb.model.mongo_entity.ListingEntity;
-import com.javaweb.repository.ListingRepository;
+import com.javaweb.model.trigger.ListingEntity;
+import com.javaweb.repository.trigger.ListingRepository;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -97,5 +97,10 @@ public class ListingTriggerService {
 
     public boolean isNotificationAllowed() {
         return allowNotification;
+    }
+
+    public void deleteAllListings() {
+        listingRepository.deleteAll();
+        System.out.println("All listings have been deleted.");
     }
 }

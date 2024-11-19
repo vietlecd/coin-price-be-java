@@ -1,6 +1,6 @@
-package com.javaweb.repository;
+package com.javaweb.repository.trigger;
 
-import com.javaweb.model.mongo_entity.ListingEntity;
+import com.javaweb.model.trigger.ListingEntity;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 public interface ListingRepository extends MongoRepository<ListingEntity, String> {
