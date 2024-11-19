@@ -1,4 +1,4 @@
-package com.javaweb.model.mongo_entity;
+package com.javaweb.model.trigger;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -7,21 +7,21 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class ListingEntity {
 
     @Id
-    private String symbol;  // Mỗi listing sẽ có symbol duy nhất là id trong MongoDB
+    private String symbol;
     private String notificationMethod;
-    private boolean isActive = false;  // Trạng thái kích hoạt trigger
+    private boolean isActive = false;
 
-    // Constructor mặc định
+
     public ListingEntity() {}
 
-    // Constructor với tham số
+
     public ListingEntity(String symbol, String notificationMethod, boolean isActive) {
         this.symbol = symbol;
         this.notificationMethod = notificationMethod;
         this.isActive = isActive;
     }
 
-    // Getter và Setter
+
     public String getSymbol() {
         return symbol;
     }

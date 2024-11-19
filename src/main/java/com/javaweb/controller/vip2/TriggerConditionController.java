@@ -2,11 +2,7 @@ package com.javaweb.controller.vip2;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.javaweb.dto.FundingIntervalDTO;
-import com.javaweb.dto.trigger.FundingRateTriggerDTO;
-import com.javaweb.dto.trigger.FuturePriceTriggerDTO;
-import com.javaweb.dto.trigger.ListingDTO;
-import com.javaweb.dto.trigger.PriceDifferenceTriggerDTO;
-import com.javaweb.dto.trigger.SpotPriceTriggerDTO;
+import com.javaweb.dto.trigger.*;
 import com.javaweb.service.trigger.CRUD.FundingRateTriggerService;
 import com.javaweb.service.trigger.CRUD.FuturePriceTriggerService;
 import com.javaweb.service.trigger.CRUD.PriceDifferenceTriggerService;
@@ -16,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.javaweb.service.trigger.CRUD.ListingTriggerService;
+import com.javaweb.service.trigger.CRUD.DelistingTriggerService;
 
 
 import javax.servlet.http.HttpServletRequest;
@@ -46,7 +43,10 @@ public class TriggerConditionController {
     private FundingRateTriggerService fundingRateTriggerService;
 
     @Autowired
-    private ListingTriggerService listingTriggerService; // Service cho Listing
+    private ListingTriggerService listingTriggerService;
+
+    @Autowired
+    private DelistingTriggerService delistingTriggerService;
 
     @PostMapping("/create")
     public ResponseEntity<?> createTriggerCondition(@RequestParam("triggerType") String triggerType, @RequestBody Map<String, Object> dtoMap, HttpServletRequest request) {
@@ -73,6 +73,10 @@ public class TriggerConditionController {
                 case "listing":
                     ListingDTO listingDTO = objectMapper.convertValue(dtoMap, ListingDTO.class);
                     alertId = listingTriggerService.createTrigger(listingDTO, username);
+                    break;
+                case "delisting":
+                    DelistingDTO delistingDTO = objectMapper.convertValue(dtoMap, DelistingDTO.class);
+                    alertId = delistingTriggerService.createTrigger(delistingDTO, username);
                     break;
                 default:
                     return ResponseEntity.badRequest().body("Invalid trigger type");
