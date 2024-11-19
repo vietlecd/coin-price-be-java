@@ -1,6 +1,7 @@
 package com.javaweb.service.trigger;
 
 import com.javaweb.dto.FundingRateDTO;
+import com.javaweb.dto.IndicatorDTO;
 import com.javaweb.dto.PriceDTO;
 import com.javaweb.helpers.trigger.SnoozeCheckHelper;
 import com.javaweb.helpers.trigger.TriggerCheckHelper;
@@ -28,6 +29,7 @@ public class TriggerService {
     private SpotWebhookService spotWebhookService;
     private FutureWebhookService futureWebhookService;
     private PriceDifferenceWebhookService priceDifferenceWebhookService;
+    private IndicatorWebhookService indicatorWebhookService;
     private TelegramNotificationService telegramNotificationService;
     private SpotPriceTriggerRepository spotPriceTriggerRepository;
     private UserRepository userRepository;
@@ -142,10 +144,10 @@ public class TriggerService {
                     System.out.println("Indicator is active, not sending alert for symbol: " + symbol);
                 } else {
                     // Gửi thông báo qua Telegram
-                    //telegramNotificationService.sendTriggerNotification("Indicator Trigger fired for symbol: " + symbol + " with username: " + username);
                     System.out.println("Indicator Trigger fired for symbol: " + symbol);
-                }
 
+                    indicatorWebhookService.processIndicatorNotification(symbol, username);
+                }
             }
         }
     }

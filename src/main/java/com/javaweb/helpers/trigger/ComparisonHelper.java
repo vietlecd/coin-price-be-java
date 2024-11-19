@@ -1,12 +1,17 @@
 package com.javaweb.helpers.trigger;
 
 import com.javaweb.model.trigger.*;
+import com.javaweb.service.impl.IndicatorService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
 @Component
 public class ComparisonHelper {
+    @Autowired
+    private IndicatorService indicatorService;
+
     private void CheckString(String str) {
         if (str == null || str.trim().isEmpty()) {
             throw new IllegalArgumentException("Current spot price cannot be null or empty");
@@ -79,8 +84,10 @@ public class ComparisonHelper {
     public boolean checkMAAndEMACondition(IndicatorTrigger trigger, double currentIndicatorValue) {
         switch (trigger.getCondition()) {
             case ">=":
+                indicatorService.handleComparedIndicatorValue(trigger.getSymbol(), trigger.getIndicator(), trigger.getPeriod(), currentIndicatorValue);
                 return currentIndicatorValue >= trigger.getValue();
             case "<":
+                indicatorService.handleComparedIndicatorValue(trigger.getSymbol(), trigger.getIndicator(), trigger.getPeriod(), currentIndicatorValue);
                 return currentIndicatorValue < trigger.getValue();
             default:
                 throw new IllegalArgumentException("Invalid comparison operator for funding rate");
@@ -89,8 +96,10 @@ public class ComparisonHelper {
     public boolean checkBOLLCondition(IndicatorTrigger trigger, Map<String, Double> currentIndicatorValue) {
         switch (trigger.getCondition()) {
             case ">=":
+                indicatorService.handleComparedIndicatorValue(trigger.getSymbol(), trigger.getIndicator() + "Upper", trigger.getPeriod(), currentIndicatorValue.get("UpperBand"));
                 return currentIndicatorValue.get("UpperBand") >= trigger.getValue();
             case "<":
+                indicatorService.handleComparedIndicatorValue(trigger.getSymbol(), trigger.getIndicator() + "Lower", trigger.getPeriod(), currentIndicatorValue.get("LowerBand"));
                 return currentIndicatorValue.get("LowerBand") < trigger.getValue();
             default:
                 throw new IllegalArgumentException("Invalid comparison operator for funding rate");
