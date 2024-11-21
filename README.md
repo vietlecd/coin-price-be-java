@@ -59,5 +59,3 @@ Chạy qua tomcat.
 |5   | 2213449 | Đoàn Nhật Tiến      | Dev  |
 |6   | 2211271 | Sam Gia Huy         | Dev  |
 |7   | 2113992 | Tô Tấn Luật         | Dev  |
-### Liên hệ
-[Page](https://www.facebook.com/profile.php?id=100093520770734)
