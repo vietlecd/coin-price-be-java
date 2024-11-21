@@ -60,11 +60,11 @@ public class IndicatorWebhookService {
                     Map<String, Object> payload = new HashMap<>();
                     payload.put("symbol", symbol);
                     payload.put("condition", condition);
-                    payload.put("chatID", "5655972163");
+                    payload.put("chatID", "6870230085");
                     payload.put("timestamp", timestamp);
                     payload.put("indicator", indicator);
                     payload.put("indicatorValue", currentValue);
-                    payload.put("threshold", value);
+                    payload.put("value", value);
                     payload.put("period", period);
                     payload.put("triggerType", triggerType);
 
