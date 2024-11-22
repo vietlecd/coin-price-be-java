@@ -9,7 +9,6 @@ import java.util.concurrent.TimeoutException;
 
 public interface IIndicatorService {
     Map<String, IndicatorDTO> getIndicatorData(List<String> symbols, List<String> indicators, int days, String username) throws TimeoutException;
-    public void handleIndicatorWebSocketMessage(String symbol, JsonNode data, boolean isTriggered);
-    public Map<String, IndicatorDTO> getIndicatorDataUsers();
-    public Map<String, IndicatorDTO> getIndicatorDataTriggers();
+    public void handleComparedIndicatorValue(String symbol, String indicator, int days, double value);
+    public Map<String, Double> getIndicatorDataTriggers();
 }

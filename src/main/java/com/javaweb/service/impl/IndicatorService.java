@@ -21,8 +21,7 @@ import java.util.concurrent.*;
 
 @Service
 public class IndicatorService implements IIndicatorService {
-    private final Map<String, IndicatorDTO> indicatorDataUsers = new ConcurrentHashMap<>();
-    private final Map<String, IndicatorDTO> indicatorDataTriggers = new ConcurrentHashMap<>();
+    private final Map<String, Double> indicatorDataTriggers = new ConcurrentHashMap<>();
 
     private final IndicatorRepository indicatorRepository = new IndicatorRepository();
     @Autowired
@@ -155,34 +154,14 @@ public class IndicatorService implements IIndicatorService {
         }
     }
 
-    @Override
-    public void handleIndicatorWebSocketMessage(String symbol, JsonNode data,  boolean isTriggered) {
-        JsonNode data1 = data.get(symbol);
-
-        Map<String, Object> values = new HashMap<>();
-        JsonNode data2 = data1.get("values");
-        values.put("MA", data2.get("MA").asDouble());
-        values.put("EMA", data2.get("EMA").asDouble());
-
-        long eventTimeLong = data1.get("eventTime").asLong();
-
-        String eventTime = DateTimeHelper.formatEventTime(eventTimeLong);
-
-        IndicatorDTO indicatorDTO = IndicatorDTOHelper.createIndicatorDTO(symbol, values, eventTime);
-
-        if (!isTriggered) {
-            indicatorDataUsers.put("Indicator: " + symbol, indicatorDTO);
-        }
-        else {
-            indicatorDataTriggers.put("Indicator: " + symbol, indicatorDTO);
-        }
+    public void handleComparedIndicatorValue(String symbol, String indicator, int days, double value) {
+        if (indicatorDataTriggers == null) System.out.println("indicatorDataTriggers is null");
+        else System.out.println("indicatorDataTriggers is not null");
+        indicatorDataTriggers.put("Indicator: " + symbol + " " + indicator + " " + String.valueOf(days), value);
     }
 
     @Override
-    public Map<String, IndicatorDTO> getIndicatorDataUsers() { return indicatorDataUsers; }
-
-    @Override
-    public Map<String, IndicatorDTO> getIndicatorDataTriggers(){
+    public Map<String, Double> getIndicatorDataTriggers(){
         return indicatorDataTriggers;
     }
 }
