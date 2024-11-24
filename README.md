@@ -45,10 +45,43 @@ Dự án này là một ứng dụng backend hỗ trợ việc theo dõi thông 
 - ![Spring](https://img.shields.io/badge/Spring-6DB33F?style=for-the-badge&logo=spring&logoColor=white) **Công nghệ:** Spring Boot
 ### Hướng dẫn cài đặt
 ```basg
-mvn install
+Cách 1: Chạy qua tomcat:
+    1. Set up JDK - 1.8.
+    2. Cài plugin: EnvFile, Spring WebSocket và Tomcat and TomEE.
+    3. Setting Tomcat server: 
+        - Cài artifact "spring-boot:war exploded" trong các mục before launch, deployment.
+        - Thêm đường dẫn tới file .env trong mục EnvFile.
+    4. Run Tomcat.
+Cách 2: Chạy bằng DockerFile:
+    1. Tạo docker-compose.yaml như sau:
+        services:
+            spring-boot-app:
+                ports:
+                - "8080:8080"
+                env_file:
+                - .env
+                image: lmao1415/dath_cnpm
+    2. Docker compose pull để kéo image về
+    3. Touch .env
+            echo 'MONGO_DB_URI=${{ secrets.MONGO_DB_URI }}' >> .env 
+            echo 'MONGO_DB_NAME=${{ secrets.MONGO_DB_NAME }}' >> .env 
+            echo 'JWT_SECRET=${{ secrets.JWT_SECRET }}' >> .env 
+            echo 'TELEGRAM_WEBHOOK_URL=${{ secrets.TELEGRAM_WEBHOOK_URL }}' >> .env 
+            echo 'email=${{ secrets.EMAIL }}' >> .env 
+            echo 'password_for_email=${{ secrets.password_for_email }}' >> .env 
+            echo 'adminToken=${{ secrets.ADMINTOKEN }}' >> .env  
+    4. sudo docker compose up
 ```
-### Để chạy chương trình
-Chạy qua tomcat.
+### ENV TEMPLATE (Nhớ bỏ ngoặc '{}')
+```basg
+MONGO_DB_URI={}
+MONGO_DB_NAME={}
+JWT_SECRET={}
+TELEGRAM_WEBHOOK_URL={}
+email={}
+password_for_email={}
+adminToken={}
+```
 ## Thành viên nhóm
 |STT | MSSV    | Tên thành viên      | Role | 
 |----|---------|---------------------|------|
