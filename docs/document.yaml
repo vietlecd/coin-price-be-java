@@ -338,7 +338,10 @@ paths:
         - name: symbols
           in: query
           required: true
-          description: List of symbols to fetch the spot price for (e.g., BTC, ETH)
+          description: |
+            Symbol(e.g., BTCUSDT, ,ETHUSDT)
+            - **BTCUSDT**: Cặp giao dịch BTC/USDT. Trong đó, BTC đại diện cho Bitcoin, còn USDT là Tether là stablecoin được neo giá theo đô la Mỹ (USD).
+            - **ETHUSDT**: Cặp giao dịch ETH/USDT. Trong đó, ETH đại diện cho Ethereum , còn USDT là Tether là stablecoin được neo giá theo đô la Mỹ (USD).
           schema:
             type: array
             items:
@@ -382,7 +385,7 @@ paths:
         - name: symbols
           in: query
           required: true
-          description: Lấy giá market và tổng lượng
+          description: Symbols(e.g., bitcoin, ethereum)
           schema:
             type: array
             items:
@@ -439,7 +442,10 @@ paths:
         - name: symbols
           in: query
           required: true
-          description: List of symbols to fetch the future price for (e.g., BTC, ETH)
+          description: |
+            Symbol(e.g., BTCUSDT, ,ETHUSDT)
+            - **BTCUSDT**: Cặp giao dịch BTC/USDT. Trong đó, BTC đại diện cho Bitcoin, còn USDT là Tether là stablecoin được neo giá theo đô la Mỹ (USD).
+            - **ETHUSDT**: Cặp giao dịch ETH/USDT. Trong đó, ETH đại diện cho Ethereum , còn USDT là Tether là stablecoin được neo giá theo đô la Mỹ (USD).
           schema:
             type: array
             items:
@@ -483,7 +489,10 @@ paths:
         - name: symbols
           in: query
           required: true
-          description: List of symbols to fetch the spot price for (e.g., BTC, ETH)
+          description: |
+            Symbol(e.g., BTCUSDT, ,ETHUSDT)
+            - **BTCUSDT**: Cặp giao dịch BTC/USDT. Trong đó, BTC đại diện cho Bitcoin, còn USDT là Tether là stablecoin được neo giá theo đô la Mỹ (USD).
+            - **ETHUSDT**: Cặp giao dịch ETH/USDT. Trong đó, ETH đại diện cho Ethereum , còn USDT là Tether là stablecoin được neo giá theo đô la Mỹ (USD).
           schema:
             type: array
             items:
@@ -536,7 +545,10 @@ paths:
         - name: symbols
           in: query
           required: true
-          description: List of symbols to fetch the price to kline for (e.g., BTC, ETH)
+          description: |
+            Symbol(e.g., BTCUSDT, ,ETHUSDT)
+            - **BTCUSDT**: Cặp giao dịch BTC/USDT. Trong đó, BTC đại diện cho Bitcoin, còn USDT là Tether là stablecoin được neo giá theo đô la Mỹ (USD).
+            - **ETHUSDT**: Cặp giao dịch ETH/USDT. Trong đó, ETH đại diện cho Ethereum , còn USDT là Tether là stablecoin được neo giá theo đô la Mỹ (USD).
           schema:
             type: array
             items:
@@ -668,7 +680,7 @@ paths:
         - name: symbol
           in: path
           required: true
-          description: Symbol will be deleted (e.g., bitcoin)
+          description: Symbol will be deleted (e.g., bitcoin, ethereum)
           schema:
             type: string
             example: BNBUSDT
@@ -750,7 +762,10 @@ paths:
         - name: snoozeType
           in: query
           required: true
-          description: Type of Snooze 
+          description: |
+            Type of Snooze (e.g., spot, future)
+            - **spot**: Giá hiện tại của BTC trên spot market.
+            - **future**: Giá của một hợp đồng tương lai.
           schema: 
             type: string
             example: spot
@@ -795,14 +810,20 @@ paths:
         - name: symbol
           in: path
           required: true
-          description: Symbol
+          description: |
+            Symbol(e.g., BTCUSDT, ,ETHUSDT)
+            - **BTCUSDT**: Cặp giao dịch BTC/USDT. Trong đó, BTC đại diện cho Bitcoin, còn USDT là Tether là stablecoin được neo giá theo đô la Mỹ (USD).
+            - **ETHUSDT**: Cặp giao dịch ETH/USDT. Trong đó, ETH đại diện cho Ethereum, còn USDT là Tether là stablecoin được neo giá theo đô la Mỹ (USD).
           schema: 
             type: string
             example: BTCUSDT
         - name: snoozeType
           in: query
           required: true
-          description: Type of Snooze 
+          description: |
+            Type of Snooze (e.g., spot, future)
+            - **spot**: Giá hiện tại của BTC trên spot market.
+            - **future**: Giá của một hợp đồng tương lai.
           schema: 
             type: string
             example: spot
@@ -835,7 +856,10 @@ paths:
         - name: symbols
           in: query
           required: true
-          description: List of symbols to fetch the spot price for (e.g., BTC, ETH)
+          description: |
+            Symbol(e.g., BTCUSDT, ,ETHUSDT)
+            - **BTCUSDT**: Cặp giao dịch BTC/USDT. Trong đó, BTC đại diện cho Bitcoin, còn USDT là Tether là stablecoin được neo giá theo đô la Mỹ (USD).
+            - **ETHUSDT**: Cặp giao dịch ETH/USDT. Trong đó, ETH đại diện cho Ethereum, còn USDT là Tether là stablecoin được neo giá theo đô la Mỹ (USD).
           schema:
             type: array
             items:
@@ -844,7 +868,11 @@ paths:
         - name: indicators
           in: query
           required: true
-          description: List of indicators (e.g., EMA, MA, BOLL )
+          description: |
+            List of indicators (e.g., EMA, MA, BOLL )
+            - **MA**: Simple Moving Average - Trung bình động đơn giản
+            - **EMA**: Exponential Moving Average - Trung bình động hàm mũ
+            - **BOLL**: Bollinger Bands - Dải Bollinger. 
           schema: 
             type: array
             items:
@@ -1457,6 +1485,8 @@ paths:
         - name: symbol
           required: true
           in: path
+          description: |
+            Symbols(e.g., bitcoin, ethereum)
           content:
             application/json:
               schema: 
@@ -1598,3 +1628,4 @@ components:
         status:
           type: string
           example: 403
+
