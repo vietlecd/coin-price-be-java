@@ -238,9 +238,9 @@ public class AuthController {
     }
 
     @GetMapping("/forgotPassword")
-    public ResponseEntity<?> forgetPassword(@RequestParam String username) {
+    public ResponseEntity<?> forgetPassword(@RequestParam String email) {
         try {
-            userData userdata = userRepository.findByUsername(username);
+            userData userdata = userRepository.findByEmail(email);
 
             if(userdata == null) {
                 throw new Exception("Không có user này");

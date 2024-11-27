@@ -186,7 +186,7 @@ public class UserController {
             info.put("name", user.getName());
             info.put("email", user.getEmail());
             info.put("coin", user.getCoin());
-            info.put("vipRole", user.getVip_role());
+            info.put("vip_role", user.getVip_role());
 
             return new ResponseEntity<>(info, HttpStatus.OK);
         } catch (Exception e) {
