@@ -49,4 +49,9 @@ jobs:
           tmux kill-session -t spring 2>/dev/null || true 
           tmux new-session -d -s spring 'sudo docker compose up'
         "
+
+    - name: Xóa cache
+      run: |
+        rm -rf ~/actions-runner/_work
+        rm -rf ~/actions-runner/_diag
         
