@@ -85,9 +85,11 @@ public class AdminController {
                     throw new Exception("Yêu cầu không hợp lệ!, from > to");
                 }
 
-                if(from < 0 || to > list.size()) {
+                if(from < 0 || to < 0) {
                     throw new Exception("Yêu cầu không hợp lệ, from < 0 || to < 0");
                 }
+
+                if(to > list.size()) to = list.size();
 
                 return list.subList(from, to);
             }
