@@ -41,9 +41,6 @@ Dự án này là một ứng dụng backend hỗ trợ việc theo dõi thông 
   - Lấy thông tin tất cả lịch sử giao dịch của user
   - Có quyền xóa 1 user ra khỏi hệ thống
 ### Yêu Cầu Phi Chức Năng
-
-### Tiêu chí phát triển hệ thống
-
 **1. Hiệu năng (Performance)**
 - Hệ thống phải đáp ứng nhanh chóng ngay cả trong điều kiện tải thông thường.
 - Đảm bảo xử lý đồng thời số lượng lớn yêu cầu từ người dùng mà không gây giảm hiệu suất.
