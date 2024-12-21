@@ -148,7 +148,7 @@ adminToken={}
 |----|---------|---------------------|------|
 |1   | 2213524 | Hà Thái Toàn        | Viết report, phân công, viết Swagger   |
 |2   | 2252903 | Lê Hoàng Việt       | Api F1, F2, F3, trigger condition  |
-|3   | 2211472 | Trần Minh Khang     | Auth request + viết CI/CD  |
+|3   | 2211472 | Trần Minh Khang     | Viết CI/CD + Foundation APIs  |
 |4   | 2252266 | Trần Nhật Huy       | Api F2 + Snooze Condition  |
 |5   | 2213449 | Đoàn Nhật Tiến      | F4 + Advanced Indicator  |
 |6   | 2211271 | Sam Gia Huy         | Trigger Indicator  |
