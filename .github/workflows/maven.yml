@@ -2,7 +2,7 @@ name: LearnJava
 
 on:
   push:
-    branches: [main]
+    branches: []
     paths-ignore:
       - README.md
       - docs/**
