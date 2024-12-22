@@ -1,4 +1,4 @@
-# Coin Price Backend Project
+![image](https://github.com/user-attachments/assets/2a1624ee-7b11-4ee2-b96e-dcddf44edf20)# Coin Price Backend Project
 ![Java](https://img.shields.io/badge/Java-ED8B00?style=for-the-badge&logo=java&logoColor=white) ![Spring](https://img.shields.io/badge/Spring-6DB33F?style=for-the-badge&logo=spring&logoColor=white) ![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white) ![MongoDB](https://img.shields.io/badge/MongoDB-47A248?style=for-the-badge&logo=mongodb&logoColor=white)
 
 - [BACKEND SERVER](https://a2-price.thuanle.me/)
@@ -103,6 +103,7 @@ Dự án này là một ứng dụng backend hỗ trợ việc theo dõi thông 
         - VIP-1: Các API tra cứu Kline.
         - VIP-2: Trigger Condition.
         - VIP-3: Adv Indicators.
+![Deployment diagram](https://media.discordapp.net/attachments/1273765294711636082/1320393461555527700/image.png?ex=67696fbc&is=67681e3c&hm=6c9423296cbc4892c7819b968e64eeb2f7c585eded7e222915d4d87be122502a&=&format=webp&quality=lossless&width=1272&height=878)
 
 ### Hướng dẫn cài đặt
 ```basg
