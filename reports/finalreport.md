@@ -105,7 +105,7 @@ Dự án này là một ứng dụng backend hỗ trợ việc theo dõi thông 
         - VIP-3: Adv Indicators.
         - 
 ### Deployment diagram
-![Deployment diagram](https://media.discordapp.net/attachments/1273765294711636082/1320393461555527700/image.png?ex=67696fbc&is=67681e3c&hm=6c9423296cbc4892c7819b968e64eeb2f7c585eded7e222915d4d87be122502a&=&format=webp&quality=lossless&width=1272&height=878)
+- ![Deployment diagram](https://media.discordapp.net/attachments/1273765294711636082/1320393461555527700/image.png?ex=67696fbc&is=67681e3c&hm=6c9423296cbc4892c7819b968e64eeb2f7c585eded7e222915d4d87be122502a&=&format=webp&quality=lossless&width=1272&height=878)
 
 ### Hướng dẫn cài đặt
 ```basg
