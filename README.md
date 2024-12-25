@@ -2,7 +2,7 @@
 ![Java](https://img.shields.io/badge/Java-ED8B00?style=for-the-badge&logo=java&logoColor=white) ![Spring](https://img.shields.io/badge/Spring-6DB33F?style=for-the-badge&logo=spring&logoColor=white) ![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white) ![MongoDB](https://img.shields.io/badge/MongoDB-47A248?style=for-the-badge&logo=mongodb&logoColor=white)
 
 - [BACKEND SERVER](https://a2-price.thuanle.me/)
-- [API docs](https://dath.hcmutssps.id.vn/docs/)
+- [API docs](https://wwenrr.github.io/coin-price-swagger/)
 
 ## Thông tin dự án
 Dự án này là một ứng dụng backend hỗ trợ việc theo dõi thông tin thị trường (giá tiền, phí,...), các giao dịch được hình thành, tra cứu thống kê các giao dịch, tự động nhận cảnh báo giá.
