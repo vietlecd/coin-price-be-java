@@ -12,7 +12,7 @@ import java.util.Map;
 @Service
 public class TelegramNotificationService {
 
-    private final String APIUrl = "https://clgslsm-tele-bot-8e92f25bcbac.herokuapp.com/backend";
+    private final String APIUrl = "https://clgslsm.duckdns.org/backend";
     private final RestTemplate restTemplate = new RestTemplate();
 
     public void sendNotification(Map<String, Object> payload) {
